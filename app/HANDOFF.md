@@ -25,6 +25,9 @@ session that runs the research. Build against mocks now; swap in the real resear
 Ask before anything that costs money, deploys publicly or needs an account action. Keys only from env
 vars, never committed. Keep everything swappable. Keep `app/README.md` up to date. Note anything in
 MASTER_PLAN.md that looks inconsistent instead of silently working around it.
+**Every image and video goes into `app/media/`** (owner, 2026-11-14), including rejected and superseded ones:
+numbered folders in the order the work happened, and an entry in `app/media/README.md` for each (what it shows,
+status, whether the owner was sent it). Screen recordings: `app/media/tools/record-walkthrough.cjs`.
 
 ## Tasks and status
 

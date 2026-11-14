@@ -15,7 +15,8 @@ accuracy is claimed.
 |---|---|---|
 | `contract/` | JSON Schemas for every request, response and artefact, plus mocks and validators. See `contract/README.md`. | Task 1: done |
 | `backend/` | FastAPI service: screening, live progress (SSE), memos, what-if, batch, artefacts, and the research agent | Task 2: done, on mocks. Task 3: done (agent tested on 5 real founders) |
-| `frontend/` | Installable mobile-first Next.js app: founders list, screening, live progress, memo, your bar, what-ifs | Task 4: done and redesigned, on mocks. Push and share (task 5) and batch UI (task 7) to come |
+| `frontend/` | Installable mobile-first Next.js app: founders list, screening, live progress, memo, your bar, what-ifs, notifications, sharing in, screening a list | Tasks 4, 5 and 7: done, on mocks |
+| `media/` | Every screenshot and video made while building the app, good and bad, in order, with an index. See `media/README.md`. | Kept up to date |
 
 ## Run the frontend locally
 
