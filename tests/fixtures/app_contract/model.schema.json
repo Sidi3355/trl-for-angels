@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "model.json (proposed format, for the research session to confirm)",
+  "description": "The production decider (steps D2 and D3): where it is served, which input type won on val, and the exact request it was trained on. No secrets: any key is named by env var only.",
+  "type": "object",
+  "required": ["schema_version", "model_id", "created_at", "endpoint", "decider_input", "request", "temperature", "answerer"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "mock": { "description": "True only for the app's mock.", "type": "boolean" },
+    "model_id": { "type": "string", "description": "Name of the served production model, e.g. 'kev-0.6b-prod-c3'." },
+    "created_at": { "type": "string", "format": "date-time" },
+    "endpoint": {
+      "type": "object",
+      "required": ["base_url", "path", "auth"],
+      "additionalProperties": false,
+      "properties": {
+        "base_url": { "type": "string", "format": "uri", "description": "e.g. the Modal URL of kev.serve." },
+        "path": { "type": "string", "default": "/v1/systemone" },
+        "auth": {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "enum": ["none", "bearer", "header"] },
+            "header_name": { "type": "string", "description": "For type 'header', e.g. 'Modal-Key'." },
+            "env_var": { "type": "string", "description": "Env var holding the key in the app backend, e.g. 'KEV_API_KEY'." }
+          }
+        },
+        "timeout_s": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "decider_input": {
+      "description": "'answers': Kev reads the serialised answers to rules.json (C3). 'profile': Kev reads the rendered profile text (C4).",
+      "enum": ["answers", "profile"]
+    },
+    "request": {
+      "description": "The decision questions exactly as in the production training JSONL. The app sends {state, questions} with state = serialised answers or the rendered profile.",
+      "type": "object",
+      "required": ["questions"],
+      "additionalProperties": false,
+      "properties": {
+        "questions": {
+          "type": "object",
+          "required": ["outcome", "years"],
+          "additionalProperties": false,
+          "properties": {
+            "outcome": { "$ref": "#/$defs/choice_question" },
+            "years": { "$ref": "#/$defs/choice_question" }
+          }
+        },
+        "response_format": {
+          "description": "How to read probabilities from the response (research to confirm against kev.serve), e.g. a JSON path per question.",
+          "type": "string"
+        }
+      }
+    },
+    "temperature": {
+      "description": "Per-question temperatures fitted on val, and who applies them.",
+      "type": "object",
+      "required": ["applied_by", "outcome", "years"],
+      "additionalProperties": false,
+      "properties": {
+        "applied_by": { "enum": ["server", "client"] },
+        "outcome": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "years": { "type": ["number", "null"], "exclusiveMinimum": 0 }
+      }
+    },
+    "answerer": {
+      "description": "The answerer used to build the training answers. The app must use the same one at screening time.",
+      "type": "object",
+      "required": ["spec", "via"],
+      "additionalProperties": false,
+      "properties": {
+        "spec": { "type": "string", "description": "'jev', or the Kev fallback spec." },
+        "via": { "const": "trl", "description": "Answers come from TRL's own pipeline (rrf.answers), never a re-implemented prompt." }
+      }
+    },
+    "answer_serialisation": {
+      "description": "Required when decider_input is 'answers'. How P(yes) becomes Kev's state text (research/serialise.py).",
+      "type": "object",
+      "required": ["format", "line_template", "order"],
+      "additionalProperties": false,
+      "properties": {
+        "format": { "enum": ["binary", "banded"] },
+        "threshold": { "type": "number", "description": "For binary: yes when P(yes) >= threshold (plan: 0.5)." },
+        "bands": {
+          "description": "For banded: label to lower bound of P(yes), e.g. {'likely no': 0, 'unsure': 0.35, 'likely yes': 0.65}.",
+          "type": "object",
+          "additionalProperties": { "type": "number" }
+        },
+        "line_template": { "type": "string", "description": "e.g. '{question} {answer}'." },
+        "separator": { "type": "string", "default": "\n" },
+        "order": { "const": "rules.json", "description": "Answers in rules.json order." }
+      }
+    },
+    "validation": {
+      "description": "Optional val metrics for display (never test).",
+      "type": "object"
+    }
+  },
+  "if": { "properties": { "decider_input": { "const": "answers" } } },
+  "then": { "required": ["answer_serialisation"] },
+  "$defs": {
+    "choice_question": {
+      "type": "object",
+      "required": ["type", "instructions", "criteria"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "choice" },
+        "instructions": { "type": "string" },
+        "criteria": {
+          "description": "Option name to description (or null), exactly as trained. Option names must be the template's band labels.",
+          "type": "object",
+          "additionalProperties": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}
