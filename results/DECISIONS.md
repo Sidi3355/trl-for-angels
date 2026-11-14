@@ -415,3 +415,33 @@ while doing the work: date, decision, reason, evidence. Newest last.
   folder of every experiment it shows (section 9c). For the existing `b3-provisional` stage
   the same copies were made by hand with the same rule; nothing in it was changed or
   rescored.
+
+## 2026-11-14 · C1-train · First c_kev run failed after training; fixed and rerun
+
+- **Run:** `kaggle-results: runs/20261114-173802-c_kev` (repo commit `e44ead9`), failed after
+  98 minutes with "no chosen c3 checkpoint".
+- **Cause (a bug in `research/train_kev.py`):** training used `--max_state 4096` correctly,
+  but the val scoring that chooses the checkpoint used Kev's `LocalPredictor` with its default
+  limits, Kev's 384-token training context. Every C3 state is 873 tokens, so scoring the first
+  candidate raised `ContextOverflow: state exceeds 384 tokens: 873`. C4's profiles (under 384)
+  were unaffected. The run script then stopped at the missing C3 checkpoint, before scoring or
+  uploading C4, so neither model's weights survived the Kaggle session.
+- **What the failed run still showed:**
+  - **C3 trains as expected:** 2 epochs, 250 steps each, 48 and 49 min, peak 4.4 GB on the
+    T4, every record kept.
+  - **C4 finished:** it chose ep2 (val log-loss 1.086 for the released Kev, 0.475 after
+    epoch 1, 0.470 after epoch 2), with temperature 1.275, and val ECE fell from 0.057 raw to
+    0.022 calibrated. These are logged in `runs/.../kev/train_c4.log` and reproduced by the
+    rerun with the same seed.
+- **Fixes:**
+  1. Scoring now uses the same limits as training (`kev.model.training_context(4096)`).
+     Checked locally on real 873-token C3 states with base Kev, the exact call that failed.
+  2. The released checkpoint is scored **before** any training, and each epoch right after it
+     trains, so a scoring problem shows in minutes, not after the training time.
+  3. `kaggle/run.sh`: each trained model is uploaded to Hugging Face **before** it's scored;
+     EXTRA is scored whatever happens to training; one condition failing no longer stops the
+     other. `d_prod` also uploads before predicting.
+  4. Dry runs on real rows: EXTRA, C4 and C3 scoring through TRL (`kev_predict.py`, CPU, base
+     Kev standing in for the trained checkpoints), and the whole `train_kev.py` flow in
+     miniature (8 rows, 1 step per epoch).
+- **Cost:** about 1.7 hours of Kaggle GPU time; no money.

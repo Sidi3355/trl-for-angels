@@ -14,6 +14,7 @@ task's outputs. Outputs the next steps need are copied into this repo's `data/` 
 | `20261114-142314-hf_setup` | hf_setup | `d8b780a` | failed | Tried to create a Hugging Face Space for the Kev server: Hugging Face returned 402 (Spaces that run code need PRO), so the server moved to the owner's PC | DECISIONS: hosting |
 | `20261114-153153-a4` | a4 (A4) | `df5a5aa` | PASS | TRL smoke test on 20 sample founders: Claude wrote 10 questions, Kev answered them, predictions ran; $0.11 | DECISIONS: A4 |
 | `20261114-160701-b1b2` | b1b2 (B1, B2) | `22f39d4` | finished | Claude wrote 93 questions ($0.49); C1a, C1a-40, C1b and C2 fitted on 2,000 train founders; answer matrices and TRL predictions for every split; 86 min | DECISIONS: B1/B2 |
-| `20261114-173802-c_kev` | c_kev (C1-train, C2-temp, B6) | *running* | *running* | Fine-tunes C3 and C4 (one GPU each), picks each checkpoint and temperature on val, scores EXTRA, C4 and C3, keeps C3 and C4 on Hugging Face | *pending* |
+| `20261114-173802-c_kev` | c_kev (C1-train, C2-temp, B6) | `e44ead9` | **failed** | Trained C3 (2 epochs, 98 min) and C4 (chose epoch 2, T 1.275), then failed scoring C3 on val: the scorer used Kev's 384-token default, and C3's texts are 873 tokens. Nothing saved | DECISIONS: first c_kev run failed |
+| *next* | c_kev (rerun) | | | The same, with the scoring fix; models saved to Hugging Face before scoring | |
 
 To read a run's log: `git show origin/kaggle-results:runs/<run>/run.log`.

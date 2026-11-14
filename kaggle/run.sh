@@ -7,7 +7,7 @@
 # OUT (folder pushed to GitHub). Secrets arrive as env vars: ANTHROPIC_API_KEY (if attached).
 set -uo pipefail
 
-# c_kev needs data/splits, data/answers and data/models (B1/B2) in the repo. About 2.5-3 hours.
+# c_kev (rerun after the 2026-11-14 scoring bug): needs data/splits, data/answers and data/models. About 2-2.5 hours.
 TASK="c_kev"
 
 echo "$TASK" > "$OUT/task.txt"
@@ -33,7 +33,10 @@ case "$TASK" in
     ;;
   c_kev)
     # B5 files, then C3 (GPU 0) and C4 (GPU 1) fine-tuned at the same time, each choosing
-    # its checkpoint and temperature on val; then EXTRA, C4 and C3 scored through TRL.
+    # its checkpoint and temperature on val. Then, per condition that trained: keep it on
+    # Hugging Face first (so the weights outlive the run), then score it through TRL. EXTRA
+    # needs no training and is scored regardless. One condition failing doesn't stop the
+    # other; the run fails at the end if anything did.
     # Needs data/splits, data/answers and data/models from the b1b2 run in the repo.
     KPY="$WORK/kev/.venv/bin/python"
     "$PY" "$REPO/research/serialise.py" --splits "$REPO/data/splits" \
@@ -46,27 +49,31 @@ case "$TASK" in
         --out "$WORK/runs/$cond" > "$OUT/kev/train_$cond.log" 2>&1) &
     done
     wait
-    for cond in c3 c4; do
+    failed=""
+    "$PY" "$REPO/research/kev_predict.py" --condition extra --kev-dir "$WORK/kev" \
+      --splits "$REPO/data/splits" --models "$REPO/data/models" --out-root "$OUT" \
+      || failed="$failed extra"
+    for cond in c4 c3; do
       cp "$WORK/runs/$cond/report.json" "$OUT/kev/${cond}_report.json" 2>/dev/null
       cp "$WORK/runs/$cond/"ep*.log "$OUT/kev/" 2>/dev/null
-      [ -d "$WORK/runs/$cond/chosen" ] || { echo "no chosen $cond checkpoint" >&2; exit 1; }
-    done
-    for cond in extra c4 c3; do
-      run=""; [ "$cond" != extra ] && run="--run $WORK/runs/$cond/chosen"
-      "$PY" "$REPO/research/kev_predict.py" --condition "$cond" $run --kev-dir "$WORK/kev" \
-        --splits "$REPO/data/splits" --models "$REPO/data/models" --out-root "$OUT" || exit 1
-    done
-    # Keep C3 and C4 for the interp steps (F2, F3): too big for GitHub, so Hugging Face.
-    if [ -n "${HF_TOKEN:-}" ]; then
-      for cond in c3 c4; do
+      if [ ! -d "$WORK/runs/$cond/chosen" ]; then
+        echo "no chosen $cond checkpoint: see kev/train_$cond.log" >&2
+        failed="$failed $cond"; continue
+      fi
+      # Keep C3 and C4 for the interp steps (F2, F3): too big for GitHub, so Hugging Face.
+      if [ -n "${HF_TOKEN:-}" ]; then
         "$WORK/kev/.venv/bin/python" "$REPO/research/hf_hub.py" --report "$OUT/hf.json" \
           upload-model "$WORK/runs/$cond/chosen" --name "trl-for-angels-kev-$cond" \
           --extra "$WORK/runs/$cond/report.json" \
-          || echo "upload of $cond failed (predictions are saved anyway)" >&2
-      done
-    else
-      echo "HF_TOKEN not attached: C3 and C4 were not kept" >&2
-    fi
+          || echo "upload of $cond failed (it is still scored below)" >&2
+      else
+        echo "HF_TOKEN not attached: $cond was not kept" >&2
+      fi
+      "$PY" "$REPO/research/kev_predict.py" --condition "$cond" \
+        --run "$WORK/runs/$cond/chosen" --kev-dir "$WORK/kev" --splits "$REPO/data/splits" \
+        --models "$REPO/data/models" --out-root "$OUT" || failed="$failed $cond"
+    done
+    if [ -n "$failed" ]; then echo "failed:$failed" >&2; exit 1; fi
     ;;
   d_prod)
     # D3: the production model on the input chosen on val at D2 (PROD_INPUT: c3 or c4),
@@ -83,9 +90,6 @@ case "$TASK" in
       --out "$WORK/runs/prod" > "$OUT/kev/train_prod.log" 2>&1) || exit 1
     cp "$WORK/runs/prod/report.json" "$OUT/kev/prod_report.json"
     cp "$WORK/runs/prod/chosen/temperatures.json" "$OUT/kev/prod_temperatures.json"
-    "$PY" "$REPO/research/kev_predict.py" --condition prod --run "$WORK/runs/prod/chosen" \
-      --kev-dir "$WORK/kev" --prod-data "$WORK/kev_data/prod" --out-root "$OUT" \
-      --gpus 0,0 --predict-splits val || exit 1
     # Publish the production model to a free Hugging Face model repo, for kev_server/.
     if [ -n "${HF_TOKEN:-}" ]; then
       "$WORK/kev/.venv/bin/python" "$REPO/research/hf_hub.py" --report "$OUT/hf.json" \
@@ -93,6 +97,9 @@ case "$TASK" in
     else
       echo "HF_TOKEN not attached: the production model was not published" >&2
     fi
+    "$PY" "$REPO/research/kev_predict.py" --condition prod --run "$WORK/runs/prod/chosen" \
+      --kev-dir "$WORK/kev" --prod-data "$WORK/kev_data/prod" --out-root "$OUT" \
+      --gpus 0,0 --predict-splits val || exit 1
     ;;
   *)
     echo "unknown TASK $TASK" >&2

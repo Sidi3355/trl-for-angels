@@ -83,9 +83,14 @@ def score(run: str, records: list, out: Path, device: str, temperature: float = 
     import torch
     from kev.benchmark import evaluate_records
     from kev.checkpoint import LoadOptions
+    from kev.model import training_context
     from kev.predictors import LocalPredictor
 
-    predictor = LocalPredictor(run, device, LoadOptions(temperature=1.0))
+    # Score within the same limits the model was trained with (--max_state MAX_STATE). The
+    # predictor's default is Kev's 384-token training context, which rejects every C3 state
+    # (873 tokens): the 2026-11-14 c_kev run failed on exactly that, after training.
+    context = {**training_context(MAX_STATE), "truncate": False}
+    predictor = LocalPredictor(run, device, LoadOptions(temperature=1.0), context=context)
     try:
         return evaluate_records(records, predictor, out, temperature)
     finally:
@@ -132,6 +137,19 @@ def main(argv: list[str] | None = None) -> int:
         (args.out / "report.json").write_text(json.dumps(report, indent=2, default=str))
 
     candidates = {"base": BASE}
+    scores = {}
+    report["val_raw"] = scores
+
+    def score_candidate(name: str) -> None:
+        rep, _ = score(candidates[name], val, args.out / "val_scores" / name, args.device)
+        scores[name] = rep["clean"]
+        print(f"{name}: val nll {rep['clean']['nll']:.4f}, brier {rep['clean']['brier']:.4f}",
+              flush=True)
+        save()
+
+    # The base checkpoint is scored first, so a scoring problem shows in minutes, before any
+    # training time is spent; each epoch is scored as soon as it's trained.
+    score_candidate("base")
     init = BASE
     for epoch in ("ep1", "ep2"):
         out = args.out / epoch
@@ -141,14 +159,7 @@ def main(argv: list[str] | None = None) -> int:
         candidates[epoch] = str(out)
         init = str(out)
         save()
-
-    scores = {}
-    for name, run in candidates.items():
-        rep, _ = score(run, val, args.out / "val_scores" / name, args.device)
-        scores[name] = rep["clean"]
-        print(f"{name}: val nll {rep['clean']['nll']:.4f}, brier {rep['clean']['brier']:.4f}",
-              flush=True)
-    report["val_raw"] = scores
+        score_candidate(epoch)
     chosen = min(scores, key=lambda k: scores[k]["nll"])
     report["chosen"] = chosen
     if chosen == "base":
