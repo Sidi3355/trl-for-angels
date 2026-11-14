@@ -44,6 +44,8 @@ SETUP = f"""
 %%bash
 # Installs Kev (pinned) and our TRL fork into their own Python 3.13 environments under /tmp/work.
 set -euo pipefail
+# Kaggle's PYTHONPATH carries a sitecustomize hook that needs packages our venvs don't have.
+unset PYTHONPATH
 nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv \\
   || {{ echo "NO GPU: set Settings > Accelerator to GPU T4, then restart"; exit 1; }}
 pip install -q uv
@@ -104,8 +106,8 @@ fine-tuning test.
 """),
         code(SETUP),
         code("%%writefile /tmp/work/a3_check.py\n" + script),
-        code("!/tmp/work/trl-venv/bin/python /tmp/work/a3_check.py --kev-dir /tmp/work/kev "
-             "--out /kaggle/working/a3_report.json"),
+        code("!env -u PYTHONPATH /tmp/work/trl-venv/bin/python /tmp/work/a3_check.py "
+             "--kev-dir /tmp/work/kev --out /kaggle/working/a3_report.json"),
         code(SUMMARY),
     ])
 
@@ -138,7 +140,7 @@ SECRET_AND_RUN = """
 import os
 from kaggle_secrets import UserSecretsClient
 os.environ["ANTHROPIC_API_KEY"] = UserSecretsClient().get_secret("ANTHROPIC_API_KEY")
-!/tmp/work/trl-venv/bin/python /tmp/work/a4_check.py --kev-dir /tmp/work/kev --data /tmp/work/a4_rows.jsonl --out /kaggle/working/a4
+!env -u PYTHONPATH /tmp/work/trl-venv/bin/python /tmp/work/a4_check.py --kev-dir /tmp/work/kev --data /tmp/work/a4_rows.jsonl --out /kaggle/working/a4
 """
 
 A4_SUMMARY = """
