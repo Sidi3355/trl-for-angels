@@ -19,19 +19,42 @@ reported too.
 
 ## Result
 
-*Final result pending* (F0.5 on test with its 95% CI, at D1).
+**Final, test** (`d1-final/`; 95% CIs from 1,000 stratified bootstrap resamples; threshold
+tuned on val):
 
-**Provisional, val only** (`b3-provisional/`): CTRL 0.457 F0.5, C1a 0.446, C1a-40 0.426,
-C1b 0.377. In plain words, C1a flags 36 of the 400 val founders and about 6 in every 10 it flags
-really succeed, against 2 in 10 for a founder picked at random. All are far below 0.8, so the
-data isn't too easy (sanity check B4 passed).
+| | F0.5 | Precision | Recall | ECE | Brier | PR-AUC |
+|---|---|---|---|---|---|---|
+| C1a (TRL default, elastic net, all 93 questions) | **0.319** (0.221–0.417) | 0.383 | 0.192 | 0.045 | 0.153 | **0.319** |
+| C1a with TRL's own threshold (as shipped) | 0.312 (0.218–0.404) | 0.379 | 0.183 | 0.045 | 0.153 | 0.319 |
+| C1a-40 (elastic net, the 40 Kev reads) | 0.306 (0.236–0.378) | 0.312 | 0.283 | 0.035 | 0.156 | 0.286 |
+| C1b (the paper's vote) | 0.305 (0.249–0.354) | 0.286 | 0.417 | 0.251 | 0.249 | 0.264 |
+| CTRL (XGBoost, the same 40) | 0.305 (0.205–0.399) | 0.375 | 0.175 | 0.040 | 0.154 | 0.317 |
+
+In plain words: C1a flags 60 of the 600 test founders, and about 4 in every 10 it flags really
+succeed, against 2 in 10 for a founder picked at random; it finds about 1 in 5 of the founders
+who succeeded. All are far below 0.8, so the data isn't too easy (sanity check B4).
+
+**Paired comparisons on test** (`results/summary/d1-final/paired.md`): none of the four
+differs from C1a on F0.5 (every CI includes zero). The vote (C1b) is far worse calibrated than
+the elastic net (ECE +0.206, CI +0.170 to +0.233) and ranks worse (PR-AUC −0.055, CI −0.115 to
+−0.005). XGBoost (CTRL) matches the elastic net on every metric. Keeping only 40 questions
+costs the elastic net a little ranking (PR-AUC −0.033, CI −0.071 to −0.000) but no F0.5.
+
+**Val** (`b3-provisional/`, `d2-val/`): CTRL 0.457 F0.5, C1a 0.446, C1a-40 0.426, C1b 0.377.
+Every condition scored lower on test than on val (C1a 0.446 → 0.319), C1a with TRL's own
+threshold too (0.432 → 0.312), which isn't tuned on val at all. Because every condition
+dropped, the val founders were most likely easier than the test founders by chance (only 80
+and 120 successes), not over-tuned.
 
 ## What it means
 
-*Pending.* For the research: the bar Kev must clear; C1a-40 against C1a, what limiting Kev
-to 40 questions costs; and CTRL against C1a-40, how much is gained just by handling
-combinations of answers. For the app: whether the questions carry
-signal at all. Also the sanity check (B4): above about 0.8 F0.5 means the data is too easy.
+- **For the research:** TRL's default elastic net is the bar, and nothing in this project
+  clears it on F0.5. Handling combinations of answers (XGBoost) adds nothing measurable over
+  a weighted sum, so the answers' signal is mostly additive. The paper's vote ranks about as
+  well but its score isn't a probability (ECE 0.25), which matters for any product that acts
+  on the number.
+- **For the app:** the questions do carry signal (precision about 2× the base rate, PR-AUC
+  0.32 against 0.20 at random), modest on this data.
 
 ## Caveats
 
@@ -52,6 +75,14 @@ Written by `research/evaluate.py` into a folder per stage (`<stage>/`):
 | `metrics_dictionary.md` | what each column means |
 
 | `plots/` | reliability plots with at least one of this folder's conditions (copies of `results/summary/<stage>/plots/`) |
+
+**Plots in `d1-final/plots/` (test):**
+- `reliability_c1a_vs_c1b_vs_ctrl_test.png`: C1a and CTRL track the diagonal up to about 0.4;
+  above that, bins hold only a few founders and wobble (CTRL's top bin has fewer than 5). The
+  vote (C1b) sits below the diagonal everywhere: when it scores 0.9, about 4 in 10 succeed.
+- `reliability_c3_vs_c1a_test.png`, `reliability_c1a_vs_c2_vs_c3_vs_c4_test.png`,
+  `reliability_c1a40_vs_ctrl_vs_c2_vs_c3_test.png`: the baselines against Kev (captions in
+  folder 03's README).
 
 **Plots in `b3-provisional/plots/` (val):**
 - `reliability_c1a_vs_c1b_vs_ctrl_val.png`: C1a and CTRL follow the diagonal (calibrated).

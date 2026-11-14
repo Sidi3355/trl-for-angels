@@ -121,7 +121,11 @@ as a pull request to TRL (`docs/trl_pr_description.md`).
   `fit_temperature`), and written into the checkpoint. The released Kev-0.6B ships
   uncalibrated (temperature 1.0).
 - **Compute:** two Kaggle T4s, C3 and C4 in parallel, one each. Measured training speed for
-  long texts: about 480 tokens per second (A3).
+  long texts: about 480 tokens per second (A3). Actual: C3 49 min per epoch (873-token states,
+  gradient checkpointing, peak 4.4 GB), C4 8.5 min per epoch (peak 13.1 GB).
+- **Outcome:** both kept epoch 2. Val log-loss 0.618 → 0.455 (C3) and 1.086 → 0.470 (C4);
+  temperatures 1.072 and 1.275 (`results/DECISIONS.md`, C1-train). Checkpoints are public on
+  Hugging Face (`Sidi3355/trl-for-angels-kev-c3`, `-c4`).
 
 ## 8. Scoring
 
@@ -133,14 +137,23 @@ as a pull request to TRL (`docs/trl_pr_description.md`).
   `research/metrics.py`).
 - **Uncertainty:** 95% percentile intervals from 1,000 bootstrap resamples, stratified
   (positives and negatives resampled separately), with the threshold fixed from val.
+- **Paired comparisons:** for planned pairs (each learn stage against C1a; C3 against C1a-40,
+  CTRL, C2 and C4; C4 against EXTRA; C1a-40 against C1a), the difference itself, with a paired
+  stratified bootstrap 95% CI (the same resampled founders for both, 1,000 resamples, seed 42,
+  thresholds fixed from val; `research/paired.py`). The pairs were fixed from the research
+  question before the script was run.
+- **Order:** the val-only table (`d2-val`) and the D2 choice were made and committed before the
+  one test evaluation (`d1-final`).
 - **No result is overwritten:** each scoring run writes its own folder
   (`results/summary/<stage>/`), and the script refuses to reuse one.
 
 ## 9. Production model (the app)
 
 Trained after the research with the same recipe, on whichever input (C3's answers or C4's
-profile) wins **on val**, with two `choice` questions instead of one: outcome (five bands) and
-years (three), each with its own temperature fitted on val. The app's risk-threshold table
+profile) wins **on val**. They tied on val (F0.5 0.426 vs 0.428; paired bootstrap CI for the
+difference −0.107 to +0.101), so the tie was broken on Kev's own val measures (log-loss,
+selective risk) and on explainability: C3's input was chosen (`results/DECISIONS.md`, D2).
+It is trained with two `choice` questions instead of one: outcome (five bands) and years (three), each with its own temperature fitted on val. The app's risk-threshold table
 (precision and recall at each threshold, per target outcome and timeline) comes from val
 (`research/thresholds.py`).
 
@@ -184,5 +197,5 @@ model relies on can be compared with the true weights.
 | Step | Cost |
 |---|---|
 | A4 smoke test (20 founders) | $0.11 (Claude) |
-| B1 question writing (2,000 founders) | TRL's estimate: at most $0.71 (Claude); actual *pending* |
-| All Kev work (answering, fine-tuning) | $0: free Kaggle GPUs |
+| B1 question writing (2,000 founders) | $0.49 (Claude; TRL's estimate was at most $0.71) |
+| All Kev work (answering, fine-tuning, scoring) | $0: free Kaggle GPUs (about 6 hours of Kaggle runs before the production model, including one failed run) |

@@ -141,6 +141,68 @@
         "mean_train": 173,
         "max_train": 316
       }
+    },
+    "c_kev_rerun": {
+      "run": "runs/20261114-192753-c_kev",
+      "repo_commit": "1fd795e",
+      "started_utc": "2026-11-14T19:27:53Z",
+      "finished_utc": "2026-11-14T21:40:23Z",
+      "c3": {
+        "epoch_seconds": [
+          2939.1,
+          2941.0
+        ],
+        "steps_per_epoch": 250,
+        "peak_device_mib": 4402,
+        "gradient_checkpointing": true,
+        "val_nll": {
+          "released": 0.6183,
+          "ep1": 0.4577,
+          "ep2": 0.4552
+        },
+        "chosen": "ep2",
+        "temperature": 1.0718,
+        "val_ece_raw_to_calibrated": [
+          0.0311,
+          0.0244
+        ],
+        "scoring_seconds": {
+          "val": 350,
+          "test": 518
+        },
+        "hf": "Sidi3355/trl-for-angels-kev-c3@840f3e90a7ba9844cf92ced296d7f9664d3c1839"
+      },
+      "c4": {
+        "epoch_seconds": [
+          504.3,
+          507.4
+        ],
+        "steps_per_epoch": 250,
+        "peak_device_mib": 13068,
+        "gradient_checkpointing": false,
+        "val_nll": {
+          "released": 1.0864,
+          "ep1": 0.4752,
+          "ep2": 0.4701
+        },
+        "chosen": "ep2",
+        "temperature": 1.2746,
+        "val_ece_raw_to_calibrated": [
+          0.0575,
+          0.0245
+        ],
+        "scoring_seconds": {
+          "val": 32,
+          "test": 52
+        },
+        "hf": "Sidi3355/trl-for-angels-kev-c4@704f8d4d4a42ed3f8991f75d18f643b4687b5463"
+      },
+      "extra": {
+        "scoring_seconds": {
+          "val": 29,
+          "test": 46
+        }
+      }
     }
   },
   "rrf_fit": {
@@ -189,5 +251,38 @@
     },
     "val_logloss": 0.4433,
     "candidates": 12
+  },
+  "evaluation": {
+    "d2_val": {
+      "stage": "d2-val",
+      "splits": [
+        "val"
+      ],
+      "decision": "c3 (tie with c4 on val; see DECISIONS D2)",
+      "val_f05_c3_minus_c4": {
+        "diff": -0.007,
+        "ci95": [
+          -0.107,
+          0.101
+        ],
+        "bootstrap": 1000,
+        "seed": 42
+      }
+    },
+    "d1_final": {
+      "stage": "d1-final",
+      "splits": [
+        "val",
+        "test"
+      ],
+      "test_read_once": true,
+      "bootstrap": 1000,
+      "seed": 42,
+      "paired": "results/summary/d1-final/paired.md",
+      "script": [
+        "research/evaluate.py",
+        "research/paired.py"
+      ]
+    }
   }
 }

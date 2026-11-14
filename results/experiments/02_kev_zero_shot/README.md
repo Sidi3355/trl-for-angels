@@ -17,19 +17,29 @@ threshold is tuned on val for F0.5.
 
 ## Result
 
-*Final result pending* (F0.5 and ECE on test, with CIs, at D1).
+**Final, test** (`d1-final/`; 95% CIs from 1,000 stratified bootstrap resamples; threshold
+tuned on val):
 
-**Provisional, val only, C2** (`b3-provisional/`): F0.5 **0.340**, ECE **0.247**, against
-0.426 and 0.036 for C1a-40, which reads the same 40 answers. In plain words, base Kev flags 171
-of the 400 val founders, and only about 3 in every 10 it flags succeed; when it says 60%, about
-25% really succeed. It ranks founders somewhat (PR-AUC 0.33 against a 0.20 base rate) but is
-badly overconfident. That's expected: the released Kev-0.6B ships uncalibrated (temperature
-1.0) and was never trained on this question. EXTRA is scored in the `c_kev` run.
+| | F0.5 | Precision | Recall | ECE | Brier | PR-AUC |
+|---|---|---|---|---|---|---|
+| C2 (released Kev on TRL's 40 answers) | 0.277 (0.242–0.312) | 0.244 | 0.608 | 0.262 (0.251–0.271) | 0.230 | 0.268 |
+| EXTRA (released Kev on the founder text) | 0.319 (0.246–0.394) | 0.322 | 0.308 | 0.465 (0.446–0.483) | 0.408 | 0.259 |
+| C1a (TRL's default, for reference) | 0.319 (0.221–0.417) | 0.383 | 0.192 | 0.045 (0.027–0.076) | 0.153 | 0.319 |
+
+In plain words: released Kev ranks founders a little (PR-AUC about 0.26 against 0.20 at
+random), and its F0.5 isn't distinguishable from TRL's default (C2 − C1a −0.042, CI −0.127 to
++0.046). But its probabilities are far too high. Reading the profile (EXTRA), its median
+founder gets 0.73 when 1 in 5 succeed, and when it says over 0.9, about 3 in 10 succeed. C2's
+ECE is worse than C1a's by 0.216 (CI +0.182 to +0.237; `results/summary/d1-final/paired.md`).
+
+**Val** (`b3-provisional/`, `d2-val/`): C2 0.340 F0.5, ECE 0.247; EXTRA 0.400, ECE 0.454.
 
 ## What it means
 
-*Pending.* The starting point for fine-tuning (folder 03), and how much Kev knows about this
-task before it's trained on it.
+The starting point for fine-tuning (folder 03): released Kev-0.6B knows a little about this
+task but isn't calibrated for it, as expected for a model shipped at temperature 1.0 and never
+trained on this question. Fine-tuning brings ECE down to 0.012 (C3) and 0.021 (C4). Its
+probabilities couldn't drive an app's actions as released.
 
 ## Caveats
 
@@ -41,6 +51,12 @@ task before it's trained on it.
 
 Same layout as folder 01: `<stage>/metrics.csv`, `predictions.csv`, `config.json`,
 `metrics_dictionary.md`, and `plots/` (reliability plots with C2 or EXTRA).
+
+**Plots in `d1-final/plots/` (test):**
+- `reliability_c2_vs_extra_vs_c3_vs_c4_test.png`: the Kev family. C2 and EXTRA sit well below
+  the diagonal at every level (overconfident); fine-tuned C3 and C4 sit on it.
+- `reliability_c1a_vs_c2_vs_c3_vs_c4_test.png`, `reliability_c1a40_vs_ctrl_vs_c2_vs_c3_test.png`:
+  released Kev against TRL's learn stages (captions in folder 03's README).
 
 **Plots in `b3-provisional/plots/` (val):**
 - `reliability_c1a40_vs_ctrl_vs_c2_val.png`: base Kev (C2) against the two learn stages that
