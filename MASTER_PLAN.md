@@ -2,6 +2,15 @@
 
 Context file for Claude Code. It records every decision already made for this project. Treat the decisions as settled unless the user changes them. Items marked **VERIFY** were checked in the source code or docs but not run, so confirm each one with a small test before building on it.
 
+## 0. Amendments (newest first; these override the sections below)
+
+- **2026-11-14 · Zero budget: Kaggle replaces Modal, and Kev-0.6B is the answerer (user decision).** Nothing may cost money. All GPU work (serving Kev to answer TRL's questions, and fine-tuning) runs in Kaggle notebooks on a free T4, in fp32 because the T4 has no bf16, with Kev's server and TRL in the same notebook. Kev-0.6B (`jaredpalmer/kev-0.6b`) is both the answerer and the learn stage: Kev-4B doesn't fit a 16 GB T4 in fp32, and Kev-0.8B's Qwen3.5 kernels may not run on a T4. Wherever this plan says Modal, read Kaggle, and section 6's `--dtype bf16` becomes `--dtype fp32`. Serving Kev for the app (free CPU such as a Hugging Face Space, or cached demo founders) is decided at E1. The generator and the app's agent use the user's existing Claude API credits. Notebooks live in `kaggle/` and are built by `kaggle/build_notebooks.py`.
+- **2026-11-14 · Kev fine-tuning command (VERIFY correction).** Section 6's `kev.train` command is incomplete. (1) `--max_state` defaults to 384 tokens and Kev silently drops longer records, which removes every C3 state (about 1.5–3k tokens), so pass `--max_state 4096`. (2) Kev's own fine-tune recipe copies the checkpoint's architecture into the command (`--base`, `--base_revision`, `--lora`, `--head_dim`, `--lora_targets`, `--option_isolation`, `--special_embeddings`, `--weights_dtype`, `--p_none_pair`); `kaggle/a3_check.py` builds it from the checkpoint's metadata. Kev caps a fine-tune's learning rate at 5e-5, so 2e-5 stands. Also, `kev-0.6b` ships uncalibrated (temperature 1.0).
+
+- **2026-11-14 · Kev replaces Jev as the answerer (user decision).** TypeSafe has no free tier, so every answer-based condition uses a self-hosted base Kev as the answerer, held constant across conditions (the fallback section 3 already allowed). Wherever sections 4–9 say Jev answers the questions (the answer matrix, B2, the app's answer step, the demo cache, the allowed claims), read "the Kev answerer". No TypeSafe key is needed. The answerer is Kev-0.6B (next amendment up).
+- **2026-11-14 · TRL spec for a Kev endpoint (VERIFY resolved).** `LLM("kev-0.6b", base_url="http://<host>:8009/v1/systemone", kind="decision", api_key="local")`. `"systemone:..."` is not a TRL provider and would route as an OpenAI chat model. `base_url` must be the full `/v1/systemone` URL, and `api_key` must be non-empty because TRL always sends `Authorization: Bearer <key>`. Checked with one call through TRL's `LLMSession`.
+- **2026-11-14 · Kev CLI flags (VERIFY resolved).** Every flag in the section 6 commands exists in Kev at commit `2074cc4`.
+
 ## 1. What we're building
 
 A hackathon project (Autonomous Agents track, about 2 days) with two halves:
@@ -37,7 +46,7 @@ The pitch: angels screen alone, without analysts. The agent researches and decid
 - **Data:** generated with Adaption in **instruction format** (instruction / input / output). The output holds two lines, `outcome:` and `years:`. Profiles are grounded in real founders where possible, and the dataset prompt is in section 10.
 - **Information cutoff:** founding date. Profiles contain only what was true on the day the company was founded. The same rule applies to the research agent and to model inputs. Post-founding investor notes are shown in the memo but never fed to the model.
 - **Research label:** "yes" if the outcome is `$500M-$1B` or `over $1B`, otherwise "no". That's about 20% positives.
-- **Answerer for every answer-based condition:** Jev, held constant. If Jev can't be used, base Kev is the fallback answerer, still held constant across conditions.
+- **Answerer for every answer-based condition:** base Kev-0.6B (self-hosted on Kaggle), held constant across conditions. Changed from Jev on 2026-11-14 because TypeSafe has no free tier and the project has no budget (section 0).
 - **Kev is not fine-tuned as the answerer.** The sub-questions are too factual for fine-tuning to help. Kev is used as the **learn stage** instead.
 - **Fine-tuning is done by hand,** from the released checkpoint with `--init_from`. Adaption credits go to data generation only, not to fine-tuning.
 - **XGBoost control included,** to separate "Kev helps" from "nonlinearity helps".
@@ -193,16 +202,16 @@ uv run python -m kev.benchmark --run runs/c3 --data val.jsonl --out runs/c3-eval
 
 Use early stopping or checkpoint selection on val, and a GPU (a Modal H100 is fastest; Colab works for 0.6B). Kev also has a Modal deploy script at `skills/kev-deploy/scripts/kev_serve.py`.
 
-### TRL with a local Kev (only needed if Jev is unavailable; **VERIFY**)
+### TRL with a Kev endpoint (verified 2026-11-14)
 
-TRL's model spec accepts `base_url` and has a `systemone` provider:
+Kev is the answerer (section 0), so this is how TRL reaches it. A custom decision endpoint needs `kind="decision"`, the full `/v1/systemone` URL and a non-empty key:
 
 ```python
 from think_reason_learn import LLM
-kev = LLM("systemone:kev-0.6b", base_url="http://127.0.0.1:8009")
+kev = LLM("kev-0.6b", base_url="http://127.0.0.1:8009/v1/systemone", kind="decision", api_key="local")
 ```
 
-The exact spec string is unverified, so test it with one call.
+`research/checks/kev_endpoint.py` makes one call through `LLMSession` against `KEV_BASE_URL`.
 
 ## 7. Production model (app)
 
@@ -334,7 +343,7 @@ The SAE analysis, activation patching, probes, voice notes, batch mode, the EXTR
 
 ### Claims allowed
 
-On this generated dataset, with Jev as the answerer:
+On this generated dataset, with Kev as the answerer:
 
 - learn stage X scored Y F0.5 (CI) against RRF's native Z
 - fine-tuning changed Kev's ECE from A to B
