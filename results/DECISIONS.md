@@ -461,3 +461,56 @@ while doing the work: date, decision, reason, evidence. Newest last.
   too. Also added a "Kev family" reliability plot (C2, EXTRA, C3, C4), so EXTRA appears in a
   plot.
 - **The c_kev rerun** (`runs/20261114-192753-c_kev`) started at 19:27 UTC with the scoring fix.
+
+## 2026-11-14 · C1-train, C2-temp · C3 and C4 fine-tuned (c_kev rerun)
+
+- **Run:** `runs/20261114-192753-c_kev` on the `kaggle-results` branch, repo commit `1fd795e`,
+  19:27–21:40 UTC, two T4s (C3 on one, C4 on the other), fp32, finished with exit 0.
+- **Recipe (both):** from `jaredpalmer/kev-0.6b`, lr 2e-5, batch 8, 2 epochs of 250 steps,
+  `--max_state 4096`, checkpoint and temperature chosen on val (section 9b C1-train).
+- **Val log-loss** (the released Kev, then after each epoch; lower is better; a constant
+  20% guess scores 0.500):
+
+  | | Released Kev | Epoch 1 | Epoch 2 | Chosen | Temperature | Val ECE raw → calibrated |
+  |---|---|---|---|---|---|---|
+  | C3 (Kev on TRL's 40 answers) | 0.618 | 0.458 | 0.455 | ep2 | 1.072 | 0.031 → 0.024 |
+  | C4 (Kev on the founder text) | 1.086 | 0.475 | 0.470 | ep2 | 1.275 | 0.058 → 0.025 |
+
+  Both "done when" checks pass: val loss improved over the released Kev, and calibrated val
+  ECE is no worse than raw. C4's epoch 2 repeats the failed run's numbers (same seed).
+- **Time:** C3 49 min per epoch (gradient checkpointing, peak 4.4 GB); C4 8.5 min per epoch
+  (peak 13.1 GB). Scoring every founder through TRL: C3 15 min, C4 1.4 min, EXTRA 1.3 min.
+- **Kept on Hugging Face** for the interp steps (F2, F3):
+  [Sidi3355/trl-for-angels-kev-c3](https://huggingface.co/Sidi3355/trl-for-angels-kev-c3)
+  (commit `840f3e9`) and
+  [Sidi3355/trl-for-angels-kev-c4](https://huggingface.co/Sidi3355/trl-for-angels-kev-c4)
+  (commit `704f8d4`).
+- **Imported:** `data/predictions/kev_{c3,c4,extra}_{val,test}.csv` (`kaggle/import_run.py`).
+  Test predictions were written by the run but not scored until D1.
+- **Cost:** about 2.2 hours of Kaggle GPU time; no money.
+
+## 2026-11-14 · D2 · The app's model reads TRL's answers (C3's input)
+
+- **Decision:** the production model (D3) is trained on C3's input, TRL's 40 answers as text,
+  not C4's founder text. Made on val only, before test was read (D1 ran after this entry).
+- **Evidence (val, 400 founders; `results/summary/d2-val/`):**
+
+  | | F0.5 | Precision | Recall | ECE | Brier | PR-AUC |
+  |---|---|---|---|---|---|---|
+  | C3 (fine-tuned Kev on TRL's answers) | 0.426 | 0.593 | 0.200 | 0.024 | 0.146 | 0.403 |
+  | C4 (fine-tuned Kev on the founder text) | 0.428 | 0.472 | 0.312 | 0.025 | 0.146 | 0.404 |
+
+  The plan's two criteria, val F0.5 and ECE, are tied. A paired, stratified bootstrap of the
+  F0.5 difference (C3 − C4; 1,000 resamples, seed 42, threshold re-tuned in each) gives
+  −0.007, 95% CI −0.107 to +0.101, with C3 ahead in 45% of resamples. The two models' P(success)
+  correlate at 0.82.
+- **Tie-break (Kev's own val measures, from each run's report):** C3 has the lower calibrated
+  log-loss (0.454 vs 0.460) and selective risk (AURC 0.097 vs 0.116). It can also decide far
+  more founders confidently: at ≤5% error it covers 20.5% of val founders against C4's 2.8%,
+  which matters for the app's autonomous *pass*.
+- **Product reasons:** with C3's input, the memo's drivers and what-ifs are TRL's questions
+  (MASTER_PLAN section 8, step 7), and the app runs TRL's whole pipeline, the contribution the
+  research is about.
+- **Cost of the choice:** D3 takes about 2 hours instead of 25 minutes, and the app asks the
+  Kev answerer 40 questions per founder before deciding.
+- **Chosen by:** the owner, from these numbers (C3, the recommended option).

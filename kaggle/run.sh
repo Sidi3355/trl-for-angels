@@ -7,8 +7,8 @@
 # OUT (folder pushed to GitHub). Secrets arrive as env vars: ANTHROPIC_API_KEY (if attached).
 set -uo pipefail
 
-# c_kev (rerun after the 2026-11-14 scoring bug): needs data/splits, data/answers and data/models. About 2-2.5 hours.
-TASK="c_kev"
+# d_prod (D3): the production model on C3's input (TRL's 40 answers), chosen at D2. Needs data/splits and data/answers. About 2 hours.
+TASK="d_prod"
 
 echo "$TASK" > "$OUT/task.txt"
 git -C "$REPO" rev-parse --short HEAD > "$OUT/repo_commit.txt"
@@ -79,7 +79,7 @@ case "$TASK" in
     # D3: the production model on the input chosen on val at D2 (PROD_INPUT: c3 or c4),
     # with the outcome and years choice questions and a temperature per question; then its
     # calibrated distributions on val for the D4 threshold table.
-    PROD_INPUT="c3"  # set from D2's decision before running
+    PROD_INPUT="c3"  # D2 (2026-11-14): C3 and C4 tied on val; C3 chosen (results/DECISIONS.md)
     KPY="$WORK/kev/.venv/bin/python"
     "$PY" "$REPO/research/serialise.py" --splits "$REPO/data/splits" \
       --answers "$REPO/data/answers" --out "$WORK/kev_data" --production "$PROD_INPUT" || exit 1
