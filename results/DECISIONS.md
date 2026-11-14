@@ -445,3 +445,19 @@ while doing the work: date, decision, reason, evidence. Newest last.
      Kev standing in for the trained checkpoints), and the whole `train_kev.py` flow in
      miniature (8 rows, 1 step per epoch).
 - **Cost:** about 1.7 hours of Kaggle GPU time; no money.
+
+## 2026-11-14 · D3/D4 · Production chain dry-run before it's needed
+
+- **Why:** after the c_kev failure, every step still to run was dry-run locally on real rows
+  first, exactly as `kaggle/run.sh` runs it (CPU, base Kev, 8 training rows, 1 step per
+  epoch), so problems show here rather than on Kaggle.
+- **Checked, for both possible D2 winners (C3 and C4):** `serialise.py --production` on the
+  real splits; `train_kev.py --condition prod` (C3 with long-state checkpointing); the copies
+  the run makes; `kev_predict.py --condition prod`; `thresholds.py` (D4); `export_artifacts.py`
+  (all three app files match the app contract). Also `evaluate.py` on val with Kev
+  prediction files (D1's path; test not read).
+- **Found and fixed:** the d_prod run saved the production report and temperatures only under
+  `kev/`, while `export_artifacts.py` reads `data/models/prod/`. The run now writes them there
+  too. Also added a "Kev family" reliability plot (C2, EXTRA, C3, C4), so EXTRA appears in a
+  plot.
+- **The c_kev rerun** (`runs/20261114-192753-c_kev`) started at 19:27 UTC with the scoring fix.
