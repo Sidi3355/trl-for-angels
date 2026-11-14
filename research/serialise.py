@@ -29,11 +29,10 @@ from pathlib import Path
 from think_reason_learn.core._data import to_texts
 from think_reason_learn.rrf import answers_text
 
-ROOT = Path(__file__).resolve().parents[1]
-SPLITS = ("train", "val", "test")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from common import POSITIVE, QUESTION, ROOT, SPLITS  # noqa: E402
+
 QUESTION_ID = "success"
-QUESTION = "Will this founder's company succeed (exit, IPO or funding over $500M)?"
-POSITIVE = "successful"
 
 
 def read_jsonl(path: Path) -> list[dict]:

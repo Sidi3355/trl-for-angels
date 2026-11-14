@@ -22,6 +22,14 @@ case "$TASK" in
     "$PY" "$REPO/kaggle/a4_check.py" --kev-dir "$WORK/kev" \
       --sample "$REPO/data/raw/sample50.jsonl" --out "$OUT/a4"
     ;;
+  b1b2)
+    # B1 fit (C1a, C1b, C2 from one set of Claude questions), then B2 answers and TRL
+    # predictions, sharing TRL's cache (kept out of OUT: too big to push).
+    "$PY" "$REPO/research/fit_rrf.py" --splits "$REPO/data/splits" --out-root "$OUT" \
+      --cache-dir "$WORK/trl_cache" --kev-dir "$WORK/kev" \
+    && "$PY" "$REPO/research/answers.py" --splits "$REPO/data/splits" --out-root "$OUT" \
+      --cache-dir "$WORK/trl_cache" --kev-dir "$WORK/kev"
+    ;;
   *)
     echo "unknown TASK $TASK" >&2
     exit 2
