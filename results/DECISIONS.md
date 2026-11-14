@@ -146,7 +146,24 @@ while doing the work: date, decision, reason, evidence. Newest last.
   `Bearer ` header was illegal and stopped every call, including from any saved and reloaded
   model, since saving drops keys.
 
-## 2026-11-14 · Hosting Kev for the app: a free Hugging Face Space (user decision)
+## 2026-11-14 · Hosting Kev for the app: the owner's PC and a free tunnel (supersedes the Space)
+
+- **What happened:** the `hf_setup` run (`kaggle-results: runs/20261114-142314-hf_setup/`)
+  reached Hugging Face with the owner's token, but creating the Space failed with
+  `402 Payment Required`: "Static Spaces are free for everyone, but hosting Gradio and Docker
+  Spaces on free cpu-basic requires a PRO subscription." Nothing was created or charged.
+- **Decision (user):** for the demo, the owner's Windows PC runs `kev_server/serve.py` (the same
+  two `kev.serve` processes and front door, now launched from plain Python, so no bash or
+  Docker is needed), with `cloudflared tunnel` giving it a free address. Cached demo founders
+  stay the backup. Considered: cached-only (no live screening), and an Oracle Cloud Always
+  Free VM (needs a card to sign up).
+- **Still on Hugging Face, free:** the production checkpoint, in a public model repo, uploaded
+  by `d_prod` (`research/hf_hub.py upload-model`). Model repos don't need PRO.
+- **Checked here:** `serve.py` started both servers on CPU; `/health` ready; 401 without the
+  key; a System One call with the key answered. Kev installed cleanly from a source archive of
+  commit `2074cc4`, which is how the Windows steps install it. Not yet run on Windows itself.
+
+## 2026-11-14 · Hosting Kev for the app: a free Hugging Face Space (user decision) (superseded below)
 
 - **Decision:** the app's two Kev servers (base Kev answering, the production model deciding)
   run on a free CPU Docker Space, and the production weights live in a Hugging Face model repo.

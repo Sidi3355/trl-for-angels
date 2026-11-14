@@ -7,7 +7,8 @@
 # OUT (folder pushed to GitHub). Secrets arrive as env vars: ANTHROPIC_API_KEY (if attached).
 set -uo pipefail
 
-TASK="hf_setup"
+# a4 needs data/raw/sample50.jsonl in the repo.
+TASK="a4"
 
 echo "$TASK" > "$OUT/task.txt"
 git -C "$REPO" rev-parse --short HEAD > "$OUT/repo_commit.txt"
@@ -74,20 +75,13 @@ case "$TASK" in
     "$PY" "$REPO/research/kev_predict.py" --condition prod --run "$WORK/runs/prod/chosen" \
       --kev-dir "$WORK/kev" --prod-data "$WORK/kev_data/prod" --out-root "$OUT" \
       --gpus 0,0 --predict-splits val || exit 1
-    # Publish the production model to Hugging Face and point the Space's decider at it.
+    # Publish the production model to a free Hugging Face model repo, for kev_server/.
     if [ -n "${HF_TOKEN:-}" ]; then
-      HPY="$WORK/kev/.venv/bin/python"
-      "$HPY" "$REPO/research/hf_hub.py" --report "$OUT/hf.json" upload-model \
-        "$WORK/runs/prod/chosen" --extra "$WORK/runs/prod/report.json" \
-      && "$HPY" "$REPO/research/hf_hub.py" --report "$OUT/hf.json" set-decider
+      "$WORK/kev/.venv/bin/python" "$REPO/research/hf_hub.py" --report "$OUT/hf.json" \
+        upload-model "$WORK/runs/prod/chosen" --extra "$WORK/runs/prod/report.json"
     else
       echo "HF_TOKEN not attached: the production model was not published" >&2
     fi
-    ;;
-  hf_setup)
-    # Create (or update) the Kev Space on Hugging Face from hf_space/.
-    "$WORK/kev/.venv/bin/python" "$REPO/research/hf_hub.py" --report "$OUT/hf.json" \
-      space --space-dir "$REPO/hf_space" || exit 1
     ;;
   *)
     echo "unknown TASK $TASK" >&2

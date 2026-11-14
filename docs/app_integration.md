@@ -51,13 +51,15 @@ For the app session (`app-track`), passed on by the owner. Checked against `app-
    ```
 
    Read `answers.<id>.probabilities`, then apply the temperatures.
-6. **Two Kev servers, one Hugging Face Space.** A free CPU Space,
-   `https://<user>-trl-for-angels-kev.hf.space`, serves base Kev at `/answerer/v1/systemone`
-   (the answerer) and the production model at `/decider/v1/systemone` (raw: apply the
-   temperatures). Both need `Authorization: Bearer <KEV_API_KEY>`; set the same key on the
-   backend. `GET /health` reports readiness, and whether the decider is still base Kev standing
-   in. Expect a few seconds per founder on CPU, and about a minute to wake from sleep, so keep
-   the demo cache as the backup. `model.json`'s `endpoint.base_url` will point at `/decider`.
+6. **Two Kev servers, on the owner's PC for the demo.** Hugging Face Spaces that run code
+   now need a paid plan, so `kev_server/serve.py` runs on the owner's Windows PC behind a free
+   Cloudflare tunnel: base Kev at `<tunnel address>/answerer/v1/systemone` (the answerer) and the
+   production model at `<tunnel address>/decider/v1/systemone` (raw: apply the temperatures).
+   Both need `Authorization: Bearer <KEV_API_KEY>`; set the same key on the backend. The tunnel
+   address (`https://<words>.trycloudflare.com`) changes each time it starts, so the backend should
+   read it from an environment variable rather than from `model.json`. `GET /health` reports
+   readiness, and whether the decider is still base Kev standing in. Expect a few seconds per
+   founder on CPU; keep the demo cache as the backup.
 
 ## Optional
 
