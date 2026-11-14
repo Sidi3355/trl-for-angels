@@ -14,7 +14,7 @@ accuracy is claimed.
 | Folder | What it is | Status |
 |---|---|---|
 | `contract/` | JSON Schemas for every request, response and artefact, plus mocks and validators. See `contract/README.md`. | Task 1: done |
-| `backend/` | FastAPI service: screening, live progress (SSE), memos, what-if, batch, artefacts | Task 2: done, on mocks. Real agent in task 3 |
+| `backend/` | FastAPI service: screening, live progress (SSE), memos, what-if, batch, artefacts, and the research agent | Task 2: done, on mocks. Task 3: agent built and tested offline; real-founder test pending the key |
 | `frontend/` | Mobile-first Next.js PWA: form, live progress, memo, controls, batch triage | Tasks 4, 5, 7 |
 
 ## Run the backend locally
@@ -49,6 +49,37 @@ python app/contract/tools/validate.py      # contract, mocks and examples
 python app/contract/tools/build_mocks.py   # regenerate mocks after a contract or pipeline change
 ```
 
+## The research agent (`AGENT=claude`)
+
+`backend/screener/pipeline/agent.py` asks Claude (default `claude-opus-5-5`, effort `medium`) to research
+one founder with web search and web fetch. It finishes by calling a strictly typed `submit_profile`
+tool with `{value, source_url, confidence, evidence}` for every template field, plus the founding date,
+its sources, post-founding facts and every real name it saw. Code then enforces the plan's rules:
+
+- **Founding-date cutoff:** a field whose only source describes the time after founding becomes
+  unknown. Post-founding facts go to the memo's notes, never to the model.
+- **Confidence floor:** a value under `AGENT_MIN_CONFIDENCE` (0.5) becomes unknown, with the guess in a note.
+- **Template values:** a value outside the template's allowed values becomes unknown.
+- **Anonymisation** (`pipeline/render.py`): the founder's and company's names, and every name the agent
+  saw, are removed from free-text values, and a rendered profile that still contains one is refused.
+- **Spend caps** (`pipeline/budget.py`), costed from the API's own usage numbers:
+  `AGENT_MAX_COST_PER_FOUNDER_USD` (default $1) and `AGENT_BUDGET_USD` for the whole process
+  (default $5; it resets on restart). The hard cap is the spend limit on the key's workspace in the
+  Claude Console: set one.
+- Requests always go to `AGENT_BASE_URL` (`https://api.anthropic.com`), never to an
+  `ANTHROPIC_BASE_URL` set in the environment. Refusals fall back server-side (`fallbacks: "default"`).
+
+Try it on the five real test founders in `backend/tools/test_founders.json` (a dry run without `--spend`):
+
+```bash
+app/backend/.venv/bin/python app/backend/tools/research_founders.py --spend --only awotona
+```
+
+It prints each founder's rendered profile, every field's provenance and source, the post-founding
+facts it kept out, and the cost. Results are saved in `app/backend/.research_runs/`, which is
+git-ignored because it holds real people's research. In the Claude Code cloud sandbox, the key goes in
+`SCREENER_ANTHROPIC_API_KEY`, because Claude Code itself reads `ANTHROPIC_API_KEY`.
+
 ## Configuration: one setting per mock-to-real swap
 
 All settings are environment variables (or `app/backend/.env` locally; see `app/backend/.env.example`).
@@ -56,7 +87,7 @@ All settings are environment variables (or `app/backend/.env` locally; see `app/
 | Setting | Default | Real | What it switches |
 |---|---|---|---|
 | `ARTIFACTS_DIR` | `app/contract/mocks` | `shared/artifacts` | `rules.json`, `thresholds.json`, `model.json` |
-| `AGENT` | `mock` | `claude` (task 3; needs `ANTHROPIC_API_KEY`) | The research agent |
+| `AGENT` | `mock` | `claude` (needs `SCREENER_ANTHROPIC_API_KEY` or `ANTHROPIC_API_KEY`) | The research agent |
 | `ANSWERER` | `mock` | `jev` (needs `TYPESAFE_API_KEY`) | Answers to the rules (answers mode only) |
 | `DECIDER` | `mock` | `kev` (endpoint from `model.json`) | Outcome and years distributions |
 

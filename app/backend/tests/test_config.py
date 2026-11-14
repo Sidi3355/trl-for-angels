@@ -70,7 +70,7 @@ def test_env_file_example_parses():
     from screener.config import BACKEND_DIR, Settings
     names = [line.split("=", 1)[0] for line in (BACKEND_DIR / ".env.example").read_text().splitlines()
              if line and not line.startswith("#")]
-    fields = {f.upper() for f in Settings.model_fields}
+    fields = {f.upper() for f in Settings.model_fields} | {"SCREENER_ANTHROPIC_API_KEY"}
     assert set(names) <= fields, set(names) - fields
     s = Settings(_env_file=BACKEND_DIR / ".env.example")
     assert s.anthropic_api_key is None and s.access_token is None and s.agent == "mock"

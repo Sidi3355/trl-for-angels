@@ -52,6 +52,15 @@ class Contract:
             self._validators[schema] = Draft202012Validator(doc, registry=self.registry, format_checker=FormatChecker())
         return self._validators[schema]
 
+    def errors_for_def(self, name: str, doc) -> list[str]:
+        """Errors for a value against one common.schema.json definition (e.g. 'jobs')."""
+        key = f"def:{name}"
+        if key not in self._validators:
+            self._validators[key] = Draft202012Validator(
+                {"$ref": f"common.schema.json#/$defs/{name}"}, registry=self.registry, format_checker=FormatChecker())
+        return [f"{'/'.join(str(p) for p in e.absolute_path) or '(value)'}: {e.message[:200]}"
+                for e in leaf_errors(list(self._validators[key].iter_errors(doc)))]
+
     def errors(self, schema: str, doc) -> list[str]:
         errs = leaf_errors(list(self.validator(schema).iter_errors(doc)))
         out = []

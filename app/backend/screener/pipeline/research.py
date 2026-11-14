@@ -1,7 +1,7 @@
 """Research agent: fills template fields from public, pre-founding information.
 
 AGENT=mock (default): serves canned findings for the three demo founders and finds nothing for anyone
-else, while streaming realistic progress events. AGENT=claude: the Claude API with web search (task 3).
+else, while streaming realistic progress events. AGENT=claude: the Claude API with web search (pipeline/agent.py).
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 
 from ..mocks.founders import find_demo_founder
 from ..template import FIELD_LABELS
-from .context import Emitter, NotConfigured, Pipeline
+from .context import Emitter, Pipeline
 
 
 @dataclass
@@ -23,6 +23,10 @@ class Findings:
     founding_date: tuple | None = None  # (value, source_ids)
     ran: bool = True
     note: str | None = None
+    field_notes: dict = field(default_factory=dict)  # key -> why a field stayed unknown
+    names_seen: list = field(default_factory=list)  # real names to keep out of the profile
+    cost_usd: float = 0.0
+    research_notes: str | None = None
 
 
 def _field_message(key: str, value) -> str:
@@ -72,16 +76,3 @@ class MockAgent:
                     await ctx.sleep(0.25)
         return Findings(fields=f["fields"], sources=sources, post_founding=f["post_founding"],
                         founding_date=tuple(f["founding_date"]) if f.get("founding_date") else None)
-
-
-class ClaudeAgent:
-    """Claude API with web search, one {value, source_url, confidence} per field (task 3)."""
-    name = "claude"
-
-    def __init__(self, api_key: str | None, model: str, max_searches: int):
-        if not api_key:
-            raise NotConfigured("AGENT=claude needs ANTHROPIC_API_KEY")
-        raise NotConfigured("AGENT=claude arrives in task 3; use AGENT=mock for now")
-
-    async def research(self, inp: dict, ctx: Pipeline, emit: Emitter) -> Findings:  # pragma: no cover
-        raise NotImplementedError

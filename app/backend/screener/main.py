@@ -24,7 +24,9 @@ from .mocks.founders import DEMO_FOUNDERS
 from .pipeline.batch import CsvError, parse_csv
 from .pipeline.context import NotConfigured, Pipeline
 from .pipeline.models import JevAnswerer, KevDecider, MockAnswerer, MockDecider
-from .pipeline.research import ClaudeAgent, MockAgent
+from .pipeline.agent import ClaudeAgent
+from .pipeline.budget import Budget
+from .pipeline.research import MockAgent
 from .pipeline.whatif import WhatIfError
 from .service import InvalidRequest, NotFound, Service
 
@@ -33,13 +35,17 @@ VERSION = "0.1.0"
 SSE_KEEPALIVE_S = 15
 
 
-def build_components(settings: Settings, artifacts) -> tuple[dict, dict]:
+def build_components(settings: Settings, artifacts, contract: Contract, budget: Budget) -> tuple[dict, dict]:
     """Instantiate the configured agent, answerer and decider; collect what isn't available."""
     built, errors = {}, {}
     makers = {
         "agent": {"mock": MockAgent,
-                  "claude": lambda: ClaudeAgent(secret(settings.anthropic_api_key), settings.agent_model,
-                                                settings.agent_max_searches)},
+                  "claude": lambda: ClaudeAgent(
+                      api_key=secret(settings.anthropic_api_key), model=settings.agent_model,
+                      base_url=settings.agent_base_url, max_searches=settings.agent_max_searches,
+                      max_fetches=settings.agent_max_fetches, effort=settings.agent_effort,
+                      max_tokens=settings.agent_max_tokens, min_confidence=settings.agent_min_confidence,
+                      budget=budget, contract=contract)},
         "answerer": {"mock": MockAnswerer, "jev": lambda: JevAnswerer(secret(settings.typesafe_api_key))},
         "decider": {"mock": MockDecider, "kev": lambda: KevDecider(secret(settings.kev_api_key), artifacts.model)},
     }
@@ -68,8 +74,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         except (FileNotFoundError, ContractError, json.JSONDecodeError) as e:
             app.state.errors["artifacts"] = str(e)
             log.error("artefacts not loaded: %s", e)
+        app.state.budget = Budget(total_usd=settings.agent_budget_usd,
+                                  per_founder_usd=settings.agent_max_cost_per_founder_usd)
         if app.state.artifacts is not None:
-            parts, errors = build_components(settings, app.state.artifacts)
+            parts, errors = build_components(settings, app.state.artifacts, contract, app.state.budget)
             app.state.errors.update(errors)
             if not errors:
                 pipeline = Pipeline(artifacts=app.state.artifacts, pace=settings.mock_pace,
@@ -182,6 +190,7 @@ async def health(request: Request) -> dict:
         "mock": svc.pipeline.any_mock if svc else None,
         "errors": errors,
         "keys": s.key_status(),
+        "research_spend": request.app.state.budget.summary() if s.agent == "claude" else None,
         "jobs": svc.stats() if svc else None,
     }
 

@@ -6,6 +6,7 @@ from .. import policy
 from ..template import UNKNOWN, render, unknown_paths
 from . import serialise
 from .context import Pipeline
+from .render import render_anonymous
 
 VERSION = "0.1.0"
 DISCLAIMER = (
@@ -85,7 +86,7 @@ async def drivers(values: dict, dist: dict, answer_labels: list[str] | None, pol
 # ------------------------------------------------------------------------------- memo
 
 def warnings(*, ctx: Pipeline, unknowns: list[str], conflicts: list[dict], pol: dict, research_note: str | None,
-             founding: dict, issues: list[str] = ()) -> list[dict]:
+             founding: dict, issues: list[str] = (), redactions: list[dict] = ()) -> list[dict]:
     out = []
     if ctx.any_mock:
         names = {"agent": "research agent", "answerer": "answerer (Jev)", "decider": "decider (Kev)"}
@@ -106,6 +107,10 @@ def warnings(*, ctx: Pipeline, unknowns: list[str], conflicts: list[dict], pol: 
             f"{MAX_UNKNOWNS_IN_TRAINING} unknown fields, so treat this result with extra caution.")})
     for issue in issues:
         out.append({"code": "profile_inconsistent", "message": f"Profile check: {issue}."})
+    if redactions:
+        out.append({"code": "redacted", "message": (
+            f"Removed {len(redactions)} real name(s) from the profile to keep it anonymous: "
+            + ", ".join(r["path"] for r in redactions) + ".")})
     if conflicts:
         out.append({"code": "conflicts_present", "message": (
             f"{len(conflicts)} of your values disagree with what the agent found. Your values were used; check the conflicts.")})
@@ -119,9 +124,10 @@ def warnings(*, ctx: Pipeline, unknowns: list[str], conflicts: list[dict], pol: 
 
 
 async def build_memo(*, inp: dict, fields: dict, conflicts: list[dict], findings, founding: dict, ctx: Pipeline,
-                     memo_id: str, job_id: str | None, emit=None, issues: list[str] = ()) -> dict:
+                     memo_id: str, job_id: str | None, emit=None, issues: list[str] = (), names: list[str] = (),
+                     redactions: list[dict] = ()) -> dict:
     values = plain(fields)
-    profile = render(values)
+    profile = render_anonymous(values, list(names))
     model = ctx.artifacts.model
     answers_mode = ctx.artifacts.decider_input == "answers"
 
@@ -172,6 +178,7 @@ async def build_memo(*, inp: dict, fields: dict, conflicts: list[dict], findings
         "unknowns": unknowns,
         "notes": {"investor": inp.get("notes"), "post_founding": findings.post_founding},
         "warnings": warnings(ctx=ctx, unknowns=unknowns, conflicts=conflicts, pol=pol,
-                             research_note=findings.note, founding=founding, issues=issues),
+                             research_note=findings.note, founding=founding, issues=issues,
+                             redactions=redactions),
         "disclaimer": DISCLAIMER,
     }
