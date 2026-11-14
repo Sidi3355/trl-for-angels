@@ -9,6 +9,7 @@ import { useApp } from "@/components/AppState";
 import { BarSheet, BarSummary } from "@/components/BarSheet";
 import { IconDeals, IconDoc, IconInfo, IconPlus, IconSliders, IconUpload, IconUser } from "@/components/icons";
 import { Onboarding } from "@/components/Onboarding";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { VerdictIcon, Wordmark, cx } from "@/components/ui";
 import { quickVerdict } from "@/lib/bar";
 import { percent } from "@/lib/format";
@@ -111,6 +112,10 @@ function Sidebar() {
           </span>
         </Link>
         <div className="space-y-1.5 px-1">
+          <div className="flex items-center justify-between gap-2 pb-1">
+            <span className="text-[12.5px] font-medium text-muted">Appearance</span>
+            <ThemeToggle compact />
+          </div>
           <StatusPill />
           <p className="text-[11.5px] leading-snug text-faint">
             Screening aid, not investment advice. <Link href="/terms" className="underline underline-offset-2 hover:text-ink">Terms</Link> ·{" "}

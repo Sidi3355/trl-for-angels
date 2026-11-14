@@ -76,6 +76,11 @@ on phones, a sidebar on desktop, light and dark themes):
   after the session (memos in memory up to about two hours; logs carry no names or notes), the profile on the
   device, and the services used (Anthropic, ElevenLabs, Kev on the owner's PC through a Cloudflare tunnel,
   Vercel, Railway, browser push services). Update them whenever data handling changes.
+- **Appearance:** System, Light or Dark, on You (Settings) and as three icons in the desktop sidebar
+  (`lib/theme.ts`, `components/ThemeToggle.tsx`). The choice is kept on the device (`screener.theme`; System stores
+  nothing) and applied before first paint by an inline script in `<head>`, as in Next's "preventing flash before
+  hydration" guide. `globals.css` keeps two identical copies of the dark colours: one under the system-dark media
+  query (unless the person chose Light), one under `[data-theme="dark"]`. The status-bar colour follows the choice.
 - **Plans** (`/plans`): a mockup of Free, Pro and Syndicate with a monthly/yearly toggle and "Coming soon"
   buttons. No payment code; prices are illustrative.
 - **Installable:** `app/manifest.ts` and `public/icons/`, so "Add to Home Screen" opens it full-screen with its

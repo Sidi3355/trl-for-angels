@@ -74,8 +74,10 @@
   color-scheme: light;
 }
 
+/* Dark theme. Applies when the system is dark, unless the person chose Light in the app (data-theme="light");
+   and always when they chose Dark. The two copies below must stay identical (lib/theme.ts sets data-theme). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #0b0c0c;
     --surface: #151616;
     --surface-2: #1d1e1e;
@@ -128,6 +130,59 @@
     --overlay: rgba(0, 0, 0, 0.66);
     color-scheme: dark;
   }
+}
+:root[data-theme="dark"] {
+  --bg: #0b0c0c;
+  --surface: #151616;
+  --surface-2: #1d1e1e;
+  --surface-3: #2a2c2b;
+  --ink: #f3f3ef;
+  --ink-2: #cfd0cb;
+  --muted: #9c9e99;
+  --faint: #878984;
+  --line: #262727;
+  --line-strong: #3b3d3c;
+  --accent: #f3f3ef;
+  --accent-hover: #ffffff;
+  --accent-ink: #0e0f0e;
+  --accent-soft: #2a2c2b;
+  --brand: #8fa0ff; /* 8:1 on the dark page */
+
+  --advance: #4fe396;
+  --advance-fill: #2cc777;
+  --advance-soft: #0f2a1b;
+  --escalate: #ffc65c;
+  --escalate-fill: #e9a01f;
+  --escalate-soft: #2e220b;
+  --pass: #b9bbb6;
+  --pass-fill: #6f7375;
+  --pass-soft: #202121;
+  --danger: #ff8479;
+  --danger-soft: #3a1714;
+  --warn: #f4c653;
+  --warn-soft: #2f2611;
+
+  --slab-pass: #27292b;
+  --slab-pass-ink: #f3f3ef;
+
+  --viz-o1: #184f95;
+  --viz-o2: #256abf;
+  --viz-o3: #3987e5;
+  --viz-o4: #6da7ec;
+  --viz-o5: #9ec5f4;
+  --viz-y1: #8a3713;
+  --viz-y2: #d95926;
+  --viz-y3: #f49a6e;
+  --viz-up: #3987e5;
+  --viz-down: #e66767;
+  --viz-track: #2a2c2b;
+
+  --dock: #232525;
+  --dock-ink: #f3f3ef;
+  --shadow-1: 0 1px 0 rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 24px 48px -16px rgba(0, 0, 0, 0.8), 0 4px 10px rgba(0, 0, 0, 0.4);
+  --overlay: rgba(0, 0, 0, 0.66);
+  color-scheme: dark;
 }
 
 @theme inline {

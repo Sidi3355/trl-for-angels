@@ -179,3 +179,20 @@ export const IconStop = (p: P) => (
     <rect x="6.5" y="6.5" width="11" height="11" rx="2" fill="currentColor" stroke="none" />
   </Svg>
 );
+export const IconSun = (p: P) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1.1 1.1M17.3 17.3l1.1 1.1M5.6 18.4l1.1-1.1M17.3 6.7l1.1-1.1" />
+  </Svg>
+);
+export const IconMoon = (p: P) => (
+  <Svg {...p}>
+    <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />
+  </Svg>
+);
+export const IconMonitor = (p: P) => (
+  <Svg {...p}>
+    <rect x="3" y="4" width="18" height="12" rx="2" />
+    <path d="M8 20h8M12 16v4" />
+  </Svg>
+);

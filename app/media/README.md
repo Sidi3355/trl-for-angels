@@ -213,6 +213,16 @@ desktops are 1440px. Named `<device>-<theme>-<n>-<screen>.png`.
 - `first-try-chart-labels-overlap/`: **bad**. The first calibration shots: the x-axis title ran into "Founders in each band", and the y-axis title touched the tick labels. Fixed by spacing the chart's margins.
 - **Sent:** `phone-light-02-intro-2-odds`, `phone-light-05-profile`, `phone-light-09b-calibration-tooltip`, `phone-light-08-model-card`, `phone-light-12-plans`, `desktop-light-calibration`
 
+## 13-theme-toggle (21:25–21:35) · Current
+
+The light/dark toggle (System, Light, Dark).
+- `phone-light-system-chose-dark.png`: a phone set to light, with Dark chosen on You
+- `phone-dark-system-chose-light.png`: a phone set to dark, with Light chosen on You
+- `phone-*-home-in-*.png`: the home page after a reload, still in the chosen theme
+- `desktop-sidebar-toggle-*`: the sidebar's three-icon toggle, dark and light
+- `first-try-sidebar-crowded/`: **bad**. The first sidebar version, where the toggle squeezed "Prototype · example scores" onto two lines.
+- **Sent:** `phone-light-system-chose-dark.png`, `desktop-sidebar-toggle-dark-crop.png`
+
 ## tools
 
 - `record-walkthrough.cjs`: the script that recorded v3 and v4, with the ffmpeg command in its header, so the video can be re-shot after design changes

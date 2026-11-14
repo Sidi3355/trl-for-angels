@@ -9,6 +9,7 @@ import { loadBar, saveBar } from "@/lib/bar";
 import { registerServiceWorker } from "@/lib/push";
 import { DEFAULT_POLICY, type Policy } from "@/lib/policy";
 import { barFromProfile, loadProfile, storeProfile, type Profile } from "@/lib/profile";
+import { applyTheme, loadTheme } from "@/lib/theme";
 import { listDeals, onDealsChange, type Deal } from "@/lib/session";
 import type { Health, Thresholds } from "@/lib/types";
 
@@ -47,6 +48,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setBarState(loadBar());
     setProfile(loadProfile());
+    applyTheme(loadTheme()); // the browser-chrome colour; the page colours were set before paint
     setReady(true);
     setDeals(listDeals());
     registerServiceWorker();

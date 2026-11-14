@@ -127,6 +127,10 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   - **Plans:** Free (5 a month), Pro ($29/month, $290/year: 100 a month, lists, voice notes, notifications),
     Syndicate ($99/month for 5 members: shared founders, memos, bar). Illustrative, US dollars, "Coming soon",
     no payment code. Everything stays free in the prototype.
+- **Light/dark toggle (owner, 2026-11-14):** System (default), Light or Dark, on You and in the desktop sidebar,
+  saved on the device as `screener.theme` (so Delete all my data resets it). The You page now shows Settings and its
+  links whether or not there's a profile: before, a phone without a profile couldn't reach How it works, Terms or
+  Privacy.
 - **Vercel free plan:** about 100 deployments a day. On 2026-11-14 the limit was hit (many were failed builds of
   the research branch, now skipped by the Ignored Build Step). Batch pushes to `app-track`.
 - **Voice (8b): speech-to-text only (owner, 2026-11-14).** No spoken memo briefing (E6) and no voice agent (E7):

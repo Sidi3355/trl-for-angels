@@ -10,6 +10,7 @@ import { useApp } from "@/components/AppState";
 import { BarSummary } from "@/components/BarSheet";
 import { IconChevronRight, IconLock } from "@/components/icons";
 import { showIntro } from "@/components/Onboarding";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button, Card, ChipMulti, ChipPicker, Notice, Page, PageHeader, SectionTitle, Segmented, Spinner, Switch, Tag, cx, linkClass } from "@/components/ui";
 import { API_URL, getPasscode, setPasscode } from "@/lib/api";
 import { CHEQUES, GEOGRAPHIES, SECTORS, STAGES, deleteAllMyData, initials, newProfile, type Profile } from "@/lib/profile";
@@ -33,7 +34,7 @@ function SignIn({ onDone }: { onDone: (p: Profile) => void }) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   return (
-    <Page>
+    <>
       <PageHeader eyebrow="Halomark" title="Sign in" subtitle="Set up your investor profile. It stays on this device: there's no Halomark account on a server, so there's no password." />
       <form
         noValidate
@@ -78,7 +79,7 @@ function SignIn({ onDone }: { onDone: (p: Profile) => void }) {
           Go to Founders
         </Link>
       </p>
-    </Page>
+    </>
   );
 }
 
@@ -231,59 +232,21 @@ function DeleteAll() {
   );
 }
 
-function Account() {
-  const { ready, profile, saveProfile, bar, openBarSheet, health, healthError, deals } = useApp();
-  const params = useSearchParams();
+/** Settings and links, shown whether or not there's a profile (so How it works, Terms etc. are always reachable). */
+function SettingsAndLinks() {
+  const { bar, openBarSheet, health, healthError, deals } = useApp();
   const [hasCode, setHasCode] = useState(false);
   const [cleared, setCleared] = useState(false);
   useEffect(() => setHasCode(Boolean(getPasscode())), []);
-  const deleted = params.get("deleted") === "1";
-
-  if (!ready)
-    return (
-      <Page>
-        <div className="flex h-40 items-center justify-center text-muted">
-          <Spinner size={20} />
-        </div>
-      </Page>
-    );
-  if (!profile)
-    return (
-      <>
-        {deleted && (
-          <div className="mx-auto max-w-[720px] px-5 pt-4 sm:px-8 lg:px-12">
-            <Notice tone="info" title="Deleted">
-              Everything Halomark kept on this device is gone.
-            </Notice>
-          </div>
-        )}
-        <SignIn onDone={(p) => saveProfile(p)} />
-      </>
-    );
-
   return (
-    <Page>
-      <header className="flex items-center gap-4 pb-6 pt-3 lg:pt-0">
-        <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-ink text-[22px] font-bold tracking-[-0.02em] text-bg" aria-hidden>
-          {initials(profile.name)}
-        </span>
-        <div className="min-w-0">
-          <h1 className="truncate text-[30px] font-extrabold leading-tight tracking-[-0.035em]">{profile.name}</h1>
-          <p className="flex flex-wrap items-center gap-2 text-[14px] text-muted">
-            {profile.email && <span className="truncate">{profile.email}</span>}
-            <Tag>Stored on this device only</Tag>
-          </p>
-        </div>
-      </header>
-
-      <section aria-labelledby="profile">
-        <SectionTitle id="profile">Your investing profile</SectionTitle>
-        <ProfileForm profile={profile} onSave={saveProfile} />
-      </section>
-
+    <>
       <section className="mt-12">
         <SectionTitle>Settings</SectionTitle>
         <div className="-mt-3.5">
+          <div className="space-y-2.5 border-b border-line py-4">
+            <span className="block text-[15.5px] font-semibold">Appearance</span>
+            <ThemeToggle />
+          </div>
           <div className={row}>
             <span className="min-w-0">
               <span className="block text-[15.5px] font-semibold">Your bar</span>
@@ -349,6 +312,59 @@ function Account() {
       </section>
 
       <DeleteAll />
+    </>
+  );
+}
+
+function Account() {
+  const { ready, profile, saveProfile } = useApp();
+  const params = useSearchParams();
+  const deleted = params.get("deleted") === "1";
+
+  if (!ready)
+    return (
+      <Page>
+        <div className="flex h-40 items-center justify-center text-muted">
+          <Spinner size={20} />
+        </div>
+      </Page>
+    );
+  if (!profile)
+    return (
+      <Page>
+        {deleted && (
+          <div className="pb-2 pt-3">
+            <Notice tone="info" title="Deleted">
+              Everything Halomark kept on this device is gone.
+            </Notice>
+          </div>
+        )}
+        <SignIn onDone={(p) => saveProfile(p)} />
+        <SettingsAndLinks />
+      </Page>
+    );
+
+  return (
+    <Page>
+      <header className="flex items-center gap-4 pb-6 pt-3 lg:pt-0">
+        <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-ink text-[22px] font-bold tracking-[-0.02em] text-bg" aria-hidden>
+          {initials(profile.name)}
+        </span>
+        <div className="min-w-0">
+          <h1 className="truncate text-[30px] font-extrabold leading-tight tracking-[-0.035em]">{profile.name}</h1>
+          <p className="flex flex-wrap items-center gap-2 text-[14px] text-muted">
+            {profile.email && <span className="truncate">{profile.email}</span>}
+            <Tag>Stored on this device only</Tag>
+          </p>
+        </div>
+      </header>
+
+      <section aria-labelledby="profile">
+        <SectionTitle id="profile">Your investing profile</SectionTitle>
+        <ProfileForm profile={profile} onSave={saveProfile} />
+      </section>
+
+      <SettingsAndLinks />
     </Page>
   );
 }
