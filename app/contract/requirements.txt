@@ -1,0 +1,2 @@
+# Contract tools (validate.py). format-nongpl adds the uri and date-time format checks.
+jsonschema[format-nongpl]==4.26.0

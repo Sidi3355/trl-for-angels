@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Progress event",
+  "description": "One event on a screening's or batch's server-sent events stream (GET .../events). The SSE 'id' is seq, so a client can resume with Last-Event-ID; the SSE 'event' is type; the SSE 'data' is this object as JSON.",
+  "$defs": {
+    "stage": {
+      "description": "Pipeline stages, in order (MASTER_PLAN section 8).",
+      "enum": ["queued", "researching", "merging", "rendering", "answering", "deciding", "writing_memo", "done", "failed"]
+    }
+  },
+  "type": "object",
+  "required": ["schema_version", "job_id", "seq", "ts", "type", "message"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "job_id": { "$ref": "common.schema.json#/$defs/id" },
+    "seq": { "type": "integer", "minimum": 0 },
+    "ts": { "type": "string", "format": "date-time" },
+    "type": {
+      "enum": ["stage", "search", "source", "field", "conflict", "warning", "error", "memo_ready", "batch_item", "heartbeat"]
+    },
+    "stage": { "$ref": "#/$defs/stage" },
+    "message": {
+      "description": "Short, human-readable line for the progress view.",
+      "type": "string",
+      "maxLength": 300
+    },
+    "data": { "type": "object" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "type": { "const": "stage" } } },
+      "then": { "required": ["stage"] }
+    },
+    {
+      "if": { "properties": { "type": { "const": "search" } } },
+      "then": {
+        "required": ["data"],
+        "properties": { "data": { "required": ["query"], "properties": { "query": { "type": "string" } } } }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "source" } } },
+      "then": {
+        "required": ["data"],
+        "properties": { "data": { "required": ["source"], "properties": { "source": { "$ref": "common.schema.json#/$defs/source" } } } }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "field" } } },
+      "then": {
+        "required": ["data"],
+        "properties": {
+          "data": {
+            "required": ["key", "value", "provenance", "source_ids", "confidence"],
+            "properties": {
+              "key": { "$ref": "common.schema.json#/$defs/field_key" },
+              "provenance": { "$ref": "common.schema.json#/$defs/provenance" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "conflict" } } },
+      "then": {
+        "required": ["data"],
+        "properties": { "data": { "$ref": "memo.schema.json#/$defs/conflict" } }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "warning" } } },
+      "then": {
+        "required": ["data"],
+        "properties": { "data": { "$ref": "common.schema.json#/$defs/warning" } }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "error" } } },
+      "then": {
+        "required": ["data"],
+        "properties": { "data": { "$ref": "common.schema.json#/$defs/error" } }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "memo_ready" } } },
+      "then": {
+        "required": ["data"],
+        "properties": {
+          "data": {
+            "required": ["memo_id", "decision", "probability"],
+            "properties": {
+              "memo_id": { "$ref": "common.schema.json#/$defs/id" },
+              "decision": { "$ref": "common.schema.json#/$defs/decision" },
+              "probability": { "$ref": "common.schema.json#/$defs/probability" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "batch_item" } } },
+      "then": {
+        "required": ["data"],
+        "properties": { "data": { "$ref": "batch_response.schema.json#/$defs/item" } }
+      }
+    }
+  ]
+}

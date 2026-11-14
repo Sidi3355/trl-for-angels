@@ -1,0 +1,411 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Shared definitions",
+  "description": "Definitions used by every app contract schema. Template field values follow shared/profile_template.md exactly; 'unknown' marks a value that couldn't be found.",
+  "$defs": {
+    "schema_version": {
+      "description": "Contract version. Bumped on any breaking change.",
+      "const": "0.1.0"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.:-]{1,80}$"
+    },
+    "date_partial": {
+      "description": "A date at year, month or day precision: YYYY, YYYY-MM or YYYY-MM-DD.",
+      "type": "string",
+      "pattern": "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$"
+    },
+    "field_key": {
+      "description": "The nine template fields, in template order.",
+      "enum": ["industry", "cofounders", "background", "work_experience", "industry_experience", "education", "jobs", "prior_startups", "prior_exits"]
+    },
+    "industry": {
+      "description": "The startup's industry, lower case as in the template (e.g. 'fintech', 'developer tools'), or 'unknown'.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "examples": ["fintech", "healthtech", "developer tools", "e-commerce", "unknown"]
+    },
+    "cofounders": {
+      "description": "Template: 'founded with [solo / 1 / 2 / 3+] co-founder(s)'.",
+      "enum": ["solo", "1", "2", "3+", "unknown"]
+    },
+    "background": {
+      "enum": ["technical", "business", "mixed", "domain specialist", "unknown"]
+    },
+    "work_experience": {
+      "description": "Years of work experience band.",
+      "enum": ["<5", "5-10", "10-15", "15+", "unknown"]
+    },
+    "industry_experience": {
+      "description": "Prior experience in the startup's industry.",
+      "enum": ["none", "some", "deep", "unknown"]
+    },
+    "qs_rank": {
+      "enum": ["top 50", "51-100", "101-300", "300+", "unranked", "unknown"]
+    },
+    "company_size": {
+      "description": "Employees at that employer, as a template band.",
+      "enum": ["1-10", "11-50", "51-200", "201-1,000", "1,001-5,000", "5,000+", "unknown"]
+    },
+    "job_duration": {
+      "description": "Years in the role, as a template band (rendered with ' years' after it).",
+      "enum": ["<1", "1-2", "2-3", "3-5", "5+", "unknown"]
+    },
+    "value_band": {
+      "description": "Value band for a prior acquisition or IPO.",
+      "enum": ["under $50M", "$50M-$500M", "$500M-$1B", "over $1B"]
+    },
+    "education_entry": {
+      "type": "object",
+      "required": ["degree", "field", "qs_rank"],
+      "additionalProperties": false,
+      "properties": {
+        "degree": {
+          "description": "Degree, e.g. BSc, BA, MSc, MBA, PhD, or 'no degree' (open set, as in the template).",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "examples": ["BSc", "BA", "MSc", "MBA", "PhD", "MD", "no degree"]
+        },
+        "field": {
+          "description": "Field of study, or 'unknown'.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "qs_rank": { "$ref": "#/$defs/qs_rank" }
+      }
+    },
+    "education": {
+      "description": "1 to 3 entries, or 'unknown' if no education was found.",
+      "oneOf": [
+        { "const": "unknown" },
+        { "type": "array", "minItems": 1, "maxItems": 3, "items": { "$ref": "#/$defs/education_entry" } }
+      ]
+    },
+    "job_entry": {
+      "type": "object",
+      "required": ["role", "company", "company_size", "industry", "duration"],
+      "additionalProperties": false,
+      "properties": {
+        "role": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "company": {
+          "description": "Generic, anonymised employer description, e.g. 'a payments company'. Never a company name.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "company_size": { "$ref": "#/$defs/company_size" },
+        "industry": {
+          "description": "The employer's industry, title case as in the template example (e.g. 'Professional Services'), or 'unknown'.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "duration": { "$ref": "#/$defs/job_duration" }
+      }
+    },
+    "jobs": {
+      "description": "1 to 6 jobs, oldest first, or 'unknown' if no jobs were found. Roles at the startup itself are never included.",
+      "oneOf": [
+        { "const": "unknown" },
+        { "type": "array", "minItems": 1, "maxItems": 6, "items": { "$ref": "#/$defs/job_entry" } }
+      ]
+    },
+    "prior_startup": {
+      "type": "object",
+      "required": ["outcome", "value_band"],
+      "additionalProperties": false,
+      "properties": {
+        "outcome": { "enum": ["shut down", "acquired", "IPO", "still operating"] },
+        "value_band": { "oneOf": [{ "$ref": "#/$defs/value_band" }, { "type": "null" }] }
+      },
+      "if": { "properties": { "outcome": { "enum": ["acquired", "IPO"] } } },
+      "then": { "properties": { "value_band": { "$ref": "#/$defs/value_band" } } },
+      "else": { "properties": { "value_band": { "type": "null" } } }
+    },
+    "prior_startups": {
+      "description": "'none', 'unknown', or the startups founded before this one, with outcomes.",
+      "oneOf": [
+        { "enum": ["none", "unknown"] },
+        { "type": "array", "minItems": 1, "maxItems": 10, "items": { "$ref": "#/$defs/prior_startup" } }
+      ]
+    },
+    "prior_exit": {
+      "type": "object",
+      "required": ["kind", "value_band"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "enum": ["acquisition", "IPO"] },
+        "value_band": { "$ref": "#/$defs/value_band" }
+      }
+    },
+    "prior_exits": {
+      "description": "'none', 'unknown', or acquisitions and IPOs as co-founder, with value bands.",
+      "oneOf": [
+        { "enum": ["none", "unknown"] },
+        { "type": "array", "minItems": 1, "maxItems": 10, "items": { "$ref": "#/$defs/prior_exit" } }
+      ]
+    },
+    "profile_fields": {
+      "description": "Template field values with no provenance (investor input). Every field is optional; a missing field means 'not provided'.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "industry": { "$ref": "#/$defs/industry" },
+        "cofounders": { "$ref": "#/$defs/cofounders" },
+        "background": { "$ref": "#/$defs/background" },
+        "work_experience": { "$ref": "#/$defs/work_experience" },
+        "industry_experience": { "$ref": "#/$defs/industry_experience" },
+        "education": { "$ref": "#/$defs/education" },
+        "jobs": { "$ref": "#/$defs/jobs" },
+        "prior_startups": { "$ref": "#/$defs/prior_startups" },
+        "prior_exits": { "$ref": "#/$defs/prior_exits" }
+      }
+    },
+    "provenance": {
+      "description": "Where a value came from. 'investor_voice' is shown as 'investor (voice)'.",
+      "enum": ["investor", "investor_voice", "agent", "unknown"]
+    },
+    "field_meta": {
+      "description": "Provenance wrapper for one template field in the memo. Combined with a typed 'value' per field.",
+      "type": "object",
+      "required": ["value", "provenance", "source_ids", "confidence"],
+      "properties": {
+        "value": true,
+        "provenance": { "$ref": "#/$defs/provenance" },
+        "source_ids": {
+          "description": "IDs into memo.sources. Required (at least one) for agent values.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "uniqueItems": true
+        },
+        "confidence": {
+          "description": "The agent's confidence in this value, 0 to 1. Null for investor and unknown values.",
+          "oneOf": [{ "type": "number", "minimum": 0, "maximum": 1 }, { "type": "null" }]
+        },
+        "note": { "type": ["string", "null"], "maxLength": 500 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "provenance": { "const": "agent" } } },
+          "then": { "properties": { "source_ids": { "minItems": 1 }, "confidence": { "type": "number" } } }
+        },
+        {
+          "if": { "properties": { "provenance": { "const": "unknown" } } },
+          "then": { "properties": { "value": { "const": "unknown" }, "source_ids": { "maxItems": 0 }, "confidence": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "provenance": { "enum": ["investor", "investor_voice"] } } },
+          "then": { "properties": { "confidence": { "type": "null" } } }
+        }
+      ]
+    },
+    "outcome_band": {
+      "enum": ["shut down", "under $50M", "$50M-$500M", "$500M-$1B", "over $1B"]
+    },
+    "years_band": {
+      "enum": ["under 5", "5-8", "over 8"]
+    },
+    "probability": { "type": "number", "minimum": 0, "maximum": 1 },
+    "outcome_distribution": {
+      "description": "Calibrated P(outcome band), from the production Kev 'outcome' question. Sums to 1.",
+      "type": "object",
+      "required": ["shut down", "under $50M", "$50M-$500M", "$500M-$1B", "over $1B"],
+      "additionalProperties": false,
+      "properties": {
+        "shut down": { "$ref": "#/$defs/probability" },
+        "under $50M": { "$ref": "#/$defs/probability" },
+        "$50M-$500M": { "$ref": "#/$defs/probability" },
+        "$500M-$1B": { "$ref": "#/$defs/probability" },
+        "over $1B": { "$ref": "#/$defs/probability" }
+      }
+    },
+    "years_distribution": {
+      "description": "Calibrated P(years from founding to outcome), from the production Kev 'years' question. Sums to 1.",
+      "type": "object",
+      "required": ["under 5", "5-8", "over 8"],
+      "additionalProperties": false,
+      "properties": {
+        "under 5": { "$ref": "#/$defs/probability" },
+        "5-8": { "$ref": "#/$defs/probability" },
+        "over 8": { "$ref": "#/$defs/probability" }
+      }
+    },
+    "distributions": {
+      "type": "object",
+      "required": ["outcome", "years"],
+      "additionalProperties": false,
+      "properties": {
+        "outcome": { "$ref": "#/$defs/outcome_distribution" },
+        "years": { "$ref": "#/$defs/years_distribution" }
+      }
+    },
+    "target": {
+      "description": "Target outcome: the probability is P(outcome at or above this value).",
+      "enum": ["$50M", "$500M", "$1B"]
+    },
+    "timeline_years": {
+      "description": "Horizon in years, or null for any timeline. With a horizon, the probability is an estimate (assumes outcome and years are independent).",
+      "enum": [null, 5, 8]
+    },
+    "risk": {
+      "enum": ["cautious", "balanced", "bold"]
+    },
+    "filters": {
+      "description": "Hard filters on profile fields. Null means no filter.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sectors": { "type": ["array", "null"], "items": { "type": "string" } },
+        "team": { "enum": ["solo", "team", null] },
+        "technical": { "type": ["boolean", "null"] },
+        "repeat_founder": { "type": ["boolean", "null"] }
+      }
+    },
+    "policy_request": {
+      "description": "Investor controls. Defaults: $500M, any timeline, balanced, no filters.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "target": { "$ref": "#/$defs/target", "default": "$500M" },
+        "timeline_years": { "$ref": "#/$defs/timeline_years", "default": null },
+        "risk": { "$ref": "#/$defs/risk", "default": "balanced" },
+        "filters": { "$ref": "#/$defs/filters" }
+      }
+    },
+    "policy_used": {
+      "description": "The controls and the thresholds they resolved to via thresholds.json.",
+      "type": "object",
+      "required": ["target", "timeline_years", "risk", "advance_threshold", "pass_threshold"],
+      "additionalProperties": false,
+      "properties": {
+        "target": { "$ref": "#/$defs/target" },
+        "timeline_years": { "$ref": "#/$defs/timeline_years" },
+        "risk": { "$ref": "#/$defs/risk" },
+        "filters": { "$ref": "#/$defs/filters" },
+        "advance_threshold": { "oneOf": [{ "$ref": "#/$defs/probability" }, { "type": "null" }] },
+        "pass_threshold": { "oneOf": [{ "$ref": "#/$defs/probability" }, { "type": "null" }] }
+      }
+    },
+    "decision": {
+      "enum": ["advance", "escalate", "pass"]
+    },
+    "verdict": {
+      "type": "object",
+      "required": ["decision", "probability", "probability_is_estimate", "policy", "expected_precision", "expected_recall", "missed_winners_if_pass", "filters_failed", "summary"],
+      "additionalProperties": false,
+      "properties": {
+        "decision": { "$ref": "#/$defs/decision" },
+        "probability": {
+          "description": "P(outcome >= target) times P(years within timeline), from the distributions.",
+          "$ref": "#/$defs/probability"
+        },
+        "probability_is_estimate": {
+          "description": "True when a timeline is set (outcome and years are combined assuming independence).",
+          "type": "boolean"
+        },
+        "policy": { "$ref": "#/$defs/policy_used" },
+        "expected_precision": {
+          "description": "From thresholds.json at the advance threshold: share of advanced founders (on val) who reached the target.",
+          "oneOf": [{ "$ref": "#/$defs/probability" }, { "type": "null" }]
+        },
+        "expected_recall": {
+          "description": "From thresholds.json at the advance threshold: share of val founders who reached the target that would be advanced.",
+          "oneOf": [{ "$ref": "#/$defs/probability" }, { "type": "null" }]
+        },
+        "missed_winners_if_pass": {
+          "description": "From thresholds.json: share of val founders who reached the target but scored below the pass threshold.",
+          "oneOf": [{ "$ref": "#/$defs/probability" }, { "type": "null" }]
+        },
+        "filters_failed": {
+          "description": "Filters this founder fails. Non-empty means the founder is filtered out, whatever the decision.",
+          "type": "array",
+          "items": { "enum": ["sectors", "team", "technical", "repeat_founder"] }
+        },
+        "summary": { "type": "string", "maxLength": 400 }
+      }
+    },
+    "facets": {
+      "description": "Values the filters use, derived from the merged fields. Null means unknown.",
+      "type": "object",
+      "required": ["sector", "team", "technical", "repeat_founder"],
+      "additionalProperties": false,
+      "properties": {
+        "sector": { "type": ["string", "null"] },
+        "team": { "enum": ["solo", "team", null] },
+        "technical": { "type": ["boolean", "null"] },
+        "repeat_founder": { "type": ["boolean", "null"] }
+      }
+    },
+    "founder_identifier": {
+      "description": "How the investor identifies the founder. At least one of name, LinkedIn, website or deck text.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "company_name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "linkedin_url": { "type": "string", "format": "uri", "maxLength": 500 },
+        "linkedin_text": { "type": "string", "maxLength": 20000 },
+        "website_url": { "type": "string", "format": "uri", "maxLength": 500 },
+        "deck_text": { "type": "string", "maxLength": 50000 },
+        "other_urls": { "type": "array", "maxItems": 10, "items": { "type": "string", "format": "uri", "maxLength": 500 } }
+      },
+      "anyOf": [
+        { "required": ["name"] },
+        { "required": ["linkedin_url"] },
+        { "required": ["linkedin_text"] },
+        { "required": ["website_url"] },
+        { "required": ["deck_text"] }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "required": ["id", "url", "title", "accessed_at", "before_founding", "used_for"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "url": { "type": "string", "format": "uri" },
+        "title": { "type": "string", "maxLength": 300 },
+        "publisher": { "type": ["string", "null"], "maxLength": 120 },
+        "published_date": { "oneOf": [{ "$ref": "#/$defs/date_partial" }, { "type": "null" }] },
+        "accessed_at": { "type": "string", "format": "date-time" },
+        "before_founding": {
+          "description": "Whether the information used from this source predates the founding date. False sources only feed memo notes, never the model.",
+          "type": ["boolean", "null"]
+        },
+        "used_for": {
+          "description": "Field paths (e.g. 'jobs', 'education[0].qs_rank') or 'notes' that this source supports.",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "warning": {
+      "type": "object",
+      "required": ["code", "message"],
+      "additionalProperties": false,
+      "properties": {
+        "code": { "enum": ["mock_artifacts", "many_unknowns", "founding_date_assumed", "conflicts_present", "research_partial", "thresholds_sparse", "timeline_estimate", "profile_inconsistent"] },
+        "message": { "type": "string", "maxLength": 400 }
+      }
+    },
+    "error": {
+      "type": "object",
+      "required": ["code", "message", "retryable"],
+      "additionalProperties": false,
+      "properties": {
+        "code": { "type": "string" },
+        "message": { "type": "string" },
+        "retryable": { "type": "boolean" }
+      }
+    },
+    "disclaimer": {
+      "description": "Shown on every memo. Must start with 'Screening aid, not investment advice.'",
+      "type": "string",
+      "pattern": "^Screening aid, not investment advice\\."
+    }
+  }
+}

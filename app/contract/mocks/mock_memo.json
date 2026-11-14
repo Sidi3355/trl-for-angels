@@ -1,0 +1,2399 @@
+[
+  {
+    "schema_version": "0.1.0",
+    "memo_id": "memo_mock_001",
+    "job_id": "job_mock_001",
+    "client_ref": "row-1",
+    "created_at": "2026-11-14T11:59:54Z",
+    "mock": true,
+    "founder": {
+      "display_name": "Ada Moreno",
+      "company_name": "Tallyframe",
+      "identifier": {
+        "name": "Ada Moreno",
+        "company_name": "Tallyframe",
+        "linkedin_url": "https://example.com/mock/ada-moreno/linkedin",
+        "website_url": "https://example.com/mock/tallyframe"
+      },
+      "founding_date": {
+        "value": "2024-03",
+        "provenance": "investor",
+        "source_ids": []
+      }
+    },
+    "verdict": {
+      "decision": "advance",
+      "probability": 0.5664,
+      "probability_is_estimate": false,
+      "policy": {
+        "target": "$500M",
+        "timeline_years": null,
+        "risk": "balanced",
+        "filters": {},
+        "advance_threshold": 0.2,
+        "pass_threshold": 0.11
+      },
+      "expected_precision": 0.2201,
+      "expected_recall": 0.5072,
+      "missed_winners_if_pass": 0.0725,
+      "filters_failed": [],
+      "summary": "Advance: 57% chance of reaching $500M or more. At balanced risk, founders advance from 20% and pass below 11%."
+    },
+    "distributions": {
+      "outcome": {
+        "shut down": 0.1522,
+        "under $50M": 0.1436,
+        "$50M-$500M": 0.1378,
+        "$500M-$1B": 0.1848,
+        "over $1B": 0.3816
+      },
+      "years": {
+        "under 5": 0.2142,
+        "5-8": 0.4441,
+        "over 8": 0.3417
+      }
+    },
+    "fields": {
+      "industry": {
+        "value": "developer tools",
+        "provenance": "investor",
+        "source_ids": [
+          "s2"
+        ],
+        "confidence": null,
+        "note": "The agent found the same value."
+      },
+      "cofounders": {
+        "value": "2",
+        "provenance": "investor",
+        "source_ids": [],
+        "confidence": null
+      },
+      "background": {
+        "value": "technical",
+        "provenance": "agent",
+        "source_ids": [
+          "s1"
+        ],
+        "confidence": 0.9
+      },
+      "work_experience": {
+        "value": "10-15",
+        "provenance": "agent",
+        "source_ids": [
+          "s1"
+        ],
+        "confidence": 0.85
+      },
+      "industry_experience": {
+        "value": "deep",
+        "provenance": "agent",
+        "source_ids": [
+          "s1",
+          "s2"
+        ],
+        "confidence": 0.8
+      },
+      "education": {
+        "value": [
+          {
+            "degree": "MSc",
+            "field": "Computer Science",
+            "qs_rank": "top 50"
+          }
+        ],
+        "provenance": "agent",
+        "source_ids": [
+          "s1"
+        ],
+        "confidence": 0.9
+      },
+      "jobs": {
+        "value": [
+          {
+            "role": "Software Engineer",
+            "company": "a large search and advertising company",
+            "company_size": "5,000+",
+            "industry": "Internet",
+            "duration": "3-5"
+          },
+          {
+            "role": "Senior Software Engineer",
+            "company": "a payments company",
+            "company_size": "1,001-5,000",
+            "industry": "Fintech",
+            "duration": "3-5"
+          },
+          {
+            "role": "Engineering Manager",
+            "company": "a developer tools company",
+            "company_size": "201-1,000",
+            "industry": "Developer Tools",
+            "duration": "3-5"
+          }
+        ],
+        "provenance": "agent",
+        "source_ids": [
+          "s1"
+        ],
+        "confidence": 0.85
+      },
+      "prior_startups": {
+        "value": [
+          {
+            "outcome": "acquired",
+            "value_band": "$50M-$500M"
+          }
+        ],
+        "provenance": "agent",
+        "source_ids": [
+          "s3"
+        ],
+        "confidence": 0.9
+      },
+      "prior_exits": {
+        "value": [
+          {
+            "kind": "acquisition",
+            "value_band": "$50M-$500M"
+          }
+        ],
+        "provenance": "agent",
+        "source_ids": [
+          "s3"
+        ],
+        "confidence": 0.85
+      }
+    },
+    "rendered_profile": "This founder leads a startup in the developer tools industry, founded with 2 co-founder(s).\nFounder background: technical, 10-15 years of work experience, deep prior experience in this startup's industry.\nEducation:\n- MSc in Computer Science, university ranked QS top 50\nJobs (oldest first):\n- Software Engineer, a large search and advertising company, 5,000+ employees, Internet, 3-5 years\n- Senior Software Engineer, a payments company, 1,001-5,000 employees, Fintech, 3-5 years\n- Engineering Manager, a developer tools company, 201-1,000 employees, Developer Tools, 3-5 years\nPrior startups: 1 acquired $50M-$500M.\nPrior exits: 1 acquisition as co-founder, $50M-$500M.",
+    "decider": {
+      "input_type": "answers",
+      "model_id": "kev-0.6b-prod-mock",
+      "artifacts_dir": "app/contract/mocks"
+    },
+    "answers": [
+      {
+        "rule_id": "r01",
+        "p_yes": 0.95,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r02",
+        "p_yes": 0.94,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r03",
+        "p_yes": 0.03,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r04",
+        "p_yes": 0.95,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r05",
+        "p_yes": 0.92,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r06",
+        "p_yes": 0.93,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r07",
+        "p_yes": 0.95,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r08",
+        "p_yes": 0.93,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r09",
+        "p_yes": 0.95,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r10",
+        "p_yes": 0.9,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r11",
+        "p_yes": 0.9,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r12",
+        "p_yes": 0.97,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r13",
+        "p_yes": 0.95,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r14",
+        "p_yes": 0.1,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r15",
+        "p_yes": 0.85,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r16",
+        "p_yes": 0.9,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r17",
+        "p_yes": 0.1,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r18",
+        "p_yes": 0.02,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r19",
+        "p_yes": 0.05,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r20",
+        "p_yes": 0.1,
+        "answer": "no"
+      }
+    ],
+    "drivers": [
+      {
+        "id": "r01",
+        "kind": "answer",
+        "label": "Has the founder previously founded a company that was acquired or went public?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.2121,
+            "under $50M": 0.1743,
+            "$50M-$500M": 0.1479,
+            "$500M-$1B": 0.174,
+            "over $1B": 0.2917
+          },
+          "years": {
+            "under 5": 0.2562,
+            "5-8": 0.4378,
+            "over 8": 0.306
+          }
+        },
+        "delta": -0.1007
+      },
+      {
+        "id": "r02",
+        "kind": "answer",
+        "label": "Has the founder had an exit worth $50M or more as a co-founder?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.2047,
+            "under $50M": 0.1711,
+            "$50M-$500M": 0.1473,
+            "$500M-$1B": 0.1759,
+            "over $1B": 0.301
+          },
+          "years": {
+            "under 5": 0.2513,
+            "5-8": 0.4386,
+            "over 8": 0.3101
+          }
+        },
+        "delta": -0.0895
+      },
+      {
+        "id": "r08",
+        "kind": "answer",
+        "label": "Does the founder have deep prior experience in the startup's industry?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1836,
+            "under $50M": 0.1612,
+            "$50M-$500M": 0.1447,
+            "$500M-$1B": 0.1805,
+            "over $1B": 0.33
+          },
+          "years": {
+            "under 5": 0.237,
+            "5-8": 0.4409,
+            "over 8": 0.3221
+          }
+        },
+        "delta": -0.0559
+      },
+      {
+        "id": "r10",
+        "kind": "answer",
+        "label": "Has the founder held a senior engineering or technical leadership role?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1802,
+            "under $50M": 0.1594,
+            "$50M-$500M": 0.1441,
+            "$500M-$1B": 0.1811,
+            "over $1B": 0.3352
+          },
+          "years": {
+            "under 5": 0.2346,
+            "5-8": 0.4413,
+            "over 8": 0.3241
+          }
+        },
+        "delta": -0.0501
+      },
+      {
+        "id": "r18",
+        "kind": "answer",
+        "label": "Does the founder have less than five years of work experience?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1769,
+            "under $50M": 0.1577,
+            "$50M-$500M": 0.1436,
+            "$500M-$1B": 0.1817,
+            "over $1B": 0.3401
+          },
+          "years": {
+            "under 5": 0.2323,
+            "5-8": 0.4416,
+            "over 8": 0.3261
+          }
+        },
+        "delta": -0.0446
+      },
+      {
+        "id": "r03",
+        "kind": "answer",
+        "label": "Is this the founder's first startup?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1737,
+            "under $50M": 0.156,
+            "$50M-$500M": 0.1429,
+            "$500M-$1B": 0.1822,
+            "over $1B": 0.3452
+          },
+          "years": {
+            "under 5": 0.23,
+            "5-8": 0.4419,
+            "over 8": 0.3281
+          }
+        },
+        "delta": -0.039
+      },
+      {
+        "id": "r04",
+        "kind": "answer",
+        "label": "Does the founder have a technical background, such as engineering or computer science?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1737,
+            "under $50M": 0.156,
+            "$50M-$500M": 0.1429,
+            "$500M-$1B": 0.1822,
+            "over $1B": 0.3452
+          },
+          "years": {
+            "under 5": 0.23,
+            "5-8": 0.4419,
+            "over 8": 0.3281
+          }
+        },
+        "delta": -0.039
+      },
+      {
+        "id": "r12",
+        "kind": "answer",
+        "label": "Did the founder start the company with at least one co-founder?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1737,
+            "under $50M": 0.156,
+            "$50M-$500M": 0.1429,
+            "$500M-$1B": 0.1822,
+            "over $1B": 0.3452
+          },
+          "years": {
+            "under 5": 0.23,
+            "5-8": 0.4419,
+            "over 8": 0.3281
+          }
+        },
+        "delta": -0.039
+      },
+      {
+        "id": "r05",
+        "kind": "answer",
+        "label": "Does the founder hold a degree from a university ranked in the QS top 100?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1705,
+            "under $50M": 0.1542,
+            "$50M-$500M": 0.1423,
+            "$500M-$1B": 0.1827,
+            "over $1B": 0.3503
+          },
+          "years": {
+            "under 5": 0.2277,
+            "5-8": 0.4423,
+            "over 8": 0.33
+          }
+        },
+        "delta": -0.0334
+      },
+      {
+        "id": "r15",
+        "kind": "answer",
+        "label": "Has the founder worked in a technical or product role at a company with 1,000 or fewer employees?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1705,
+            "under $50M": 0.1542,
+            "$50M-$500M": 0.1423,
+            "$500M-$1B": 0.1827,
+            "over $1B": 0.3503
+          },
+          "years": {
+            "under 5": 0.2277,
+            "5-8": 0.4423,
+            "over 8": 0.33
+          }
+        },
+        "delta": -0.0334
+      },
+      {
+        "id": "r16",
+        "kind": "answer",
+        "label": "Has the founder worked in the same industry as the startup?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1705,
+            "under $50M": 0.1542,
+            "$50M-$500M": 0.1423,
+            "$500M-$1B": 0.1827,
+            "over $1B": 0.3503
+          },
+          "years": {
+            "under 5": 0.2277,
+            "5-8": 0.4423,
+            "over 8": 0.33
+          }
+        },
+        "delta": -0.0334
+      },
+      {
+        "id": "r07",
+        "kind": "answer",
+        "label": "Does the founder have more than 10 years of work experience?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1673,
+            "under $50M": 0.1525,
+            "$50M-$500M": 0.1416,
+            "$500M-$1B": 0.1832,
+            "over $1B": 0.3554
+          },
+          "years": {
+            "under 5": 0.2254,
+            "5-8": 0.4426,
+            "over 8": 0.332
+          }
+        },
+        "delta": -0.0278
+      },
+      {
+        "id": "r11",
+        "kind": "answer",
+        "label": "Has the founder held a management or leadership role?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1642,
+            "under $50M": 0.1507,
+            "$50M-$500M": 0.1409,
+            "$500M-$1B": 0.1836,
+            "over $1B": 0.3606
+          },
+          "years": {
+            "under 5": 0.2231,
+            "5-8": 0.4429,
+            "over 8": 0.334
+          }
+        },
+        "delta": -0.0222
+      },
+      {
+        "id": "r17",
+        "kind": "answer",
+        "label": "Has the founder spent most of their career at organisations with more than 5,000 employees?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1642,
+            "under $50M": 0.1507,
+            "$50M-$500M": 0.1409,
+            "$500M-$1B": 0.1836,
+            "over $1B": 0.3606
+          },
+          "years": {
+            "under 5": 0.2231,
+            "5-8": 0.4429,
+            "over 8": 0.334
+          }
+        },
+        "delta": -0.0222
+      },
+      {
+        "id": "r09",
+        "kind": "answer",
+        "label": "Has the founder worked at a company with more than 1,000 employees?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1611,
+            "under $50M": 0.1489,
+            "$50M-$500M": 0.1401,
+            "$500M-$1B": 0.184,
+            "over $1B": 0.3659
+          },
+          "years": {
+            "under 5": 0.2209,
+            "5-8": 0.4432,
+            "over 8": 0.3359
+          }
+        },
+        "delta": -0.0165
+      },
+      {
+        "id": "r13",
+        "kind": "answer",
+        "label": "Does the founding team have three or more people?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1611,
+            "under $50M": 0.1489,
+            "$50M-$500M": 0.1401,
+            "$500M-$1B": 0.184,
+            "over $1B": 0.3659
+          },
+          "years": {
+            "under 5": 0.2209,
+            "5-8": 0.4432,
+            "over 8": 0.3359
+          }
+        },
+        "delta": -0.0165
+      },
+      {
+        "id": "r20",
+        "kind": "answer",
+        "label": "Has the founder changed industries more than twice?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1611,
+            "under $50M": 0.1489,
+            "$50M-$500M": 0.1401,
+            "$500M-$1B": 0.184,
+            "over $1B": 0.3659
+          },
+          "years": {
+            "under 5": 0.2209,
+            "5-8": 0.4432,
+            "over 8": 0.3359
+          }
+        },
+        "delta": -0.0165
+      },
+      {
+        "id": "r06",
+        "kind": "answer",
+        "label": "Does the founder hold a graduate degree (master's, MBA, PhD or equivalent)?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1581,
+            "under $50M": 0.1472,
+            "$50M-$500M": 0.1394,
+            "$500M-$1B": 0.1843,
+            "over $1B": 0.371
+          },
+          "years": {
+            "under 5": 0.2186,
+            "5-8": 0.4435,
+            "over 8": 0.3379
+          }
+        },
+        "delta": -0.0111
+      },
+      {
+        "id": "r19",
+        "kind": "answer",
+        "label": "Is the founder a domain specialist, such as a clinician or scientist?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1465,
+            "under $50M": 0.14,
+            "$50M-$500M": 0.136,
+            "$500M-$1B": 0.1852,
+            "over $1B": 0.3923
+          },
+          "years": {
+            "under 5": 0.2099,
+            "5-8": 0.4445,
+            "over 8": 0.3456
+          }
+        },
+        "delta": 0.0111
+      },
+      {
+        "id": "r14",
+        "kind": "answer",
+        "label": "Has the founder spent five or more years with a single employer?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.1493,
+            "under $50M": 0.1418,
+            "$50M-$500M": 0.1369,
+            "$500M-$1B": 0.185,
+            "over $1B": 0.387
+          },
+          "years": {
+            "under 5": 0.212,
+            "5-8": 0.4443,
+            "over 8": 0.3437
+          }
+        },
+        "delta": 0.0056
+      }
+    ],
+    "what_if": {
+      "answer_changes": "supported",
+      "field_changes": "needs_answerer"
+    },
+    "facets": {
+      "sector": "developer tools",
+      "team": "team",
+      "technical": true,
+      "repeat_founder": true
+    },
+    "sources": [
+      {
+        "id": "s1",
+        "url": "https://example.com/mock/ada-moreno/linkedin",
+        "title": "Ada Moreno - professional profile (mock)",
+        "publisher": "example.com",
+        "published_date": null,
+        "before_founding": true,
+        "used_for": [
+          "background",
+          "work_experience",
+          "industry_experience",
+          "education",
+          "jobs"
+        ],
+        "accessed_at": "2026-11-14T11:59:04Z"
+      },
+      {
+        "id": "s2",
+        "url": "https://example.com/mock/tallyframe/about",
+        "title": "About Tallyframe (mock)",
+        "publisher": "example.com",
+        "published_date": "2024-03",
+        "before_founding": true,
+        "used_for": [
+          "industry",
+          "industry_experience",
+          "founding_date"
+        ],
+        "accessed_at": "2026-11-14T11:59:06Z"
+      },
+      {
+        "id": "s3",
+        "url": "https://example.com/mock/news/ledgerkit-acquired",
+        "title": "Payments API startup Ledgerkit acquired (mock news)",
+        "publisher": "example.com",
+        "published_date": "2021-06",
+        "before_founding": true,
+        "used_for": [
+          "prior_startups",
+          "prior_exits"
+        ],
+        "accessed_at": "2026-11-14T11:59:08Z"
+      },
+      {
+        "id": "s4",
+        "url": "https://example.com/mock/news/tallyframe-seed",
+        "title": "Tallyframe raises a seed round (mock news)",
+        "publisher": "example.com",
+        "published_date": "2024-09",
+        "before_founding": false,
+        "used_for": [
+          "notes"
+        ],
+        "accessed_at": "2026-11-14T11:59:10Z"
+      }
+    ],
+    "conflicts": [],
+    "unknowns": [],
+    "notes": {
+      "investor": "Met at demo day. Deep payments-infrastructure background; says they have 40 design partners.",
+      "post_founding": [
+        {
+          "text": "Raised a seed round about six months after founding.",
+          "source_ids": [
+            "s4"
+          ]
+        }
+      ]
+    },
+    "warnings": [
+      {
+        "code": "mock_artifacts",
+        "message": "Everything runs on mocks for now, so every number here is illustrative only."
+      }
+    ],
+    "disclaimer": "Screening aid, not investment advice. The model estimates the chance of a large outcome (an exit, IPO or funding at or above the chosen target) from the founder's background on the day the company was founded. It was trained on generated data, so its accuracy on real founders is unknown. Public information only; nothing is stored after the session."
+  },
+  {
+    "schema_version": "0.1.0",
+    "memo_id": "memo_mock_002",
+    "job_id": "job_mock_002",
+    "client_ref": "row-2",
+    "created_at": "2026-11-14T11:59:56Z",
+    "mock": true,
+    "founder": {
+      "display_name": "Samir Haddad",
+      "company_name": "Clearpath Clinical",
+      "identifier": {
+        "name": "Samir Haddad",
+        "company_name": "Clearpath Clinical",
+        "website_url": "https://example.com/mock/clearpath"
+      },
+      "founding_date": {
+        "value": "2025-01",
+        "provenance": "investor",
+        "source_ids": []
+      }
+    },
+    "verdict": {
+      "decision": "escalate",
+      "probability": 0.1776,
+      "probability_is_estimate": false,
+      "policy": {
+        "target": "$500M",
+        "timeline_years": null,
+        "risk": "balanced",
+        "filters": {},
+        "advance_threshold": 0.2,
+        "pass_threshold": 0.11
+      },
+      "expected_precision": 0.2201,
+      "expected_recall": 0.5072,
+      "missed_winners_if_pass": 0.0725,
+      "filters_failed": [],
+      "summary": "Escalate: 18% chance of reaching $500M or more. At balanced risk, founders advance from 20% and pass below 11%."
+    },
+    "distributions": {
+      "outcome": {
+        "shut down": 0.5206,
+        "under $50M": 0.197,
+        "$50M-$500M": 0.1048,
+        "$500M-$1B": 0.085,
+        "over $1B": 0.0926
+      },
+      "years": {
+        "under 5": 0.418,
+        "5-8": 0.3961,
+        "over 8": 0.1859
+      }
+    },
+    "fields": {
+      "industry": {
+        "value": "healthtech",
+        "provenance": "investor",
+        "source_ids": [
+          "s1"
+        ],
+        "confidence": null,
+        "note": "The agent found the same value."
+      },
+      "cofounders": {
+        "value": "solo",
+        "provenance": "investor",
+        "source_ids": [
+          "s3"
+        ],
+        "confidence": null,
+        "note": "The agent found the same value."
+      },
+      "background": {
+        "value": "domain specialist",
+        "provenance": "agent",
+        "source_ids": [
+          "s1"
+        ],
+        "confidence": 0.9
+      },
+      "work_experience": {
+        "value": "10-15",
+        "provenance": "investor_voice",
+        "source_ids": [],
+        "confidence": null
+      },
+      "industry_experience": {
+        "value": "deep",
+        "provenance": "agent",
+        "source_ids": [
+          "s1"
+        ],
+        "confidence": 0.85
+      },
+      "education": {
+        "value": [
+          {
+            "degree": "MD",
+            "field": "Medicine",
+            "qs_rank": "101-300"
+          },
+          {
+            "degree": "MSc",
+            "field": "Health Informatics",
+            "qs_rank": "unknown"
+          }
+        ],
+        "provenance": "agent",
+        "source_ids": [
+          "s1",
+          "s2"
+        ],
+        "confidence": 0.8
+      },
+      "jobs": {
+        "value": [
+          {
+            "role": "Resident Physician",
+            "company": "a teaching hospital",
+            "company_size": "5,000+",
+            "industry": "Healthcare",
+            "duration": "3-5"
+          },
+          {
+            "role": "Attending Physician",
+            "company": "a regional hospital network",
+            "company_size": "5,000+",
+            "industry": "Healthcare",
+            "duration": "5+"
+          },
+          {
+            "role": "Clinical Lead",
+            "company": "a digital health company",
+            "company_size": "unknown",
+            "industry": "Healthtech",
+            "duration": "2-3"
+          }
+        ],
+        "provenance": "agent",
+        "source_ids": [
+          "s1"
+        ],
+        "confidence": 0.75
+      },
+      "prior_startups": {
+        "value": "none",
+        "provenance": "agent",
+        "source_ids": [
+          "s1"
+        ],
+        "confidence": 0.7
+      },
+      "prior_exits": {
+        "value": "none",
+        "provenance": "agent",
+        "source_ids": [
+          "s1"
+        ],
+        "confidence": 0.7
+      }
+    },
+    "rendered_profile": "This founder leads a startup in the healthtech industry, founded with solo co-founder(s).\nFounder background: domain specialist, 10-15 years of work experience, deep prior experience in this startup's industry.\nEducation:\n- MD in Medicine, university ranked QS 101-300\n- MSc in Health Informatics, university ranked QS unknown\nJobs (oldest first):\n- Resident Physician, a teaching hospital, 5,000+ employees, Healthcare, 3-5 years\n- Attending Physician, a regional hospital network, 5,000+ employees, Healthcare, 5+ years\n- Clinical Lead, a digital health company, unknown employees, Healthtech, 2-3 years\nPrior startups: none.\nPrior exits: none.",
+    "decider": {
+      "input_type": "answers",
+      "model_id": "kev-0.6b-prod-mock",
+      "artifacts_dir": "app/contract/mocks"
+    },
+    "answers": [
+      {
+        "rule_id": "r01",
+        "p_yes": 0.04,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r02",
+        "p_yes": 0.03,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r03",
+        "p_yes": 0.96,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r04",
+        "p_yes": 0.08,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r05",
+        "p_yes": 0.4,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r06",
+        "p_yes": 0.93,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r07",
+        "p_yes": 0.95,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r08",
+        "p_yes": 0.93,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r09",
+        "p_yes": 0.95,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r10",
+        "p_yes": 0.08,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r11",
+        "p_yes": 0.9,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r12",
+        "p_yes": 0.03,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r13",
+        "p_yes": 0.04,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r14",
+        "p_yes": 0.92,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r15",
+        "p_yes": 0.1,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r16",
+        "p_yes": 0.9,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r17",
+        "p_yes": 0.9,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r18",
+        "p_yes": 0.02,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r19",
+        "p_yes": 0.95,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r20",
+        "p_yes": 0.1,
+        "answer": "no"
+      }
+    ],
+    "drivers": [
+      {
+        "id": "r01",
+        "kind": "answer",
+        "label": "Has the founder previously founded a company that was acquired or went public?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.4201,
+            "under $50M": 0.2088,
+            "$50M-$500M": 0.1265,
+            "$500M-$1B": 0.1119,
+            "over $1B": 0.1327
+          },
+          "years": {
+            "under 5": 0.3718,
+            "5-8": 0.4102,
+            "over 8": 0.218
+          }
+        },
+        "delta": 0.067
+      },
+      {
+        "id": "r02",
+        "kind": "answer",
+        "label": "Has the founder had an exit worth $50M or more as a co-founder?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.4311,
+            "under $50M": 0.2083,
+            "$50M-$500M": 0.1242,
+            "$500M-$1B": 0.1088,
+            "over $1B": 0.1276
+          },
+          "years": {
+            "under 5": 0.3771,
+            "5-8": 0.4087,
+            "over 8": 0.2142
+          }
+        },
+        "delta": 0.0588
+      },
+      {
+        "id": "r10",
+        "kind": "answer",
+        "label": "Has the founder held a senior engineering or technical leadership role?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.4701,
+            "under $50M": 0.2048,
+            "$50M-$500M": 0.116,
+            "$500M-$1B": 0.0981,
+            "over $1B": 0.111
+          },
+          "years": {
+            "under 5": 0.3954,
+            "5-8": 0.4031,
+            "over 8": 0.2015
+          }
+        },
+        "delta": 0.0315
+      },
+      {
+        "id": "r08",
+        "kind": "answer",
+        "label": "Does the founder have deep prior experience in the startup's industry?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.5763,
+            "under $50M": 0.1846,
+            "$50M-$500M": 0.092,
+            "$500M-$1B": 0.0718,
+            "over $1B": 0.0753
+          },
+          "years": {
+            "under 5": 0.4419,
+            "5-8": 0.3883,
+            "over 8": 0.1698
+          }
+        },
+        "delta": -0.0305
+      },
+      {
+        "id": "r18",
+        "kind": "answer",
+        "label": "Does the founder have less than five years of work experience?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.5653,
+            "under $50M": 0.1873,
+            "$50M-$500M": 0.0946,
+            "$500M-$1B": 0.0743,
+            "over $1B": 0.0785
+          },
+          "years": {
+            "under 5": 0.4373,
+            "5-8": 0.3898,
+            "over 8": 0.1729
+          }
+        },
+        "delta": -0.0248
+      },
+      {
+        "id": "r03",
+        "kind": "answer",
+        "label": "Is this the founder's first startup?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.4813,
+            "under $50M": 0.2033,
+            "$50M-$500M": 0.1136,
+            "$500M-$1B": 0.0951,
+            "over $1B": 0.1067
+          },
+          "years": {
+            "under 5": 0.4005,
+            "5-8": 0.4016,
+            "over 8": 0.1979
+          }
+        },
+        "delta": 0.0242
+      },
+      {
+        "id": "r04",
+        "kind": "answer",
+        "label": "Does the founder have a technical background, such as engineering or computer science?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.4813,
+            "under $50M": 0.2033,
+            "$50M-$500M": 0.1136,
+            "$500M-$1B": 0.0951,
+            "over $1B": 0.1067
+          },
+          "years": {
+            "under 5": 0.4005,
+            "5-8": 0.4016,
+            "over 8": 0.1979
+          }
+        },
+        "delta": 0.0242
+      },
+      {
+        "id": "r12",
+        "kind": "answer",
+        "label": "Did the founder start the company with at least one co-founder?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.4813,
+            "under $50M": 0.2033,
+            "$50M-$500M": 0.1136,
+            "$500M-$1B": 0.0951,
+            "over $1B": 0.1067
+          },
+          "years": {
+            "under 5": 0.4005,
+            "5-8": 0.4016,
+            "over 8": 0.1979
+          }
+        },
+        "delta": 0.0242
+      },
+      {
+        "id": "r05",
+        "kind": "answer",
+        "label": "Does the founder hold a degree from a university ranked in the QS top 100?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.487,
+            "under $50M": 0.2026,
+            "$50M-$500M": 0.1123,
+            "$500M-$1B": 0.0936,
+            "over $1B": 0.1045
+          },
+          "years": {
+            "under 5": 0.403,
+            "5-8": 0.4008,
+            "over 8": 0.1962
+          }
+        },
+        "delta": 0.0205
+      },
+      {
+        "id": "r15",
+        "kind": "answer",
+        "label": "Has the founder worked in a technical or product role at a company with 1,000 or fewer employees?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.487,
+            "under $50M": 0.2026,
+            "$50M-$500M": 0.1123,
+            "$500M-$1B": 0.0936,
+            "over $1B": 0.1045
+          },
+          "years": {
+            "under 5": 0.403,
+            "5-8": 0.4008,
+            "over 8": 0.1962
+          }
+        },
+        "delta": 0.0205
+      },
+      {
+        "id": "r16",
+        "kind": "answer",
+        "label": "Has the founder worked in the same industry as the startup?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.5543,
+            "under $50M": 0.1899,
+            "$50M-$500M": 0.0971,
+            "$500M-$1B": 0.0769,
+            "over $1B": 0.0818
+          },
+          "years": {
+            "under 5": 0.4325,
+            "5-8": 0.3914,
+            "over 8": 0.1761
+          }
+        },
+        "delta": -0.0189
+      },
+      {
+        "id": "r07",
+        "kind": "answer",
+        "label": "Does the founder have more than 10 years of work experience?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.5487,
+            "under $50M": 0.1912,
+            "$50M-$500M": 0.0984,
+            "$500M-$1B": 0.0782,
+            "over $1B": 0.0835
+          },
+          "years": {
+            "under 5": 0.4301,
+            "5-8": 0.3922,
+            "over 8": 0.1777
+          }
+        },
+        "delta": -0.0159
+      },
+      {
+        "id": "r17",
+        "kind": "answer",
+        "label": "Has the founder spent most of their career at organisations with more than 5,000 employees?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.4982,
+            "under $50M": 0.2009,
+            "$50M-$500M": 0.1098,
+            "$500M-$1B": 0.0907,
+            "over $1B": 0.1004
+          },
+          "years": {
+            "under 5": 0.4081,
+            "5-8": 0.3992,
+            "over 8": 0.1927
+          }
+        },
+        "delta": 0.0135
+      },
+      {
+        "id": "r11",
+        "kind": "answer",
+        "label": "Has the founder held a management or leadership role?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.543,
+            "under $50M": 0.1924,
+            "$50M-$500M": 0.0997,
+            "$500M-$1B": 0.0796,
+            "over $1B": 0.0853
+          },
+          "years": {
+            "under 5": 0.4278,
+            "5-8": 0.3929,
+            "over 8": 0.1793
+          }
+        },
+        "delta": -0.0127
+      },
+      {
+        "id": "r13",
+        "kind": "answer",
+        "label": "Does the founding team have three or more people?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.5038,
+            "under $50M": 0.1999,
+            "$50M-$500M": 0.1086,
+            "$500M-$1B": 0.0893,
+            "over $1B": 0.0984
+          },
+          "years": {
+            "under 5": 0.4105,
+            "5-8": 0.3985,
+            "over 8": 0.191
+          }
+        },
+        "delta": 0.0101
+      },
+      {
+        "id": "r09",
+        "kind": "answer",
+        "label": "Has the founder worked at a company with more than 1,000 employees?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.5376,
+            "under $50M": 0.1936,
+            "$50M-$500M": 0.1009,
+            "$500M-$1B": 0.0809,
+            "over $1B": 0.087
+          },
+          "years": {
+            "under 5": 0.4254,
+            "5-8": 0.3937,
+            "over 8": 0.1809
+          }
+        },
+        "delta": -0.0097
+      },
+      {
+        "id": "r20",
+        "kind": "answer",
+        "label": "Has the founder changed industries more than twice?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.5376,
+            "under $50M": 0.1936,
+            "$50M-$500M": 0.1009,
+            "$500M-$1B": 0.0809,
+            "over $1B": 0.087
+          },
+          "years": {
+            "under 5": 0.4254,
+            "5-8": 0.3937,
+            "over 8": 0.1809
+          }
+        },
+        "delta": -0.0097
+      },
+      {
+        "id": "r06",
+        "kind": "answer",
+        "label": "Does the founder hold a graduate degree (master's, MBA, PhD or equivalent)?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.5318,
+            "under $50M": 0.1948,
+            "$50M-$500M": 0.1022,
+            "$500M-$1B": 0.0823,
+            "over $1B": 0.0889
+          },
+          "years": {
+            "under 5": 0.423,
+            "5-8": 0.3945,
+            "over 8": 0.1825
+          }
+        },
+        "delta": -0.0064
+      },
+      {
+        "id": "r19",
+        "kind": "answer",
+        "label": "Is the founder a domain specialist, such as a clinician or scientist?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.5318,
+            "under $50M": 0.1948,
+            "$50M-$500M": 0.1022,
+            "$500M-$1B": 0.0823,
+            "over $1B": 0.0889
+          },
+          "years": {
+            "under 5": 0.423,
+            "5-8": 0.3945,
+            "over 8": 0.1825
+          }
+        },
+        "delta": -0.0064
+      },
+      {
+        "id": "r14",
+        "kind": "answer",
+        "label": "Has the founder spent five or more years with a single employer?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.5263,
+            "under $50M": 0.1959,
+            "$50M-$500M": 0.1035,
+            "$500M-$1B": 0.0836,
+            "over $1B": 0.0907
+          },
+          "years": {
+            "under 5": 0.4205,
+            "5-8": 0.3953,
+            "over 8": 0.1842
+          }
+        },
+        "delta": -0.0033
+      }
+    ],
+    "what_if": {
+      "answer_changes": "supported",
+      "field_changes": "needs_answerer"
+    },
+    "facets": {
+      "sector": "healthtech",
+      "team": "solo",
+      "technical": false,
+      "repeat_founder": false
+    },
+    "sources": [
+      {
+        "id": "s1",
+        "url": "https://example.com/mock/samir-haddad/profile",
+        "title": "Dr Samir Haddad - professional profile (mock)",
+        "publisher": "example.com",
+        "published_date": null,
+        "before_founding": true,
+        "used_for": [
+          "industry",
+          "background",
+          "work_experience",
+          "industry_experience",
+          "education",
+          "jobs",
+          "prior_startups",
+          "prior_exits"
+        ],
+        "accessed_at": "2026-11-14T11:59:04Z"
+      },
+      {
+        "id": "s2",
+        "url": "https://example.com/mock/university/health-informatics-alumni",
+        "title": "Health informatics alumni list (mock)",
+        "publisher": "example.com",
+        "published_date": "2019",
+        "before_founding": true,
+        "used_for": [
+          "education"
+        ],
+        "accessed_at": "2026-11-14T11:59:06Z"
+      },
+      {
+        "id": "s3",
+        "url": "https://example.com/mock/clearpath/team",
+        "title": "Clearpath Clinical - team page (mock)",
+        "publisher": "example.com",
+        "published_date": "2025-01",
+        "before_founding": true,
+        "used_for": [
+          "cofounders",
+          "founding_date"
+        ],
+        "accessed_at": "2026-11-14T11:59:08Z"
+      },
+      {
+        "id": "s4",
+        "url": "https://example.com/mock/news/clearpath-pilots",
+        "title": "Clearpath Clinical announces hospital pilots (mock news)",
+        "publisher": "example.com",
+        "published_date": "2025-05",
+        "before_founding": false,
+        "used_for": [
+          "notes"
+        ],
+        "accessed_at": "2026-11-14T11:59:10Z"
+      }
+    ],
+    "conflicts": [
+      {
+        "field": "work_experience",
+        "investor_value": "10-15",
+        "agent_value": "15+",
+        "agent_source_ids": [
+          "s1"
+        ],
+        "resolution": "investor_value_used",
+        "note": "Agent confidence 70%."
+      }
+    ],
+    "unknowns": [
+      "education[1].qs_rank",
+      "jobs[2].company_size"
+    ],
+    "notes": {
+      "investor": "Met at a clinical AI meetup. Says three hospital pilots are lined up. Solo for now, hiring a CTO.",
+      "post_founding": [
+        {
+          "text": "Announced pilots with hospital partners about four months after founding.",
+          "source_ids": [
+            "s4"
+          ]
+        }
+      ]
+    },
+    "warnings": [
+      {
+        "code": "mock_artifacts",
+        "message": "Everything runs on mocks for now, so every number here is illustrative only."
+      },
+      {
+        "code": "conflicts_present",
+        "message": "1 of your values disagree with what the agent found. Your values were used; check the conflicts."
+      }
+    ],
+    "disclaimer": "Screening aid, not investment advice. The model estimates the chance of a large outcome (an exit, IPO or funding at or above the chosen target) from the founder's background on the day the company was founded. It was trained on generated data, so its accuracy on real founders is unknown. Public information only; nothing is stored after the session."
+  },
+  {
+    "schema_version": "0.1.0",
+    "memo_id": "memo_mock_003",
+    "job_id": "job_mock_003",
+    "client_ref": "row-3",
+    "created_at": "2026-11-14T11:59:44Z",
+    "mock": true,
+    "founder": {
+      "display_name": "Jordan Pike",
+      "company_name": null,
+      "identifier": {
+        "name": "Jordan Pike",
+        "website_url": "https://example.com/mock/loopcart"
+      },
+      "founding_date": {
+        "value": "2025-06",
+        "provenance": "agent",
+        "source_ids": [
+          "s2"
+        ]
+      }
+    },
+    "verdict": {
+      "decision": "pass",
+      "probability": 0.0991,
+      "probability_is_estimate": false,
+      "policy": {
+        "target": "$500M",
+        "timeline_years": null,
+        "risk": "balanced",
+        "filters": {},
+        "advance_threshold": 0.2,
+        "pass_threshold": 0.11
+      },
+      "expected_precision": 0.2201,
+      "expected_recall": 0.5072,
+      "missed_winners_if_pass": 0.0725,
+      "filters_failed": [],
+      "summary": "Pass: 10% chance of reaching $500M or more. At balanced risk, founders advance from 20% and pass below 11%."
+    },
+    "distributions": {
+      "outcome": {
+        "shut down": 0.6809,
+        "under $50M": 0.1522,
+        "$50M-$500M": 0.0678,
+        "$500M-$1B": 0.0497,
+        "over $1B": 0.0494
+      },
+      "years": {
+        "under 5": 0.4843,
+        "5-8": 0.3737,
+        "over 8": 0.142
+      }
+    },
+    "fields": {
+      "industry": {
+        "value": "e-commerce",
+        "provenance": "agent",
+        "source_ids": [
+          "s2"
+        ],
+        "confidence": 0.8
+      },
+      "cofounders": {
+        "value": "unknown",
+        "provenance": "unknown",
+        "source_ids": [],
+        "confidence": null
+      },
+      "background": {
+        "value": "business",
+        "provenance": "agent",
+        "source_ids": [
+          "s1"
+        ],
+        "confidence": 0.75
+      },
+      "work_experience": {
+        "value": "<5",
+        "provenance": "agent",
+        "source_ids": [
+          "s1"
+        ],
+        "confidence": 0.7
+      },
+      "industry_experience": {
+        "value": "some",
+        "provenance": "agent",
+        "source_ids": [
+          "s1"
+        ],
+        "confidence": 0.6
+      },
+      "education": {
+        "value": [
+          {
+            "degree": "BA",
+            "field": "Economics",
+            "qs_rank": "300+"
+          }
+        ],
+        "provenance": "agent",
+        "source_ids": [
+          "s1"
+        ],
+        "confidence": 0.7
+      },
+      "jobs": {
+        "value": [
+          {
+            "role": "Marketing Associate",
+            "company": "a consumer goods company",
+            "company_size": "1,001-5,000",
+            "industry": "Consumer Goods",
+            "duration": "1-2"
+          },
+          {
+            "role": "Growth Manager",
+            "company": "an online travel company",
+            "company_size": "201-1,000",
+            "industry": "Travel",
+            "duration": "1-2"
+          }
+        ],
+        "provenance": "agent",
+        "source_ids": [
+          "s1"
+        ],
+        "confidence": 0.7
+      },
+      "prior_startups": {
+        "value": "unknown",
+        "provenance": "unknown",
+        "source_ids": [],
+        "confidence": null
+      },
+      "prior_exits": {
+        "value": "unknown",
+        "provenance": "unknown",
+        "source_ids": [],
+        "confidence": null
+      }
+    },
+    "rendered_profile": "This founder leads a startup in the e-commerce industry, founded with unknown co-founder(s).\nFounder background: business, <5 years of work experience, some prior experience in this startup's industry.\nEducation:\n- BA in Economics, university ranked QS 300+\nJobs (oldest first):\n- Marketing Associate, a consumer goods company, 1,001-5,000 employees, Consumer Goods, 1-2 years\n- Growth Manager, an online travel company, 201-1,000 employees, Travel, 1-2 years\nPrior startups: unknown.\nPrior exits: unknown.",
+    "decider": {
+      "input_type": "answers",
+      "model_id": "kev-0.6b-prod-mock",
+      "artifacts_dir": "app/contract/mocks"
+    },
+    "answers": [
+      {
+        "rule_id": "r01",
+        "p_yes": 0.3,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r02",
+        "p_yes": 0.25,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r03",
+        "p_yes": 0.6,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r04",
+        "p_yes": 0.08,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r05",
+        "p_yes": 0.06,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r06",
+        "p_yes": 0.07,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r07",
+        "p_yes": 0.02,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r08",
+        "p_yes": 0.3,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r09",
+        "p_yes": 0.95,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r10",
+        "p_yes": 0.08,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r11",
+        "p_yes": 0.9,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r12",
+        "p_yes": 0.45,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r13",
+        "p_yes": 0.3,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r14",
+        "p_yes": 0.1,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r15",
+        "p_yes": 0.1,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r16",
+        "p_yes": 0.15,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r17",
+        "p_yes": 0.1,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r18",
+        "p_yes": 0.96,
+        "answer": "yes"
+      },
+      {
+        "rule_id": "r19",
+        "p_yes": 0.05,
+        "answer": "no"
+      },
+      {
+        "rule_id": "r20",
+        "p_yes": 0.1,
+        "answer": "no"
+      }
+    ],
+    "drivers": [
+      {
+        "id": "r01",
+        "kind": "answer",
+        "label": "Has the founder previously founded a company that was acquired or went public?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.5873,
+            "under $50M": 0.1817,
+            "$50M-$500M": 0.0895,
+            "$500M-$1B": 0.0693,
+            "over $1B": 0.0722
+          },
+          "years": {
+            "under 5": 0.4466,
+            "5-8": 0.3867,
+            "over 8": 0.1667
+          }
+        },
+        "delta": 0.0424
+      },
+      {
+        "id": "r02",
+        "kind": "answer",
+        "label": "Has the founder had an exit worth $50M or more as a co-founder?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.598,
+            "under $50M": 0.1788,
+            "$50M-$500M": 0.087,
+            "$500M-$1B": 0.0669,
+            "over $1B": 0.0693
+          },
+          "years": {
+            "under 5": 0.451,
+            "5-8": 0.3852,
+            "over 8": 0.1638
+          }
+        },
+        "delta": 0.0371
+      },
+      {
+        "id": "r08",
+        "kind": "answer",
+        "label": "Does the founder have deep prior experience in the startup's industry?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.6301,
+            "under $50M": 0.1693,
+            "$50M-$500M": 0.0795,
+            "$500M-$1B": 0.06,
+            "over $1B": 0.0611
+          },
+          "years": {
+            "under 5": 0.464,
+            "5-8": 0.3808,
+            "over 8": 0.1552
+          }
+        },
+        "delta": 0.022
+      },
+      {
+        "id": "r10",
+        "kind": "answer",
+        "label": "Has the founder held a senior engineering or technical leadership role?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.6353,
+            "under $50M": 0.1677,
+            "$50M-$500M": 0.0783,
+            "$500M-$1B": 0.0589,
+            "over $1B": 0.0598
+          },
+          "years": {
+            "under 5": 0.4662,
+            "5-8": 0.38,
+            "over 8": 0.1538
+          }
+        },
+        "delta": 0.0196
+      },
+      {
+        "id": "r18",
+        "kind": "answer",
+        "label": "Does the founder have less than five years of work experience?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.6406,
+            "under $50M": 0.166,
+            "$50M-$500M": 0.0771,
+            "$500M-$1B": 0.0578,
+            "over $1B": 0.0585
+          },
+          "years": {
+            "under 5": 0.4683,
+            "5-8": 0.3793,
+            "over 8": 0.1524
+          }
+        },
+        "delta": 0.0172
+      },
+      {
+        "id": "r03",
+        "kind": "answer",
+        "label": "Is this the founder's first startup?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.6458,
+            "under $50M": 0.1643,
+            "$50M-$500M": 0.0759,
+            "$500M-$1B": 0.0567,
+            "over $1B": 0.0573
+          },
+          "years": {
+            "under 5": 0.4703,
+            "5-8": 0.3786,
+            "over 8": 0.1511
+          }
+        },
+        "delta": 0.0149
+      },
+      {
+        "id": "r04",
+        "kind": "answer",
+        "label": "Does the founder have a technical background, such as engineering or computer science?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.6458,
+            "under $50M": 0.1643,
+            "$50M-$500M": 0.0759,
+            "$500M-$1B": 0.0567,
+            "over $1B": 0.0573
+          },
+          "years": {
+            "under 5": 0.4703,
+            "5-8": 0.3786,
+            "over 8": 0.1511
+          }
+        },
+        "delta": 0.0149
+      },
+      {
+        "id": "r12",
+        "kind": "answer",
+        "label": "Did the founder start the company with at least one co-founder?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.6458,
+            "under $50M": 0.1643,
+            "$50M-$500M": 0.0759,
+            "$500M-$1B": 0.0567,
+            "over $1B": 0.0573
+          },
+          "years": {
+            "under 5": 0.4703,
+            "5-8": 0.3786,
+            "over 8": 0.1511
+          }
+        },
+        "delta": 0.0149
+      },
+      {
+        "id": "r05",
+        "kind": "answer",
+        "label": "Does the founder hold a degree from a university ranked in the QS top 100?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.6508,
+            "under $50M": 0.1626,
+            "$50M-$500M": 0.0748,
+            "$500M-$1B": 0.0557,
+            "over $1B": 0.0561
+          },
+          "years": {
+            "under 5": 0.4724,
+            "5-8": 0.3779,
+            "over 8": 0.1497
+          }
+        },
+        "delta": 0.0127
+      },
+      {
+        "id": "r15",
+        "kind": "answer",
+        "label": "Has the founder worked in a technical or product role at a company with 1,000 or fewer employees?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.6508,
+            "under $50M": 0.1626,
+            "$50M-$500M": 0.0748,
+            "$500M-$1B": 0.0557,
+            "over $1B": 0.0561
+          },
+          "years": {
+            "under 5": 0.4724,
+            "5-8": 0.3779,
+            "over 8": 0.1497
+          }
+        },
+        "delta": 0.0127
+      },
+      {
+        "id": "r16",
+        "kind": "answer",
+        "label": "Has the founder worked in the same industry as the startup?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.6508,
+            "under $50M": 0.1626,
+            "$50M-$500M": 0.0748,
+            "$500M-$1B": 0.0557,
+            "over $1B": 0.0561
+          },
+          "years": {
+            "under 5": 0.4724,
+            "5-8": 0.3779,
+            "over 8": 0.1497
+          }
+        },
+        "delta": 0.0127
+      },
+      {
+        "id": "r07",
+        "kind": "answer",
+        "label": "Does the founder have more than 10 years of work experience?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.656,
+            "under $50M": 0.1609,
+            "$50M-$500M": 0.0736,
+            "$500M-$1B": 0.0546,
+            "over $1B": 0.0549
+          },
+          "years": {
+            "under 5": 0.4745,
+            "5-8": 0.3771,
+            "over 8": 0.1484
+          }
+        },
+        "delta": 0.0104
+      },
+      {
+        "id": "r11",
+        "kind": "answer",
+        "label": "Has the founder held a management or leadership role?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.7001,
+            "under $50M": 0.1451,
+            "$50M-$500M": 0.0635,
+            "$500M-$1B": 0.046,
+            "over $1B": 0.0453
+          },
+          "years": {
+            "under 5": 0.4918,
+            "5-8": 0.371,
+            "over 8": 0.1372
+          }
+        },
+        "delta": -0.0078
+      },
+      {
+        "id": "r17",
+        "kind": "answer",
+        "label": "Has the founder spent most of their career at organisations with more than 5,000 employees?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.7001,
+            "under $50M": 0.1451,
+            "$50M-$500M": 0.0635,
+            "$500M-$1B": 0.046,
+            "over $1B": 0.0453
+          },
+          "years": {
+            "under 5": 0.4918,
+            "5-8": 0.371,
+            "over 8": 0.1372
+          }
+        },
+        "delta": -0.0078
+      },
+      {
+        "id": "r13",
+        "kind": "answer",
+        "label": "Does the founding team have three or more people?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.666,
+            "under $50M": 0.1575,
+            "$50M-$500M": 0.0713,
+            "$500M-$1B": 0.0526,
+            "over $1B": 0.0526
+          },
+          "years": {
+            "under 5": 0.4785,
+            "5-8": 0.3757,
+            "over 8": 0.1458
+          }
+        },
+        "delta": 0.0061
+      },
+      {
+        "id": "r09",
+        "kind": "answer",
+        "label": "Has the founder worked at a company with more than 1,000 employees?",
+        "current": "yes",
+        "flipped": "no",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.6954,
+            "under $50M": 0.1469,
+            "$50M-$500M": 0.0645,
+            "$500M-$1B": 0.0469,
+            "over $1B": 0.0463
+          },
+          "years": {
+            "under 5": 0.4899,
+            "5-8": 0.3717,
+            "over 8": 0.1384
+          }
+        },
+        "delta": -0.0059
+      },
+      {
+        "id": "r20",
+        "kind": "answer",
+        "label": "Has the founder changed industries more than twice?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.6954,
+            "under $50M": 0.1469,
+            "$50M-$500M": 0.0645,
+            "$500M-$1B": 0.0469,
+            "over $1B": 0.0463
+          },
+          "years": {
+            "under 5": 0.4899,
+            "5-8": 0.3717,
+            "over 8": 0.1384
+          }
+        },
+        "delta": -0.0059
+      },
+      {
+        "id": "r06",
+        "kind": "answer",
+        "label": "Does the founder hold a graduate degree (master's, MBA, PhD or equivalent)?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.6711,
+            "under $50M": 0.1557,
+            "$50M-$500M": 0.0701,
+            "$500M-$1B": 0.0516,
+            "over $1B": 0.0515
+          },
+          "years": {
+            "under 5": 0.4804,
+            "5-8": 0.3751,
+            "over 8": 0.1445
+          }
+        },
+        "delta": 0.004
+      },
+      {
+        "id": "r19",
+        "kind": "answer",
+        "label": "Is the founder a domain specialist, such as a clinician or scientist?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.6711,
+            "under $50M": 0.1557,
+            "$50M-$500M": 0.0701,
+            "$500M-$1B": 0.0516,
+            "over $1B": 0.0515
+          },
+          "years": {
+            "under 5": 0.4804,
+            "5-8": 0.3751,
+            "over 8": 0.1445
+          }
+        },
+        "delta": 0.004
+      },
+      {
+        "id": "r14",
+        "kind": "answer",
+        "label": "Has the founder spent five or more years with a single employer?",
+        "current": "no",
+        "flipped": "yes",
+        "distributions": {
+          "outcome": {
+            "shut down": 0.676,
+            "under $50M": 0.154,
+            "$50M-$500M": 0.069,
+            "$500M-$1B": 0.0506,
+            "over $1B": 0.0504
+          },
+          "years": {
+            "under 5": 0.4823,
+            "5-8": 0.3744,
+            "over 8": 0.1433
+          }
+        },
+        "delta": 0.0019
+      }
+    ],
+    "what_if": {
+      "answer_changes": "supported",
+      "field_changes": "needs_answerer"
+    },
+    "facets": {
+      "sector": "e-commerce",
+      "team": null,
+      "technical": false,
+      "repeat_founder": null
+    },
+    "sources": [
+      {
+        "id": "s1",
+        "url": "https://example.com/mock/jordan-pike/profile",
+        "title": "Jordan Pike - professional profile (mock)",
+        "publisher": "example.com",
+        "published_date": null,
+        "before_founding": true,
+        "used_for": [
+          "background",
+          "work_experience",
+          "industry_experience",
+          "education",
+          "jobs"
+        ],
+        "accessed_at": "2026-11-14T11:59:04Z"
+      },
+      {
+        "id": "s2",
+        "url": "https://example.com/mock/loopcart",
+        "title": "Loopcart - home page (mock)",
+        "publisher": "example.com",
+        "published_date": "2025-06",
+        "before_founding": true,
+        "used_for": [
+          "industry",
+          "founding_date"
+        ],
+        "accessed_at": "2026-11-14T11:59:06Z"
+      },
+      {
+        "id": "s3",
+        "url": "https://example.com/mock/news/loopcart-preseed",
+        "title": "Loopcart raises a pre-seed round (mock news)",
+        "publisher": "example.com",
+        "published_date": "2025-10",
+        "before_founding": false,
+        "used_for": [
+          "notes"
+        ],
+        "accessed_at": "2026-11-14T11:59:08Z"
+      }
+    ],
+    "conflicts": [],
+    "unknowns": [
+      "cofounders",
+      "prior_startups",
+      "prior_exits"
+    ],
+    "notes": {
+      "investor": "Inbound through the website form.",
+      "post_founding": [
+        {
+          "text": "Raised a pre-seed round about four months after founding.",
+          "source_ids": [
+            "s3"
+          ]
+        }
+      ]
+    },
+    "warnings": [
+      {
+        "code": "mock_artifacts",
+        "message": "Everything runs on mocks for now, so every number here is illustrative only."
+      },
+      {
+        "code": "many_unknowns",
+        "message": "3 fields are unknown. The model was trained on profiles with at most 2 unknown fields, so treat this result with extra caution."
+      }
+    ],
+    "disclaimer": "Screening aid, not investment advice. The model estimates the chance of a large outcome (an exit, IPO or funding at or above the chosen target) from the founder's background on the day the company was founded. It was trained on generated data, so its accuracy on real founders is unknown. Public information only; nothing is stored after the session."
+  }
+]

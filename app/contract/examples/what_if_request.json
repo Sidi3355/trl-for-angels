@@ -1,0 +1,10 @@
+{
+  "schema_version": "0.1.0",
+  "changes": [
+    {
+      "kind": "answer",
+      "rule_id": "r12",
+      "value": "yes"
+    }
+  ]
+}
