@@ -1,45 +1,48 @@
 # Dataset
 
-**In short:** 3,000 made-up but realistic founder profiles, each describing a founder on the
-day their company was founded, labelled with how big the company's outcome was and how long
-it took. Results describe this dataset, not the real world. Per-split counts are in
-`stats.md` (written by `research/splits.py`, step A6).
-
-**Status:** generation is under way. A 50-row sample comes first (step A2); it must pass the
-validator (`research/validate.py`) and a read-through before the full 3,000 rows (A5).
+**In short:** 3,000 anonymised founder profiles in `data/raw/full.jsonl`, each labelled with the
+company's outcome band and years to outcome. 50 are based on real founders and companies; 2,950
+are made up, modelled on those 50. Because most of the data is synthetic, results describe this
+dataset only, not real-world accuracy (VCBench is the future real test).
 
 ## How it was made
 
-- **Tool:** Adaption, from the prompts in `MASTER_PLAN.md` sections 10a (sample) and 10 (full).
-- **Grounding:** each profile is based on a real founder and real outcome where possible,
-  especially the successful ones, preferring lesser-known companies; otherwise it's a
-  founder typical of that outcome.
-- **Fixed template:** every profile follows the same lines: industry and co-founders;
-  background and experience; 1–3 education entries; 1–6 jobs, oldest first; prior startups;
-  prior exits. Only the allowed values are used, for example years of experience as
-  `<5 / 5-10 / 10-15 / 15+`.
-- **Anonymised:** no names of people, companies, products, universities or places, and no
-  exact dates. Employers are described generically ("a payments company").
-- **Founding-date cutoff:** only what was true on the day the company was founded. No later
-  jobs, funding or traction, so no model can see the future.
-- **Built against shortcuts:** no single detail is allowed to give the outcome away. For
-  example, top-50 universities, solo founders and prior exits all appear among both shut-down
-  and successful founders, about 30% of records are deliberately "surprising", and profile
-  length doesn't depend on outcome.
-
-## Labels
-
-| Label | Values | Share (target) |
+| Rows | What | How |
 |---|---|---|
-| Outcome | shut down / under $50M / $50M-$500M / $500M-$1B / over $1B | 50% / 15% / 15% / 10% / 10% |
-| Years to that outcome | under 5 / 5-8 / over 8 | (not fixed) |
-| **Research label** | **successful** = $500M-$1B or over $1B; otherwise failed | about 20% successful |
+| 1–50 | Real-grounded | `data/raw/sample50.jsonl`: each row based on a real company and founder (step A2). Sources, for review only: `data/raw/sample50_sources.md`. |
+| 51–3,000 | Synthetic | `research/generate_dataset.py` (seed 42, reproducible byte for byte). |
 
-The outcome is the exit or IPO value, or total funding if the company is still private and has
-raised over $500M; "shut down" if it closed. Companies were founded in 2010–2019, outcomes as
-of 2025.
+The generator follows the section 10 prompt: the same template and allowed values, the same
+consistency rules (experience matches job durations, exits match prior startups, degrees fit
+roles, industry experience matches the jobs), and the same variety and anonymisation rules. It
+builds each founder's career from pools of roles and generic employers, by background
+(technical, business, mixed, domain specialist) and the startup's industry (about 80 industries).
+
+**How outcomes are assigned (synthetic rows).** Each profile gets a *background score* from its
+fields: industry experience, prior exits, team size, education, experience, the industry, and a
+few interactions (for example a domain specialist with deep experience in health or finance).
+Random noise is added, and within each batch of 50 the noisy score is ranked and cut into exact
+counts: 25 shut down, 8 or 7 under $50M, 7 or 8 $50M-$500M, 5 $500M-$1B and 5 over $1B. Years
+are drawn per outcome band (for example, over $1B is mostly 5-8 or over 8 years). So outcomes
+depend on the profile, but only weakly, as with real founders.
+
+## Key numbers
+
+| Measure | Value | Plain reading |
+|---|---|---|
+| Rows, outcome bands | 1,500 / 450 / 450 / 300 / 300 | exactly 50 / 15 / 15 / 10 / 10%; every batch of 50 has the same mix |
+| Research "yes" ($500M and above) | 600 (20%) | 1 in 5 founders |
+| How predictable the label is (5-fold, profile fields only) | AUC 0.69 (logistic), 0.67 (boosted trees); best F0.5 0.36 | a simple model does better than chance but is often wrong; far below the plan's "too easy" line of 0.8 F0.5 |
+| Best single field | AUC 0.59 | no single field gives the answer away |
+| "Surprising" synthetic rows | 20% | background score rank at least 40 points away from the outcome's rank (16% of shut-downs have a top-30% background; 14% of $500M+ outcomes have a bottom-40% background). The prompt asked for about 30%; more noise would raise this but weaken the signal the research needs to compare learn stages |
+| Rows with an unknown field | 478 (16%) | spread across all bands |
+| Industries | 113 distinct labels; at least 15 in every batch of 50 | |
+
+Full validator report: `results/data/validation_full.md` (`research/validate.py --profile full`).
 
 ## Splits
+
+Per-split counts are in `stats.md` (written by `research/splits.py`, step A6).
 
 | Split | Rows | Used for |
 |---|---|---|
@@ -53,10 +56,19 @@ already seen.
 
 ## Limits
 
-- **Generated, not observed.** An AI wrote these profiles. Patterns in them may be the AI's
-  ideas of what success looks like, not the real world's. A model that does well here may
-  not do well on real founders.
-- **Grounding can't be fully checked.** Whether each profile matches a real founder and the
-  real outcome can't be verified by a script.
-- **Small successful group.** About 400 successful founders in train and 120 in test, so test
-  scores carry real uncertainty; that's why every score has a confidence interval.
+- Synthetic rows are plausible, not real: their outcomes come from the scoring rule above, so a
+  model can only learn that rule (plus noise), not real founder dynamics.
+- The real-grounded 50 were written differently from the synthetic 2,950, so they may look
+  slightly different to a model.
+- Kev-0.6B (the answerer) reads these profiles; its answers carry their own noise on top.
+- The scoring rule is mostly additive (one weight per field value), plus five small
+  interactions that the generator added on purpose (for example, a domain specialist with deep
+  industry experience in health or finance). Each interaction is worth 0.1–0.2, well below the
+  noise (sd 0.62). So any finding that a learn stage "finds interactions" describes this rule,
+  not real founders. XGBoost (CTRL) is there to show whether non-linearity alone helps.
+- **Years to outcome depend only on the outcome band** in the synthetic rows (drawn from fixed
+  odds per band), not on the profile. The production model's `years` question can therefore
+  only learn timing through the outcome, and the app's timeline control is an estimate built on
+  that.
+- Because the rule is known (`background_score` in `research/generate_dataset.py`), the
+  interp steps (F1, F2) can compare what each model relies on against the true weights.
