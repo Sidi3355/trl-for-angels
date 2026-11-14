@@ -1,12 +1,12 @@
 {
-  "name": "screener-frontend",
+  "name": "halomark-frontend",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",
-    "start": "next start --port 3000",
+    "start": "next start --port ${PORT:-3000}",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run"
   },

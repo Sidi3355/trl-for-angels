@@ -12,10 +12,10 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import timedelta
 
-from . import policy
+from . import policy, push
 from .contract import Contract
 from .pipeline import batch as batchmod
-from .pipeline.context import Pipeline
+from .pipeline.context import NotConfigured, Pipeline
 from .pipeline.memo import DISCLAIMER
 from .pipeline.screening import screen
 from .pipeline.whatif import what_if
@@ -101,8 +101,10 @@ class InvalidRequest(ValueError):
 
 class Service:
     def __init__(self, pipeline: Pipeline, contract: Contract, *, retention_minutes: int = 120,
-                 max_concurrent: int = 4, batch_concurrency: int = 3, validate: bool = True):
+                 max_concurrent: int = 4, batch_concurrency: int = 3, validate: bool = True, pusher=None):
         self.pipeline = pipeline
+        self.pusher = pusher
+        self.watchers: dict[str, list[tuple[dict, dict | None]]] = {}  # job id -> (push subscription, bar)
         self.contract = contract
         self.retention = timedelta(minutes=retention_minutes)
         self.validate = validate
@@ -151,6 +153,7 @@ class Service:
         for j in old:
             self.jobs.pop(j.id, None)
             self.batches.pop(j.id, None)
+            self.watchers.pop(j.id, None)
         stale = [m for m, (_, t) in self.memos.items() if t < cutoff]
         for m in stale:
             self.memos.pop(m, None)
@@ -189,6 +192,7 @@ class Service:
                 self._finish(job, "failed")
                 await self._emit(job, "error", "Screening failed.", data=job.error)
                 await self._emit(job, "stage", "Failed.", stage="failed")
+                await self._push_watchers(job)
                 return None
         self.memos[memo["memo_id"]] = (memo, self.pipeline.clock())
         job.memo_id = memo["memo_id"]
@@ -197,6 +201,7 @@ class Service:
         await self._emit(job, "memo_ready", f"Memo ready: {v['decision']}.",
                          data={"memo_id": memo["memo_id"], "decision": v["decision"], "probability": v["probability"]})
         await self._emit(job, "stage", "Done.", stage="done")
+        await self._push_watchers(job)
         return memo
 
     def job(self, job_id: str, kind: str = "screening") -> Job:
@@ -271,6 +276,7 @@ class Service:
         c = batchmod.counts(b.items)
         await self._emit(b.job, "stage", f"Done: {c['advance']} advance, {c['escalate']} escalate, {c['pass']} pass.",
                          stage="done" if b.job.status != "failed" else "failed")
+        await self._push_watchers(b.job)
 
     def batch(self, batch_id: str) -> Batch:
         if batch_id not in self.batches:
@@ -286,3 +292,36 @@ class Service:
             "counts": batchmod.counts(items), "items": items, "events_url": f"/v1/batches/{b.job.id}/events",
             "mock": self.pipeline.any_mock, "disclaimer": DISCLAIMER,
         })
+
+    # ------------------------------------------------------------- push notifications
+
+    MAX_WATCHERS_PER_JOB = 5
+
+    def _push_payload(self, job: Job, pol: dict | None) -> dict:
+        thresholds = self.pipeline.artifacts.thresholds
+        if job.kind == "batch":
+            return push.batch_payload(job.id, self.batches[job.id].items, thresholds, pol)
+        memo = self.memos.get(job.memo_id, (None,))[0] if job.memo_id else None
+        return push.screening_payload(memo, thresholds, pol, job.error)
+
+    async def watch(self, job_id: str, kind: str, req: dict) -> dict:
+        """Send one push notification to this subscription when the job finishes (now, if it has)."""
+        self._check_request("push_watch_request", req)
+        if self.pusher is None:
+            raise NotConfigured("push notifications aren't available on this server")
+        job = self.job(job_id, kind)
+        sub, pol = req["subscription"], req.get("policy")
+        if job.finished:
+            status = "sent" if await self.pusher.send(sub, self._push_payload(job, pol)) else "failed"
+        else:
+            subs = [w for w in self.watchers.get(job.id, []) if w[0].get("endpoint") != sub.get("endpoint")]
+            self.watchers[job.id] = (subs + [(sub, pol)])[-self.MAX_WATCHERS_PER_JOB:]
+            status = "watching"
+        return self._check("push_watch_response", {"schema_version": VERSION, "job_id": job.id, "status": status})
+
+    async def _push_watchers(self, job: Job) -> None:
+        """Notify everyone watching a finished job, once, then forget their subscriptions."""
+        if self.pusher is None:
+            return
+        for sub, pol in self.watchers.pop(job.id, []):
+            await self.pusher.send(sub, self._push_payload(job, pol))

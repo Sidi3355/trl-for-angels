@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Push watch response",
+  "description": "Reply to a push watch request (202). 'watching': the notification goes out when the job finishes. 'sent': the job had already finished, so it went out now. 'failed': it had finished but the push service refused the notification.",
+  "type": "object",
+  "required": ["schema_version", "job_id", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "job_id": { "$ref": "common.schema.json#/$defs/id" },
+    "status": { "enum": ["watching", "sent", "failed"] }
+  }
+}

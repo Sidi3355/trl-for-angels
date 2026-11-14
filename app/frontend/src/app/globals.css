@@ -1,131 +1,408 @@
 @import "tailwindcss";
 
-/* Colour tokens: iOS-like grouped surfaces, one accent, and the three verdict colours. */
+/*
+  Halomark design tokens.
+  Direction: a printed odds slip. Neutral paper, black ink, one typeface (Archivo) used at three
+  widths: extra-condensed for the big figures, normal for reading, wide capitals for small labels.
+  Colour is saved for the verdict: a full-colour slab (green, amber or ink) carries the decision,
+  everything around it stays black on paper. Buttons and selections are ink, not a brand hue.
+  The brand is the stamp on the slip. In the app the name is set in ink with the halo as its O; the full
+  mark (the halo struck into a cut-corner punch, in stamp-pad blue, --brand) is the app icon, and appears
+  in the app only where the About page explains the name. Verdicts are struck in the punch shape (.punch).
+  Verdicts always come with an icon and a label; charts keep the validated ramps (dataviz skill).
+*/
 :root {
-  --bg: #f2f2f7;
-  --card: #ffffff;
-  --card-2: #f6f6f9;
-  --ink: #111114;
-  --ink-2: #3c3c43;
-  --muted: #6c6c74;
-  --line: rgba(60, 60, 67, 0.16);
-  --accent: #2756c5;
+  --bg: #eeeeea;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --surface-3: #e3e3de;
+  --ink: #0e0f0e;
+  --ink-2: #2e302e;
+  --muted: #5b5e5a;
+  --faint: #6c6f6a;
+  --line: #dededa;
+  --line-strong: #c4c4be;
+  --accent: #0e0f0e;
+  --accent-hover: #2c2e2c;
   --accent-ink: #ffffff;
-  --accent-soft: #e6edfb;
-  --advance: #12784a;
-  --advance-soft: #e1f3e9;
-  --escalate: #9a5b06;
-  --escalate-soft: #fbefd9;
-  --pass: #5a5e69;
-  --pass-soft: #eceef2;
-  --danger: #b8321f;
-  --danger-soft: #fbe8e4;
-  --warn: #7f5400;
-  --warn-soft: #fff3d1;
+  --accent-soft: #e3e3de;
+  /* stamp-pad blue: the mark only (6.9:1 on paper) */
+  --brand: #1f3bd0;
+
+  --advance: #0a6a3a;
+  --advance-fill: #1fb96b;
+  --advance-soft: #d9f4e4;
+  --escalate: #7f4d00;
+  --escalate-fill: #f0a21a;
+  --escalate-soft: #fcebc7;
+  --pass: #44474b;
+  --pass-fill: #7c8086;
+  --pass-soft: #e5e5e1;
+  --danger: #b3261e;
+  --danger-soft: #fbe4e1;
+  --warn: #7a4b00;
+  --warn-soft: #fbebc8;
+
+  /* the verdict slab: one loud block per memo */
+  --slab-advance: #35d685;
+  --slab-advance-ink: #04210f;
+  --slab-escalate: #ffb930;
+  --slab-escalate-ink: #2a1800;
+  --slab-pass: #17181a;
+  --slab-pass-ink: #f4f4f0;
+
+  /* charts (validated with the dataviz palette script) */
+  --viz-o1: #86b6ef;
+  --viz-o2: #5598e7;
+  --viz-o3: #2a78d6;
+  --viz-o4: #1c5cab;
+  --viz-o5: #104281;
+  --viz-y1: #f3a37a;
+  --viz-y2: #e2622d;
+  --viz-y3: #a8431a;
+  --viz-up: #2a78d6;
+  --viz-down: #e34948;
+  --viz-track: #e3e3de;
+
+  --dock: #0e0f0e;
+  --dock-ink: #ffffff;
+  --shadow-1: 0 1px 0 rgba(14, 15, 14, 0.04);
+  --shadow-2: 0 24px 48px -16px rgba(14, 15, 14, 0.28), 0 4px 10px rgba(14, 15, 14, 0.08);
+  --overlay: rgba(14, 15, 14, 0.5);
+  /* room for the floating tab dock on phones */
+  --dock-clear: calc(max(env(safe-area-inset-bottom), 12px) + 76px);
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #000000;
-    --card: #1c1c1e;
-    --card-2: #2a2a2d;
-    --ink: #f4f4f6;
-    --ink-2: #d4d4d9;
-    --muted: #9a9aa2;
-    --line: rgba(120, 120, 128, 0.36);
-    --accent: #7c9dff;
-    --accent-ink: #0a1020;
-    --accent-soft: #1a2442;
-    --advance: #54d38f;
-    --advance-soft: #0f2a1c;
-    --escalate: #f1b553;
-    --escalate-soft: #2f2310;
-    --pass: #aeb2bc;
-    --pass-soft: #262629;
-    --danger: #ff7c68;
-    --danger-soft: #3a1611;
-    --warn: #f3c552;
-    --warn-soft: #2f2610;
+    --bg: #0b0c0c;
+    --surface: #151616;
+    --surface-2: #1d1e1e;
+    --surface-3: #2a2c2b;
+    --ink: #f3f3ef;
+    --ink-2: #cfd0cb;
+    --muted: #9c9e99;
+    --faint: #878984;
+    --line: #262727;
+    --line-strong: #3b3d3c;
+    --accent: #f3f3ef;
+    --accent-hover: #ffffff;
+    --accent-ink: #0e0f0e;
+    --accent-soft: #2a2c2b;
+    --brand: #8fa0ff; /* 8:1 on the dark page */
+
+    --advance: #4fe396;
+    --advance-fill: #2cc777;
+    --advance-soft: #0f2a1b;
+    --escalate: #ffc65c;
+    --escalate-fill: #e9a01f;
+    --escalate-soft: #2e220b;
+    --pass: #b9bbb6;
+    --pass-fill: #6f7375;
+    --pass-soft: #202121;
+    --danger: #ff8479;
+    --danger-soft: #3a1714;
+    --warn: #f4c653;
+    --warn-soft: #2f2611;
+
+    --slab-pass: #27292b;
+    --slab-pass-ink: #f3f3ef;
+
+    --viz-o1: #184f95;
+    --viz-o2: #256abf;
+    --viz-o3: #3987e5;
+    --viz-o4: #6da7ec;
+    --viz-o5: #9ec5f4;
+    --viz-y1: #8a3713;
+    --viz-y2: #d95926;
+    --viz-y3: #f49a6e;
+    --viz-up: #3987e5;
+    --viz-down: #e66767;
+    --viz-track: #2a2c2b;
+
+    --dock: #232525;
+    --dock-ink: #f3f3ef;
+    --shadow-1: 0 1px 0 rgba(0, 0, 0, 0.4);
+    --shadow-2: 0 24px 48px -16px rgba(0, 0, 0, 0.8), 0 4px 10px rgba(0, 0, 0, 0.4);
+    --overlay: rgba(0, 0, 0, 0.66);
     color-scheme: dark;
   }
 }
 
 @theme inline {
   --color-bg: var(--bg);
-  --color-card: var(--card);
-  --color-card-2: var(--card-2);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
   --color-muted: var(--muted);
+  --color-faint: var(--faint);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
+  --color-brand: var(--brand);
   --color-advance: var(--advance);
+  --color-advance-fill: var(--advance-fill);
   --color-advance-soft: var(--advance-soft);
   --color-escalate: var(--escalate);
+  --color-escalate-fill: var(--escalate-fill);
   --color-escalate-soft: var(--escalate-soft);
   --color-pass: var(--pass);
+  --color-pass-fill: var(--pass-fill);
   --color-pass-soft: var(--pass-soft);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --color-warn: var(--warn);
   --color-warn-soft: var(--warn-soft);
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --color-dock: var(--dock);
+  --color-dock-ink: var(--dock-ink);
+  --font-sans: var(--font-archivo), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-archivo), -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --shadow-card: var(--shadow-1);
+  --shadow-float: var(--shadow-2);
 }
 
 html {
   -webkit-text-size-adjust: 100%;
   background: var(--bg);
 }
+/* Phones: the floating dock (and the screening form's sticky button) cover the bottom of the screen, so
+   anything scrolled into view, by focus or by code, stops above them. */
+@media (max-width: 1023px) {
+  html {
+    scroll-padding-bottom: calc(var(--dock-clear) + 64px);
+  }
+}
 
 body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
 }
 
-/* iOS zooms into inputs under 16px; keep form text at 16px. */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* iOS zooms into inputs under 16px. */
 input,
 select,
 textarea {
   font-size: 16px;
 }
 
-@keyframes pulse-dot {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.35;
-  }
-}
-.pulse-dot {
-  animation: pulse-dot 1.4s ease-in-out infinite;
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
-@keyframes rise-in {
+::selection {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+@layer components {
+  /* Archivo's width axis is the voice: condensed figures, wide capital labels. */
+  .cond {
+    font-stretch: 62%;
+    font-variation-settings: "wdth" 62;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+  .semi-cond {
+    font-stretch: 80%;
+    font-variation-settings: "wdth" 80;
+  }
+  .wide {
+    font-stretch: 116%;
+    font-variation-settings: "wdth" 116;
+  }
+  .eyebrow {
+    font-stretch: 116%;
+    font-variation-settings: "wdth" 116;
+    font-size: 10.5px;
+    font-weight: 650;
+    letter-spacing: 0.09em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+  /* The wordmark: Archivo at its widest, in capitals, with the halo standing in for the O, in the text colour. */
+  .wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    font-stretch: 125%;
+    font-variation-settings: "wdth" 125;
+    font-weight: 800;
+    letter-spacing: 0.012em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .wordmark svg {
+    /* Archivo's capital height (0.697em) plus a round letter's overshoot above and below the lines;
+       a flex item's baseline is its bottom edge, so it's moved down by the lower overshoot */
+    height: 0.725em;
+    width: calc(0.725em * 1.355);
+    margin: 0 0.04em 0 0.045em;
+    position: relative;
+    top: 0.014em;
+    flex: none;
+  }
+  /* A hallmark punch: a square with its corners cut. Verdict tiles are struck in this shape. */
+  .punch {
+    clip-path: polygon(18.75% 0, 81.25% 0, 100% 18.75%, 100% 81.25%, 81.25% 100%, 18.75% 100%, 0 81.25%, 0 18.75%);
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The verdict slab's paper grain. */
+  .slab {
+    position: relative;
+    isolation: isolate;
+  }
+  .slab::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0.22;
+    mix-blend-mode: soft-light;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* Hatching marks the "pass" zone of a gauge, so zones differ by pattern as well as tone. */
+  .hatch {
+    background-image: repeating-linear-gradient(135deg, currentColor 0 1.5px, transparent 1.5px 5px);
+  }
+}
+
+@keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
     transform: none;
   }
 }
-.rise-in {
-  animation: rise-in 0.25s ease-out both;
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
+.anim-fade-up {
+  animation: fade-up 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.anim-fade-in {
+  animation: fade-in 0.2s ease-out both;
+}
+.anim-sheet-up {
+  animation: sheet-up 0.38s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+@media (min-width: 640px) {
+  .anim-sheet-up {
+    animation-name: pop-in;
+    animation-duration: 0.26s;
+  }
+}
+.anim-pulse {
+  animation: pulse-soft 1.2s ease-in-out infinite;
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 0%, var(--surface-3) 50%, var(--surface-2) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+/* Children of a .stagger container rise in one after another. */
+.stagger > * {
+  animation: fade-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.stagger > *:nth-child(2) {
+  animation-delay: 60ms;
+}
+.stagger > *:nth-child(3) {
+  animation-delay: 120ms;
+}
+.stagger > *:nth-child(4) {
+  animation-delay: 180ms;
+}
+.stagger > *:nth-child(n + 5) {
+  animation-delay: 240ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pulse-dot,
-  .rise-in {
+  .anim-fade-up,
+  .anim-fade-in,
+  .anim-sheet-up,
+  .anim-pulse,
+  .skeleton,
+  .stagger > * {
     animation: none;
   }
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Hide scrollbars on horizontal chip rows, keep them scrollable. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }

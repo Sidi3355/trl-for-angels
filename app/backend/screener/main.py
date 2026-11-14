@@ -24,10 +24,13 @@ from .mocks.founders import DEMO_FOUNDERS
 from .pipeline.batch import CsvError, parse_csv
 from .pipeline.context import NotConfigured, Pipeline
 from .pipeline.models import JevAnswerer, KevDecider, MockAnswerer, MockDecider
+from .pipeline.notes import (ClaudeSorter, ElevenLabsTranscriber, MockSorter, MockTranscriber, NoteError, NoteTools,
+                             audio_extension)
 from .pipeline.agent import ClaudeAgent
 from .pipeline.budget import Budget
 from .pipeline.research import MockAgent
 from .pipeline.whatif import WhatIfError
+from .push import Pusher
 from .service import InvalidRequest, NotFound, Service
 
 log = logging.getLogger("screener")
@@ -58,6 +61,41 @@ def build_components(settings: Settings, artifacts, contract: Contract, budget: 
     return built, errors
 
 
+def build_notes(settings: Settings, contract: Contract, budget: Budget) -> NoteTools:
+    """Voice notes: the transcriber and the note sorter. 'auto' uses the real service when its key is set."""
+    tools = NoteTools()
+    choice = settings.transcriber
+    if choice == "auto":
+        choice = "elevenlabs" if secret(settings.elevenlabs_api_key) else "mock"
+    try:
+        tools.transcriber = (MockTranscriber() if choice == "mock"
+                             else ElevenLabsTranscriber(secret(settings.elevenlabs_api_key), settings.transcriber_model))
+    except NotConfigured as e:
+        tools.transcriber_error = str(e)
+    choice = settings.note_sorter
+    if choice == "auto":
+        choice = "claude" if secret(settings.anthropic_api_key) else "off"
+    try:
+        if choice == "off":
+            raise NotConfigured("sorting notes into the form is off: it needs the Claude key (ANTHROPIC_API_KEY) on the "
+                                "server, or NOTE_SORTER=mock for the keyword stand-in")
+        tools.sorter = (MockSorter(contract) if choice == "mock" else ClaudeSorter(
+            api_key=secret(settings.anthropic_api_key), model=settings.note_sorter_model,
+            base_url=settings.agent_base_url, effort=settings.note_sorter_effort, budget=budget, contract=contract))
+    except NotConfigured as e:
+        tools.sorter_error = str(e)
+    return tools
+
+
+def _make_pusher(settings: Settings) -> Pusher | None:
+    """Web push, with keys from VAPID_PRIVATE_KEY or generated for this process. Off if the library is missing."""
+    try:
+        return Pusher(private_key=secret(settings.vapid_private_key), subject=settings.vapid_subject or "mailto:push@example.com")
+    except ImportError as e:
+        log.error("push notifications off: %s", e)
+        return None
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings()
 
@@ -76,6 +114,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             log.error("artefacts not loaded: %s", e)
         app.state.budget = Budget(total_usd=settings.agent_budget_usd,
                                   per_founder_usd=settings.agent_max_cost_per_founder_usd)
+        app.state.contract = contract
+        app.state.notes = build_notes(settings, contract, app.state.budget)
         if app.state.artifacts is not None:
             parts, errors = build_components(settings, app.state.artifacts, contract, app.state.budget)
             app.state.errors.update(errors)
@@ -85,7 +125,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 app.state.service = Service(
                     pipeline, contract, retention_minutes=settings.retention_minutes,
                     max_concurrent=settings.max_concurrent_screenings,
-                    batch_concurrency=settings.batch_max_concurrency, validate=settings.validate_responses)
+                    batch_concurrency=settings.batch_max_concurrency, validate=settings.validate_responses,
+                    pusher=_make_pusher(settings))
         for part, msg in app.state.errors.items():
             log.error("not configured: %s: %s", part, msg)
         sweeper = asyncio.create_task(_sweep_forever(app))
@@ -167,6 +208,10 @@ def _install_error_handlers(app: FastAPI) -> None:
     async def _unconfigured(_, e: NotConfigured):
         return _error(503, "not_configured", str(e), retryable=True)
 
+    @app.exception_handler(NoteError)
+    async def _note(_, e: NoteError):
+        return _error(e.status, e.code, str(e), retryable=e.retryable)
+
     @app.exception_handler(ContractError)
     async def _drift(_, e: ContractError):
         log.error("response broke the contract: %s", e)
@@ -185,12 +230,13 @@ async def health(request: Request) -> dict:
         "status": "ok" if svc is not None else "degraded",
         "version": VERSION,
         "env": s.env,
-        "components": {"agent": s.agent, "answerer": s.answerer, "decider": s.decider},
+        "components": {"agent": s.agent, "answerer": s.answerer, "decider": s.decider,
+                       **request.app.state.notes.summary()},
         "artifacts": arts.summary() if arts else None,
         "mock": svc.pipeline.any_mock if svc else None,
         "errors": errors,
         "keys": s.key_status(),
-        "research_spend": request.app.state.budget.summary() if s.agent == "claude" else None,
+        "research_spend": request.app.state.budget.summary() if "claude" in (s.agent, request.app.state.notes.summary()["note_sorter"]) else None,
         "jobs": svc.stats() if svc else None,
     }
 
@@ -271,6 +317,60 @@ def _router(settings: Settings) -> APIRouter:
                                last_event_id: str | None = Header(default=None),
                                svc: Service = Depends(service)):
         return _events(svc.job(job_id), request, after, last_event_id, format)
+
+    @r.get("/push/key", tags=["push"], summary="The public key a browser needs to subscribe to push notifications")
+    async def push_key(svc: Service = Depends(service)):
+        if svc.pusher is None:
+            raise NotConfigured("push notifications aren't available on this server")
+        return svc._check("push_key", {"schema_version": VERSION, "public_key": svc.pusher.public_key})
+
+    @r.post("/screenings/{job_id}/notify", status_code=202, tags=["push"],
+            summary="Push a notification to this browser when the screening finishes (body: push_watch_request)")
+    async def screening_notify(job_id: str, request: Request, svc: Service = Depends(service)):
+        return JSONResponse(await svc.watch(job_id, "screening", await _json_body(request)), status_code=202)
+
+    @r.post("/batches/{batch_id}/notify", status_code=202, tags=["push"],
+            summary="Push a notification to this browser when the batch finishes (body: push_watch_request)")
+    async def batch_notify(batch_id: str, request: Request, svc: Service = Depends(service)):
+        return JSONResponse(await svc.watch(batch_id, "batch", await _json_body(request)), status_code=202)
+
+    @r.post("/notes/transcribe", tags=["notes"],
+            summary="Transcribe a voice note (body: the recording, e.g. audio/webm or audio/mp4). The audio isn't kept")
+    async def transcribe_note(request: Request):
+        notes: NoteTools = request.app.state.notes
+        if notes.transcriber is None:
+            raise NotConfigured(notes.transcriber_error)
+        ctype = request.headers.get("content-type", "").split(";")[0].strip().lower()
+        if not audio_extension(ctype):
+            raise BadRequest("send the recording as the request body with an audio Content-Type, e.g. audio/webm or audio/mp4")
+        limit = int(settings.note_max_audio_mb * 1024 * 1024)
+        declared = request.headers.get("content-length", "")
+        if declared.isdigit() and int(declared) > limit:
+            return _error(413, "too_large", f"the recording is over {settings.note_max_audio_mb:g} MB; keep notes to about a minute")
+        audio = await request.body()
+        if len(audio) > limit:
+            return _error(413, "too_large", f"the recording is over {settings.note_max_audio_mb:g} MB; keep notes to about a minute")
+        if len(audio) < 200:
+            return _error(422, "empty_recording", "the recording is empty")
+        doc = {"schema_version": VERSION, **await notes.transcriber.transcribe(audio, ctype)}
+        if settings.validate_responses:
+            request.app.state.contract.check("note_transcript", doc)
+        return doc
+
+    @r.post("/notes/sort", tags=["notes"],
+            summary="Sort free-form notes into template fields for the investor to check (body: note_sort_request)")
+    async def sort_note(request: Request):
+        notes: NoteTools = request.app.state.notes
+        body = await _json_body(request)
+        errors = request.app.state.contract.errors("note_sort_request", body)
+        if errors:
+            raise InvalidRequest("note_sort_request", errors)
+        if notes.sorter is None:
+            raise NotConfigured(notes.sorter_error)
+        doc = await notes.sorter.sort(body["text"], body.get("founding_date"))
+        if settings.validate_responses:
+            request.app.state.contract.check("note_sort_response", doc)
+        return doc
 
     @r.get("/memos/{memo_id}", tags=["memos"])
     async def get_memo(memo_id: str, svc: Service = Depends(service)):

@@ -3,6 +3,7 @@
 // sessionStorage only, so it is gone when the tab or app closes.
 
 import type {
+  BatchResponse,
   Health,
   InvestorInput,
   Memo,
@@ -10,6 +11,11 @@ import type {
   Thresholds,
   WhatIfRequest,
   WhatIfResponse,
+  PushWatchRequest,
+  PushWatchResponse,
+  NoteSortRequest,
+  NoteSortResponse,
+  NoteTranscript,
 } from "./types";
 
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/+$/, "");
@@ -106,6 +112,26 @@ export const api = {
       method: "POST",
       body: JSON.stringify(body),
     }),
+  /** Screen a list: the CSV columns are in app/contract/README.md ("Batch CSV columns"). */
+  startBatchCsv: (csv: string) =>
+    request<BatchResponse>("/v1/batches", { method: "POST", body: csv, headers: { "Content-Type": "text/csv" } }),
+  batch: (batchId: string) => request<BatchResponse>(`/v1/batches/${encodeURIComponent(batchId)}`),
+  pushKey: () => request<{ schema_version: string; public_key: string }>("/v1/push/key"),
+  notifyWhenDone: (kind: "screening" | "batch", id: string, body: PushWatchRequest) =>
+    request<PushWatchResponse>(`/v1/${kind === "batch" ? "batches" : "screenings"}/${encodeURIComponent(id)}/notify`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  /** A voice note's words. The body is the recording itself; the server doesn't keep it. */
+  transcribeNote: (audio: Blob) =>
+    request<NoteTranscript>("/v1/notes/transcribe", {
+      method: "POST",
+      body: audio,
+      headers: { "Content-Type": audio.type || "audio/webm" },
+    }),
+  /** Template fields found in free-form notes, for the investor to check before screening. */
+  sortNote: (body: NoteSortRequest) =>
+    request<NoteSortResponse>("/v1/notes/sort", { method: "POST", body: JSON.stringify(body) }),
   /** The val lookup table behind the risk control. Fetched once per page load. */
   thresholds: () => {
     thresholdsPromise ??= request<Thresholds>("/v1/artifacts/thresholds").catch((e) => {

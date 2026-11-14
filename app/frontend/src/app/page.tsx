@@ -1,262 +1,208 @@
 "use client";
 
+// Founders: one box to screen the next founder, then everyone screened this session at the investor's bar.
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 
-import { Chip, DecisionPill, Disclaimer, Mark, Notice, Page, Row, Section, Spinner, Switch, ChevronDown, cx } from "@/components/ui";
-import { ApiError, api, API_URL } from "@/lib/api";
-import { percent, relativeTime } from "@/lib/format";
-import { recentScreenings, type RecentScreening } from "@/lib/session";
-import { SCHEMA_VERSION, type FieldValues, type Health, type InvestorInput } from "@/lib/types";
+import { useApp } from "@/components/AppState";
+import { BarSummary } from "@/components/BarSheet";
+import { Examples } from "@/components/Examples";
+import { IconArrowRight, IconSliders } from "@/components/icons";
+import { Disclaimer, Notice, Page, Spinner, VerdictIcon, VerdictTile, cx, linkClass } from "@/components/ui";
+import { API_URL } from "@/lib/api";
+import { quickVerdict } from "@/lib/bar";
+import { DECISION_LABELS, percent, relativeTime, sectorLabel } from "@/lib/format";
+import type { Decision } from "@/lib/types";
+import { parseFounder, useStartScreening } from "@/lib/useScreening";
 
-const INDUSTRIES = [
-  "fintech", "healthtech", "biotech", "B2B SaaS", "developer tools", "e-commerce", "logistics", "edtech", "climate",
-  "cybersecurity", "marketplaces", "media", "hardware", "insurtech", "agtech", "gaming", "proptech", "HR tech", "travel", "food",
-];
-
-type Known = {
-  industry: string;
-  cofounders: string;
-  background: string;
-  work_experience: string;
-  industry_experience: string;
-  prior_startups: string;
-  prior_exits: string;
-};
-const EMPTY_KNOWN: Known = { industry: "", cofounders: "", background: "", work_experience: "", industry_experience: "", prior_startups: "", prior_exits: "" };
-
-const KNOWN_OPTIONS: { key: Exclude<keyof Known, "industry">; label: string; options: [string, string][] }[] = [
-  { key: "cofounders", label: "Founding team", options: [["solo", "Solo founder"], ["1", "1 co-founder"], ["2", "2 co-founders"], ["3+", "3+ co-founders"]] },
-  { key: "background", label: "Background", options: [["technical", "Technical"], ["business", "Business"], ["mixed", "Mixed"], ["domain specialist", "Domain specialist"]] },
-  { key: "work_experience", label: "Work experience", options: [["<5", "Under 5 years"], ["5-10", "5–10 years"], ["10-15", "10–15 years"], ["15+", "15+ years"]] },
-  { key: "industry_experience", label: "Experience in this industry", options: [["none", "None"], ["some", "Some"], ["deep", "Deep"]] },
-  { key: "prior_startups", label: "Earlier startups", options: [["none", "None"]] },
-  { key: "prior_exits", label: "Earlier exits", options: [["none", "None"]] },
-];
-
-const DATE_RE = /^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$/;
-
-function toUrl(raw: string): string | null {
-  const s = raw.trim();
-  if (!s) return null;
-  const withScheme = /^https?:\/\//i.test(s) ? s : `https://${s}`;
-  try {
-    const u = new URL(withScheme);
-    return u.hostname.includes(".") ? u.toString() : null;
-  } catch {
-    return null;
-  }
+function QuickScreen() {
+  const [q, setQ] = useState("");
+  const { start, busy, error, setError } = useStartScreening();
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        const founder = parseFounder(q);
+        if (!founder) return setError("Type a founder's name, or paste a LinkedIn or website link.");
+        start({ founder, options: { research: true } });
+      }}
+    >
+      <label htmlFor="quick" className="block text-[40px] font-extrabold leading-[0.98] tracking-[-0.04em] sm:text-[52px] lg:text-[60px]">
+        Who&apos;s the founder?
+      </label>
+      <div className="mt-5 flex h-[64px] items-center gap-2 rounded-[20px] border-2 border-ink bg-surface pl-5 pr-2 transition-shadow focus-within:shadow-[0_0_0_4px_var(--surface-3)] lg:h-[72px] lg:pl-6 lg:pr-2.5">
+        <input
+          id="quick"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Name, LinkedIn or website"
+          autoComplete="off"
+          autoCapitalize="words"
+          enterKeyHint="go"
+          className="min-w-0 flex-1 bg-transparent text-[18px] font-medium outline-none placeholder:font-normal placeholder:text-faint lg:text-[20px]"
+        />
+        <button
+          type="submit"
+          disabled={busy !== null || !q.trim()}
+          aria-label="Screen founder"
+          className="flex h-12 shrink-0 items-center gap-2 rounded-[14px] bg-accent px-4 text-[15.5px] font-bold text-accent-ink transition-[background,opacity,transform] hover:bg-accent-hover active:scale-95 disabled:opacity-30 lg:h-[52px] lg:px-5"
+        >
+          <span className="hidden sm:inline">Screen</span>
+          {busy ? <Spinner /> : <IconArrowRight size={20} strokeWidth={2.4} />}
+        </button>
+      </div>
+      <p className="mt-3 text-[13.5px] leading-snug text-muted">
+        Reads only what was public before they started the company.{" "}
+        <Link href={q.trim() ? `/new?q=${encodeURIComponent(q.trim())}` : "/new"} className={cx(linkClass, "whitespace-nowrap")}>
+          Add what you know
+        </Link>{" "}
+        or{" "}
+        <Link href="/batch" className={cx(linkClass, "whitespace-nowrap")}>
+          screen a list
+        </Link>
+      </p>
+      {error && (
+        <div className="mt-3">
+          <Notice tone="danger">{error}</Notice>
+        </div>
+      )}
+    </form>
+  );
 }
 
-export default function Home() {
-  const router = useRouter();
-  const [name, setName] = useState("");
-  const [company, setCompany] = useState("");
-  const [link, setLink] = useState("");
-  const [founded, setFounded] = useState("");
-  const [notes, setNotes] = useState("");
-  const [research, setResearch] = useState(true);
-  const [known, setKnown] = useState<Known>(EMPTY_KNOWN);
-  const [showKnown, setShowKnown] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState<string | null>(null);
+const FILTERS: { key: Decision | "all"; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "advance", label: "Meet" },
+  { key: "escalate", label: "Look closer" },
+  { key: "pass", label: "Pass" },
+];
+const VERDICT_TEXT: Record<Decision, string> = { advance: "text-advance", escalate: "text-escalate", pass: "text-pass" };
 
-  const [health, setHealth] = useState<Health | null>(null);
-  const [healthError, setHealthError] = useState<string | null>(null);
-  const [demos, setDemos] = useState<InvestorInput[]>([]);
-  const [recent, setRecent] = useState<RecentScreening[]>([]);
+export default function DealsPage() {
+  const { deals, thresholds, bar, openBarSheet, healthError } = useApp();
+  const [show, setShow] = useState<Decision | "all">("all");
+  const { start, busy } = useStartScreening();
 
-  useEffect(() => {
-    setRecent(recentScreenings());
-    api.health().then(setHealth, (e: ApiError) => setHealthError(e.message));
-    api.demoFounders().then(setDemos, () => setDemos([]));
-  }, []);
-
-  async function start(input: InvestorInput, label: string) {
-    setError(null);
-    setBusy(label);
-    try {
-      const job = await api.startScreening(input);
-      router.push(`/screenings/${job.job_id}`);
-    } catch (e) {
-      setBusy(null);
-      const err = e as ApiError;
-      if (err.status !== 401) setError(err.details?.length ? `${err.message} (${String(err.details[0])})` : err.message);
-    }
-  }
-
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
-    const url = toUrl(link);
-    if (link.trim() && !url) return setError("That link doesn't look like a web address.");
-    if (!name.trim() && !url) return setError("Add the founder's name or a link to their LinkedIn or website.");
-    if (founded.trim() && !DATE_RE.test(founded.trim())) return setError("Write the founding date as YYYY or YYYY-MM, for example 2021-06.");
-
-    const fields: Partial<FieldValues> = {};
-    if (known.industry.trim()) fields.industry = known.industry.trim().toLowerCase() === "b2b saas" ? "B2B SaaS" : known.industry.trim().toLowerCase();
-    for (const { key } of KNOWN_OPTIONS) if (known[key]) (fields as Record<string, string>)[key] = known[key];
-
-    const isLinkedIn = url ? new URL(url).hostname.endsWith("linkedin.com") : false;
-    const input: InvestorInput = {
-      schema_version: SCHEMA_VERSION,
-      founder: {
-        ...(name.trim() && { name: name.trim() }),
-        ...(company.trim() && { company_name: company.trim() }),
-        ...(url && (isLinkedIn ? { linkedin_url: url } : { website_url: url })),
-      },
-      ...(founded.trim() && { founding_date: founded.trim() }),
-      ...(Object.keys(fields).length && { fields }),
-      ...(notes.trim() && { notes: notes.trim() }),
-      options: { research },
-    };
-    start(input, "form");
-  }
-
-  const mockResearch = health?.components.agent === "mock";
+  const rows = useMemo(
+    () => deals.map((d) => ({ d, v: thresholds ? quickVerdict(d.distributions, d.facets, thresholds, bar) : null })),
+    [deals, thresholds, bar],
+  );
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { all: rows.length, advance: 0, escalate: 0, pass: 0 };
+    rows.forEach(({ v }) => v && c[v.decision]++);
+    return c;
+  }, [rows]);
+  const visible = rows.filter(({ v }) => show === "all" || v?.decision === show);
+  const has = deals.length > 0;
 
   return (
-    <Page>
-      <header className="flex items-center gap-3 pt-4">
-        <Mark />
-        <div>
-          <h1 className="text-[28px] font-bold leading-tight tracking-tight">Screener</h1>
-          <p className="text-[15px] text-muted">Research a founder. Get a calibrated first call.</p>
-        </div>
-      </header>
-
-      <div className="mt-5 space-y-2">
-        {healthError && (
-          <Notice tone="danger">
-            Can&apos;t reach the screening service at <span className="break-all font-mono text-[13px]">{API_URL}</span>. {healthError}
-          </Notice>
-        )}
-        {health?.status === "degraded" && (
-          <Notice tone="warn">Part of the service isn&apos;t set up: {Object.values(health.errors).join(" ")}</Notice>
-        )}
-        {health?.mock && (
-          <Notice tone="info">
-            <strong className="font-semibold">Prototype.</strong>{" "}
-            {mockResearch ? "Web research is simulated, and" : "Web research is real, but"} the scores come from a placeholder
-            model, so every number is illustrative.
-          </Notice>
-        )}
-      </div>
-
-      <form onSubmit={submit} noValidate>
-        <Section title="Founder" footer="A name and a link work best. Research uses only what was public before the founding date.">
-          <Row>
-            <label className="block text-[13px] text-muted" htmlFor="name">Name</label>
-            <input id="name" value={name} onChange={(e) => setName(e.target.value)} autoComplete="off" placeholder="e.g. Ada Moreno" className="mt-0.5 w-full bg-transparent outline-none placeholder:text-muted/60" />
-          </Row>
-          <Row>
-            <label className="block text-[13px] text-muted" htmlFor="company">Company</label>
-            <input id="company" value={company} onChange={(e) => setCompany(e.target.value)} autoComplete="off" placeholder="Optional" className="mt-0.5 w-full bg-transparent outline-none placeholder:text-muted/60" />
-          </Row>
-          <Row>
-            <label className="block text-[13px] text-muted" htmlFor="link">LinkedIn or website</label>
-            <input id="link" value={link} onChange={(e) => setLink(e.target.value)} type="url" inputMode="url" autoCapitalize="none" autoCorrect="off" placeholder="linkedin.com/in/… or company.com" className="mt-0.5 w-full bg-transparent outline-none placeholder:text-muted/60" />
-          </Row>
-          <Row>
-            <label className="block text-[13px] text-muted" htmlFor="founded">Founded</label>
-            <input id="founded" value={founded} onChange={(e) => setFounded(e.target.value)} inputMode="numeric" autoComplete="off" placeholder="YYYY or YYYY-MM (optional)" className="mt-0.5 w-full bg-transparent outline-none placeholder:text-muted/60" />
-          </Row>
-        </Section>
-
-        <section className="mt-7">
-          <button type="button" onClick={() => setShowKnown((v) => !v)} aria-expanded={showKnown} className="flex w-full items-center justify-between rounded-2xl bg-card px-4 py-3.5 text-left active:opacity-70">
-            <span>
-              <span className="block text-[17px]">What you already know</span>
-              <span className="block text-[13px] text-muted">Optional. Your answers override the agent&apos;s.</span>
-            </span>
-            <ChevronDown open={showKnown} />
-          </button>
-          {showKnown && (
-            <div className="mt-2 overflow-hidden rounded-2xl bg-card">
-              <Row>
-                <label className="block text-[13px] text-muted" htmlFor="industry">Industry</label>
-                <input id="industry" list="industries" value={known.industry} onChange={(e) => setKnown({ ...known, industry: e.target.value })} placeholder="Not sure" autoComplete="off" className="mt-0.5 w-full bg-transparent outline-none placeholder:text-muted/60" />
-                <datalist id="industries">{INDUSTRIES.map((i) => <option key={i} value={i} />)}</datalist>
-              </Row>
-              {KNOWN_OPTIONS.map(({ key, label, options }) => (
-                <Row key={key} className="flex items-center justify-between gap-3">
-                  <label htmlFor={key} className="text-[15px]">{label}</label>
-                  <select id={key} value={known[key]} onChange={(e) => setKnown({ ...known, [key]: e.target.value })} className="max-w-[55%] appearance-none bg-transparent text-right text-muted outline-none">
-                    <option value="">Not sure</option>
-                    {options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-                  </select>
-                </Row>
-              ))}
+    <Page wide>
+      <div className="grid gap-x-16 gap-y-10 pt-4 lg:grid-cols-[minmax(0,1fr)_300px] lg:pt-2">
+        <div className="min-w-0">
+          {healthError && (
+            <div className="mb-5">
+              <Notice tone="danger" title="Can't reach the screening service">
+                {healthError} <span className="break-all font-mono text-[12px] opacity-80">({API_URL})</span>
+              </Notice>
             </div>
           )}
-        </section>
 
-        <Section title="Your notes" footer="Shown in the memo only. Never sent to the model.">
-          <Row>
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} placeholder="Meeting notes, traction, gut feel…" aria-label="Your notes" className="w-full resize-none bg-transparent outline-none placeholder:text-muted/60" />
-          </Row>
-        </Section>
+          <QuickScreen />
 
-        <div className="mt-4 overflow-hidden rounded-2xl bg-card">
-          <Row className="flex items-center justify-between">
-            <label htmlFor="research" className="pr-3 text-[15px]">
-              Web research
-              <span className="block text-[13px] text-muted">{research ? "The agent fills in what you leave blank." : "Use only what you entered."}</span>
-            </label>
-            <Switch id="research" checked={research} onChange={setResearch} />
-          </Row>
+          <button type="button" onClick={openBarSheet} className="group mt-6 flex w-full items-center gap-3 rounded-[16px] border border-line-strong px-4 py-3 text-left transition-colors hover:border-ink lg:hidden">
+            <IconSliders size={18} className="shrink-0 text-muted" />
+            <span className="min-w-0 flex-1">
+              <span className="eyebrow block text-muted">Your bar</span>
+              <span className="mt-0.5 block truncate text-[15px] font-semibold">
+                <BarSummary bar={bar} />
+              </span>
+            </span>
+            <span className={linkClass + " text-[14px]"}>Change</span>
+          </button>
+
+          {has && (
+            <section className="mt-10 lg:mt-14" aria-labelledby="deals-title">
+              <div className="flex items-end justify-between gap-4 border-t-2 border-ink pt-3">
+                <h2 id="deals-title" className="text-[21px] font-bold tracking-[-0.025em]">
+                  This session
+                </h2>
+                <p className="hidden text-[13px] text-muted sm:block">Judged against your bar</p>
+              </div>
+              <div className="no-scrollbar -mx-5 mt-3 flex gap-1.5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+                {FILTERS.map((f) => (
+                  <button
+                    key={f.key}
+                    type="button"
+                    onClick={() => setShow(f.key)}
+                    aria-pressed={show === f.key}
+                    className={cx(
+                      "flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3 text-[14px] sm:px-3.5 font-semibold transition-colors duration-150",
+                      show === f.key ? "bg-ink text-bg" : "text-ink-2 ring-1 ring-inset ring-line-strong hover:ring-ink",
+                    )}
+                  >
+                    {f.key !== "all" && <span className="hidden sm:inline-flex"><VerdictIcon decision={f.key} size={13} /></span>}
+                    {f.label}
+                    <span className={cx("tabular", show === f.key ? "opacity-60" : "text-muted")}>{counts[f.key]}</span>
+                  </button>
+                ))}
+              </div>
+              <ul className="stagger mt-3">
+                {visible.map(({ d, v }) => (
+                  <li key={d.memo_id} className="border-b border-line">
+                    <Link href={`/memos/${d.memo_id}`} className="group -mx-2 flex items-center gap-3.5 rounded-[14px] px-2 py-3.5 transition-colors hover:bg-surface active:bg-surface">
+                      <VerdictTile decision={v ? v.decision : null} size={46} />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-[17px] font-bold tracking-[-0.015em]">{d.name}</span>
+                        <span className="block truncate text-[13.5px] text-muted">{[d.company, sectorLabel(d.sector), relativeTime(d.at)].filter(Boolean).join(" · ")}</span>
+                      </span>
+                      {v ? (
+                        <span className="flex shrink-0 flex-col items-end">
+                          <span className="cond text-[34px] font-extrabold leading-[0.9]">
+                            {v.estimate && <span className="text-[0.6em] font-semibold text-muted">≈</span>}
+                            {percent(v.probability)}
+                          </span>
+                          <span className={cx("mt-1 text-[12.5px] font-bold", VERDICT_TEXT[v.decision])}>
+                            {DECISION_LABELS[v.decision]}
+                            {v.filtersFailed.length > 0 && <span className="font-medium text-muted"> · filtered</span>}
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="skeleton h-8 w-14 rounded-lg" />
+                      )}
+                    </Link>
+                  </li>
+                ))}
+                {visible.length === 0 && <li className="border-b border-line py-8 text-[14.5px] text-muted">No founders in this group at your bar.</li>}
+              </ul>
+              <p className="mt-3 text-[12.5px] leading-snug text-faint">
+                Kept only until you close the app.{deals.some((d) => d.mock) && " Scores come from a placeholder model for now, so treat them as examples."}
+              </p>
+            </section>
+          )}
         </div>
 
-        {error && <div className="mt-4"><Notice tone="danger">{error}</Notice></div>}
+        <aside aria-labelledby="examples-title" className="lg:pt-3">
+          <h2 id="examples-title" className="eyebrow mb-3 text-muted">
+            {has ? "Examples" : "Or try an example"}
+          </h2>
+          <Examples onPick={(input, key) => start(input, key)} busy={busy} />
+          <p className="mt-3 text-[12.5px] leading-snug text-faint">Made-up founders with canned research, so they finish in seconds.</p>
 
-        <button type="submit" disabled={busy !== null} className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-accent py-4 text-[17px] font-semibold text-accent-ink active:opacity-80 disabled:opacity-60">
-          {busy === "form" && <Spinner />} Screen founder
-        </button>
-      </form>
-
-      {demos.length > 0 && (
-        <Section title="Try a demo founder" footer="Fictional founders with canned research, to see the whole flow.">
-          {demos.map((d, i) => {
-            const label = d.founder.name ?? d.founder.website_url ?? `Demo ${i + 1}`;
-            return (
-              <Row key={label}>
-                <button type="button" disabled={busy !== null} onClick={() => start({ ...d, schema_version: SCHEMA_VERSION }, label)} className="flex w-full items-center justify-between gap-3 text-left active:opacity-60 disabled:opacity-60">
-                  <span className="min-w-0">
-                    <span className="block truncate text-[17px]">{label}</span>
-                    <span className="block truncate text-[13px] text-muted">{d.founder.company_name ?? (d.founder.website_url ? new URL(d.founder.website_url).hostname : "Demo")}{d.fields?.industry ? ` · ${d.fields.industry}` : ""}</span>
-                  </span>
-                  {busy === label ? <Spinner className="text-muted" /> : <span className="text-[15px] text-accent">Screen</span>}
-                </button>
-              </Row>
-            );
-          })}
-        </Section>
-      )}
-
-      {recent.length > 0 && (
-        <Section title="This session">
-          {recent.map((r) => (
-            <Row key={r.memo_id}>
-              <Link href={`/memos/${r.memo_id}`} className="flex items-center justify-between gap-3 active:opacity-60">
-                <span className="min-w-0">
-                  <span className="block truncate text-[17px]">{r.name}</span>
-                  <span className="block truncate text-[13px] text-muted">{[r.company, relativeTime(r.at)].filter(Boolean).join(" · ")}</span>
-                </span>
-                <span className="flex items-center gap-2">
-                  <span className={cx("text-[15px] tabular-nums text-muted")}>{percent(r.probability)}</span>
-                  <DecisionPill decision={r.decision} size="sm" />
-                </span>
-              </Link>
-            </Row>
-          ))}
-        </Section>
-      )}
-
-      <div className="mt-6 flex flex-wrap justify-center gap-1.5">
-        <Chip>Public information only</Chip>
-        <Chip>Nothing kept after the session</Chip>
+          <div className="mt-8 hidden border-t border-line pt-5 lg:block">
+            <h2 className="eyebrow mb-3 text-muted">What you get</h2>
+            <ol className="space-y-3 text-[13.5px] leading-snug text-ink-2">
+              {["A verdict against your bar: meet, look closer or pass.", "The chance of a large outcome, and what moves it.", "Every fact linked to its public source."].map((t, i) => (
+                <li key={t} className="flex gap-3">
+                  <span className="cond w-3 shrink-0 text-[20px] font-extrabold leading-[1]">{i + 1}</span>
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </aside>
       </div>
-      <Disclaimer />
+
+      <Disclaimer className="mt-14" />
     </Page>
   );
 }

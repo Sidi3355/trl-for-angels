@@ -1,54 +1,69 @@
 "use client";
 
-// The memo: verdict at the investor's controls, what drives it, what-ifs, and the evidence.
+// The memo: verdict at the investor's bar, what drives it, what-ifs, then the evidence.
+// Desktop: verdict pinned on the left, detail on the right. Phone: one column.
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { Controls } from "@/components/memo/Controls";
-import { Conflicts, DistributionsView, ModelInput, Notes, ProfileFields, Sources, Unknowns } from "@/components/memo/Details";
-import { Drivers } from "@/components/memo/Drivers";
-import { VerdictCard } from "@/components/memo/VerdictCard";
-import { Disclaimer, Notice, Page, Section, Spinner, TopBar } from "@/components/ui";
+import { useApp } from "@/components/AppState";
+import { IconChevronLeft, IconGlobe, IconLink } from "@/components/icons";
+import { Notes, Sources, UnderTheHood, WorthKnowing } from "@/components/memo/Evidence";
+import { Factors } from "@/components/memo/Factors";
+import { Outcome } from "@/components/memo/Outcome";
+import { Profile } from "@/components/memo/Profile";
+import { VerdictCard } from "@/components/memo/Verdict";
+import { Disclaimer, Notice, Page, PageHeader, SLAB, Spinner, Tag, VerdictIcon, cx } from "@/components/ui";
 import { api, type ApiError } from "@/lib/api";
-import { foundedLabel, foundedSource } from "@/lib/format";
-import { resolve, verdict as computeVerdict, withDefaults, type Policy } from "@/lib/policy";
-import { rememberScreening } from "@/lib/session";
+import { DECISION_LABELS, foundedLabel, foundedSource, percent, sectorLabel } from "@/lib/format";
+import { verdict as computeVerdict } from "@/lib/policy";
+import { rememberDeal } from "@/lib/session";
 import { SCHEMA_VERSION, type Driver, type FieldValues, type Memo, type Thresholds, type WhatIfChange, type WhatIfResponse } from "@/lib/types";
+
+const chip = "inline-flex h-8 items-center gap-1.5 rounded-full border border-line-strong px-3.5 text-[13.5px] font-semibold text-ink-2 transition-colors hover:border-ink hover:text-ink";
 
 function plainFields(memo: Memo): FieldValues {
   return Object.fromEntries(Object.entries(memo.fields).map(([k, f]) => [k, f.value])) as unknown as FieldValues;
 }
 
 function changeFor(d: Driver): WhatIfChange {
-  return d.kind === "answer"
-    ? { kind: "answer", rule_id: d.id, value: d.flipped as "yes" | "no" }
-    : { kind: "field", key: d.id as keyof FieldValues, value: d.flipped };
+  return d.kind === "answer" ? { kind: "answer", rule_id: d.id, value: d.flipped as "yes" | "no" } : { kind: "field", key: d.id as keyof FieldValues, value: d.flipped };
 }
 
 export function MemoView({ memoId }: { memoId: string }) {
+  const { bar } = useApp();
   const [memo, setMemo] = useState<Memo | null>(null);
   const [thresholds, setThresholds] = useState<Thresholds | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [policy, setPolicy] = useState<Policy | null>(null);
 
   const [flipped, setFlipped] = useState<Map<string, Driver>>(new Map());
   const [whatIf, setWhatIf] = useState<WhatIfResponse | null>(null);
-  const [whatIfLoading, setWhatIfLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [whatIfError, setWhatIfError] = useState<string | null>(null);
   const requestNo = useRef(0);
+  // The floating what-if bar shows only once the verdict itself has scrolled out of view.
+  const [verdictEl, setVerdictEl] = useState<HTMLDivElement | null>(null);
+  const [verdictOnScreen, setVerdictOnScreen] = useState(true);
+  useEffect(() => {
+    if (!verdictEl || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => setVerdictOnScreen(e.isIntersecting), { threshold: 0.12 });
+    io.observe(verdictEl);
+    return () => io.disconnect();
+  }, [verdictEl]);
 
   useEffect(() => {
     Promise.all([api.memo(memoId), api.thresholds()]).then(
       ([m, t]) => {
         setMemo(m);
         setThresholds(t);
-        setPolicy(withDefaults(m.verdict.policy));
-        rememberScreening({
+        rememberDeal({
           memo_id: m.memo_id,
           name: m.founder.display_name,
           company: m.founder.company_name,
-          decision: m.verdict.decision,
-          probability: m.verdict.probability,
+          sector: m.facets.sector,
+          distributions: m.distributions,
+          facets: m.facets,
           at: m.created_at,
+          mock: m.mock,
         });
       },
       (e: ApiError) => {
@@ -65,17 +80,17 @@ export function MemoView({ memoId }: { memoId: string }) {
       setWhatIfError(null);
       if (!next.size) {
         setWhatIf(null);
-        setWhatIfLoading(false);
+        setLoading(false);
         return;
       }
-      setWhatIfLoading(true);
+      setLoading(true);
       try {
         const res = await api.whatIf(memoId, { schema_version: SCHEMA_VERSION, changes: [...next.values()].map(changeFor) });
         if (n === requestNo.current) setWhatIf(res);
       } catch (e) {
         if (n === requestNo.current) setWhatIfError((e as ApiError).message);
       } finally {
-        if (n === requestNo.current) setWhatIfLoading(false);
+        if (n === requestNo.current) setLoading(false);
       }
     },
     [memoId],
@@ -96,135 +111,113 @@ export function MemoView({ memoId }: { memoId: string }) {
   if (error) {
     return (
       <Page>
-        <TopBar back={{ href: "/", label: "New" }} />
-        <div className="mt-6">
-          <Notice tone="danger">{error}</Notice>
-        </div>
+        <PageHeader title="Memo unavailable" back={{ href: "/", label: "Founders" }} />
+        <Notice tone="danger">{error}</Notice>
       </Page>
     );
   }
-  if (!memo || !thresholds || !policy || !fields) {
+  if (!memo || !thresholds || !fields) {
     return (
-      <Page>
-        <TopBar back={{ href: "/", label: "New" }} />
-        <div className="mt-24 flex justify-center text-muted">
-          <Spinner className="h-6 w-6" />
+      <Page wide>
+        <div className="pt-12">
+          <div className="skeleton h-9 w-64 rounded-xl" />
+          <div className="skeleton mt-3 h-4 w-48 rounded" />
+          <div className="mt-8 grid gap-x-14 gap-y-8 lg:grid-cols-[420px_minmax(0,1fr)]">
+            <div className="skeleton h-[480px] rounded-[30px]" />
+            <div className="space-y-4">
+              <div className="skeleton h-40 rounded-[20px]" />
+              <div className="skeleton h-40 rounded-[20px]" />
+            </div>
+          </div>
+          <span className="sr-only">
+            <Spinner /> Loading the memo
+          </span>
         </div>
       </Page>
     );
   }
 
-  const resolved = resolve(thresholds, policy);
-  const baseline = computeVerdict(memo.distributions, thresholds, policy, fields);
-  const current = whatIf ? computeVerdict(whatIf.distributions, thresholds, policy, fields) : baseline;
+  const baseline = computeVerdict(memo.distributions, thresholds, bar, fields);
+  const current = whatIf ? computeVerdict(whatIf.distributions, thresholds, bar, fields) : baseline;
   const fd = memo.founder.founding_date;
-  const otherWarnings = memo.warnings.filter((w) => w.code !== "mock_artifacts");
-  const mockWarning = memo.warnings.find((w) => w.code === "mock_artifacts");
-  const links = [
-    memo.founder.identifier.linkedin_url && { href: memo.founder.identifier.linkedin_url, label: "LinkedIn" },
-    memo.founder.identifier.website_url && { href: memo.founder.identifier.website_url, label: "Website" },
-  ].filter(Boolean) as { href: string; label: string }[];
-  const fieldWhatIf = memo.what_if.field_changes;
-  const driversSupported = memo.drivers.every((d) => (d.kind === "answer" ? memo.what_if.answer_changes === "supported" : fieldWhatIf !== "unsupported"));
+  const sector = sectorLabel(memo.facets.sector);
+  const ids = memo.founder.identifier;
+  const fieldsWhatIf = memo.what_if.field_changes !== "unsupported";
+  const enabled = memo.drivers.every((d) => (d.kind === "answer" ? memo.what_if.answer_changes === "supported" : fieldsWhatIf));
+  const whatIfOn = flipped.size > 0;
 
   return (
-    <Page>
-      <TopBar back={{ href: "/", label: "New" }} />
-
-      <header className="mt-1">
-        <h1 className="text-[28px] font-bold leading-tight tracking-tight">{memo.founder.display_name}</h1>
-        <p className="mt-0.5 text-[15px] text-muted">
-          {[memo.founder.company_name, `Founded ${foundedLabel(fd.value)}, ${foundedSource(fd.provenance)}`].filter(Boolean).join(" · ")}
-        </p>
-        {links.length > 0 && (
-          <div className="mt-1 flex flex-wrap gap-x-3 text-[15px]">
-            {links.map((l) => (
-              <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" className="text-accent">
-                {l.label}
-              </a>
-            ))}
+    <Page wide>
+      <header className="pb-5 pt-1 lg:pb-6 lg:pt-0">
+        <Link href="/" className="-ml-1.5 mb-1.5 lg:mb-3 inline-flex items-center gap-0.5 rounded-lg py-1 pr-2 text-[14px] font-medium text-muted transition-colors hover:text-ink active:opacity-60">
+          <IconChevronLeft size={18} /> Founders
+        </Link>
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+          <div className="min-w-0">
+            <h1 className="text-[36px] font-extrabold leading-[0.98] tracking-[-0.04em] lg:text-[54px]">{memo.founder.display_name}</h1>
+            <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[15px] text-muted">
+              <span>{[memo.founder.company_name, sector, `Founded ${foundedLabel(fd.value)}`].filter(Boolean).join(" · ")}</span>
+              {fd.provenance === "assumed" && <Tag tone="warn">Date assumed</Tag>}
+              {fd.provenance === "agent" && <Tag>Date {foundedSource(fd.provenance)}</Tag>}
+              {memo.mock && <Tag>Example data</Tag>}
+            </p>
           </div>
-        )}
+          {(ids.linkedin_url || ids.website_url) && (
+            <div className="flex flex-wrap gap-2">
+              {ids.linkedin_url && (
+                <a href={ids.linkedin_url} target="_blank" rel="noopener noreferrer" className={chip}>
+                  <IconLink size={15} /> LinkedIn
+                </a>
+              )}
+              {ids.website_url && (
+                <a href={ids.website_url} target="_blank" rel="noopener noreferrer" className={chip}>
+                  <IconGlobe size={15} /> Website
+                </a>
+              )}
+            </div>
+          )}
+        </div>
       </header>
 
-      {memo.mock && (
-        <div className="mt-4">
-          <Notice tone="info">
-            <strong className="font-semibold">Prototype memo.</strong> {mockWarning?.message ?? "Parts of this memo are mocked."}
-          </Notice>
+      <div className="grid items-start gap-x-14 gap-y-10 lg:grid-cols-[420px_minmax(0,1fr)]">
+        <div ref={setVerdictEl} className="anim-fade-up space-y-3 lg:sticky lg:top-8">
+          <VerdictCard verdict={current} baseline={baseline} whatIf={whatIfOn} loading={loading} onReset={reset} />
+          {memo.mock && (
+            <p className="px-1 text-[12.5px] leading-snug text-faint">
+              Prototype: the score comes from a placeholder model until the real one is trained, so treat every number as an example.
+            </p>
+          )}
         </div>
-      )}
 
-      <div className="mt-4">
-        <VerdictCard verdict={current} resolved={resolved} baseline={whatIf ? baseline : null} whatIfActive={flipped.size > 0} whatIfLoading={whatIfLoading} onResetWhatIf={reset} />
+        <div className="stagger min-w-0 space-y-12">
+          <Factors drivers={memo.drivers} base={memo.distributions} bar={bar} flipped={new Set(flipped.keys())} onToggle={toggle} loading={loading} enabled={enabled} error={whatIfError} />
+          <Outcome d={whatIf ? whatIf.distributions : memo.distributions} bar={bar} />
+          <Profile memo={memo} />
+          <WorthKnowing memo={memo} />
+          <Notes memo={memo} />
+          <Sources memo={memo} />
+          <UnderTheHood memo={memo} />
+          <Disclaimer text={memo.disclaimer} />
+        </div>
       </div>
 
-      {otherWarnings.length > 0 && (
-        <div className="mt-3 space-y-2">
-          {otherWarnings.map((w) => (
-            <Notice key={w.code} tone="warn">
-              {w.message}
-            </Notice>
-          ))}
+      {whatIfOn && <div className="h-20 lg:hidden" aria-hidden />}
+      {whatIfOn && !verdictOnScreen && (
+        <div className="anim-fade-up fixed inset-x-0 bottom-[calc(var(--dock-clear)-4px)] z-20 px-4 lg:hidden">
+          <div
+            className={cx("mx-auto flex max-w-md items-center gap-2.5 rounded-full py-2 pl-4 pr-2 shadow-float ring-[3px] ring-bg transition-colors duration-500", SLAB[current.decision])}
+          >
+            <VerdictIcon decision={current.decision} size={16} />
+            <span className="min-w-0 flex-1 truncate text-[14.5px] font-semibold">
+              What-if: {DECISION_LABELS[current.decision]} <span className="tabular">{percent(current.probability)}</span>
+              <span className="font-medium opacity-70"> (was {percent(baseline.probability)})</span>
+            </span>
+            <button type="button" onClick={reset} className="rounded-full border-[1.5px] border-current px-3 py-1 text-[13px] font-bold">
+              Reset
+            </button>
+          </div>
         </div>
       )}
-
-      <Section title="Your controls" footer="Changes apply instantly, on your phone. No new research or scoring.">
-        <Controls policy={policy} onChange={setPolicy} facets={memo.facets} />
-      </Section>
-
-      <Section
-        title="What moves this score"
-        footer={
-          whatIfError ? (
-            <span className="text-danger">{whatIfError}</span>
-          ) : memo.decider.input_type === "answers" ? (
-            "Each line is one screening question. “Try” re-scores with that answer flipped; nothing is researched again."
-          ) : (
-            "Each line is one profile field. “Try” re-scores with it changed."
-          )
-        }
-      >
-        <Drivers drivers={memo.drivers} base={memo.distributions} policy={policy} flipped={new Set(flipped.keys())} onToggle={toggle} loading={whatIfLoading} supported={driversSupported} />
-      </Section>
-
-      <Section title="Predicted outcome">
-        <DistributionsView d={whatIf ? whatIf.distributions : memo.distributions} policy={policy} />
-      </Section>
-
-      <Section title="Founder profile" footer="As of the founding date. “You” means your input, which wins over the agent's findings.">
-        <ProfileFields memo={memo} />
-      </Section>
-
-      {memo.conflicts.length > 0 && (
-        <Section title="Conflicts">
-          <Conflicts conflicts={memo.conflicts} />
-        </Section>
-      )}
-
-      {memo.unknowns.length > 0 && (
-        <Section title="Unknown" footer="Unknown fields make the score less certain. Add what you know and screen again.">
-          <Unknowns paths={memo.unknowns} />
-        </Section>
-      )}
-
-      {(memo.notes.investor || memo.notes.post_founding.length > 0) && (
-        <Section title="Notes" footer="Memo only. Never sent to the model.">
-          <Notes memo={memo} />
-        </Section>
-      )}
-
-      {memo.sources.length > 0 && (
-        <Section title={`Sources (${memo.sources.length})`}>
-          <Sources sources={memo.sources} />
-        </Section>
-      )}
-
-      <Section>
-        <ModelInput memo={memo} />
-      </Section>
-
-      <Disclaimer text={memo.disclaimer} />
     </Page>
   );
 }

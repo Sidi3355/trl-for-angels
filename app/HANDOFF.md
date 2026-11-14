@@ -25,6 +25,11 @@ session that runs the research. Build against mocks now; swap in the real resear
 Ask before anything that costs money, deploys publicly or needs an account action. Keys only from env
 vars, never committed. Keep everything swappable. Keep `app/README.md` up to date. Note anything in
 MASTER_PLAN.md that looks inconsistent instead of silently working around it.
+**Every image and video goes into `app/media/`** (owner, 2026-11-14), including rejected and superseded ones:
+numbered folders in the order the work happened, and an entry in `app/media/README.md` for each (what it shows,
+status, whether the owner was sent it). Screen recordings: `app/media/tools/record-walkthrough.cjs`. To keep the
+repo light, take phone screenshots at 2× (`deviceScaleFactor: 2`, about half the size of 3×) and keep only the
+video versions that matter. `app/backend/Dockerfile.dockerignore` keeps `app/media` out of the backend's build.
 
 ## Tasks and status
 
@@ -33,24 +38,29 @@ MASTER_PLAN.md that looks inconsistent instead of silently working around it.
 | 1 | API contract and mocks (`app/contract/`) | Done |
 | 2 | FastAPI backend on mocks (`app/backend/`) | Done |
 | 3 | Research agent, merge, render; test on 5 real founders | **Done.** 5 founders for $1.21 in total; the owner has seen the profiles and sources |
-| 4 | Mobile-first Next.js app (`app/frontend/`): form, live progress, memo, client-side controls, what-ifs, disclaimer | **Done, on mocks.** Checked end to end in an emulated iPhone 17, light and dark |
-| 5 | PWA features: manifest, share target, web push; phone test instructions (iOS and Android differ) | Not started |
-| 6 | Hosting: frontend on Vercel, backend on Railway, both on mocks | **In progress:** deploy files pushed; the owner is setting up Railway |
-| 7 | Batch mode UI: CSV upload, triage view | Not started (the backend side exists) |
+| 4 | Mobile-first Next.js app (`app/frontend/`): form, live progress, memo, client-side controls, what-ifs, disclaimer | **Done, on mocks; redesigned 2026-11-14** at the owner's request (simpler, product-grade, phone and desktop). Checked on an emulated iPhone 17 and a 1440px desktop, light and dark |
+| 5 | PWA features: manifest, share target, web push; phone test instructions (iOS and Android differ) | **Done (2026-11-14):** push notifications, `/share` with Android share target and iPhone Shortcut steps. Real push delivery can't be tested from this sandbox (push services unreachable); checked with a simulated subscription |
+| 6 | Hosting: frontend on Vercel, backend on Railway, both on mocks | **Deployed** (2026-11-14). Waiting for the owner's test on the iPhone |
+| 7 | Batch mode UI: CSV upload, triage view | **Done (2026-11-14):** `/batch`, checked end to end on phone and desktop |
+| E5 | Voice notes (speech-to-text; MASTER_PLAN 8b) | **Done (2026-11-14), on example transcripts until the key is on Railway.** Record, transcribe (ElevenLabs), fill the form (Claude); typed notes too. Checked end to end in a browser with a fake microphone and the mock services. No real ElevenLabs call made yet: the onboarding's test waits for the owner's yes |
 
-## Next step (task 6: get it on the owner's iPhone)
+## Next step (task 6: the owner tests on the iPhone)
 
-The owner asked for the prototype on their phone (2026-11-14), which is the go-ahead to host it.
+Deployed on 2026-11-14; `app/README.md`, "Deploy", has the settings and addresses.
 
-1. **Railway (the owner does this; this session has no Railway access).** Steps are in `app/README.md`,
-   "Deploy": project from the GitHub repo, branch `app-track`, config file `/app/backend/railway.json`,
-   variables `ACCESS_TOKEN` (the owner's passcode; never ask for it) and `CORS_ORIGIN_REGEX`, then
-   generate a domain. Wait for the owner to send the domain, and check `<domain>/health`.
-2. **Vercel (through the connector).** Project `trl-for-angels`: root directory `app/frontend`, framework
-   Next.js, `NEXT_PUBLIC_API_URL` = the Railway domain, remove the "Ignored Build Step" (`exit 0`). Decide
-   with the owner which branch serves the phone (production branch, or a preview URL, which needs a
-   Vercel login on the phone).
-3. Open the Vercel URL in Safari on the iPhone, enter the passcode, screen a demo founder.
+- **Backend (Railway, set up by the owner):** `https://trl-for-angels-production.up.railway.app`, branch
+  `app-track`, mocks. Variables: `RAILWAY_DOCKERFILE_PATH`, `ACCESS_TOKEN` (the owner's passcode; never ask
+  for it) and `CORS_ORIGIN_REGEX`. The "Railway config file" setting didn't take; the variable did.
+- **Frontend (Vercel, set up through the connector):** framework Next.js, root `app/frontend`, Node 22,
+  `NEXT_PUBLIC_API_URL` = the Railway domain, Ignored Build Step now builds only `app-track` and `main`. Phone URL: the `app-track` branch
+  alias, `https://trl-for-angels-git-app-track-siddarths-projects-2714c925.vercel.app`, behind Vercel's login.
+- This sandbox can't reach `railway.app` or `vercel.app` (network policy), so checks on the live app come
+  from the owner or from the Vercel connector's logs.
+- `main` was merged from `app-track` with the owner's OK (2026-11-14), and both branches were level after it.
+  Further merges into `main` still wait for the owner.
+
+Then: the owner's UI feedback, task 5 (PWA: home-screen icon, iOS Shortcut share, push), task 7 (batch UI),
+or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25 per founder).
 
 ### Task 3 notes, for later
 
@@ -60,6 +70,52 @@ The owner asked for the prototype on their phone (2026-11-14), which is the go-a
 - Still open: the owner to confirm in the Claude Console that the usage landed on their key.
 
 ## Decisions made
+
+- **Redesign (2026-11-14, owner: "make it look amazing, feel like a fully fledged product, less complicated").**
+  Founders list as home (first called "Deals"; renamed because the owner found the investor jargon unclear);
+  one smart search box; "Your bar" is a single global setting in a sheet (not controls
+  on every memo); memo leads with the verdict and a to-scale gauge; detail behind progressive disclosure.
+  Inter + Space Grotesk; cool neutrals with one ink-blue accent; chart ramps validated with the dataviz
+  skill. Installable (manifest and icons); push and share stay in task 5.
+- **Second redesign (2026-11-14, owner: "still looks AI generated, make it look cool", asked for Fable 5.2):**
+  a Claude Fable 5.2 design agent chose "the odds slip": ink on paper, colour only for the verdict slab,
+  Archivo at three widths, floating dock on phones. Reviewed here: logic untouched, tests and build pass,
+  every verdict colour, not-found, passcode and overflow at 390px checked; the gauge marker was changed to a
+  solid needle (the hollow ring read as a zero).
+- **Name: Halomark (owner, 2026-11-14)**, replacing "Screener": a halo for angels, and a near-homophone of
+  hallmark, the stamp that certifies tested gold. Identity by a Claude Fable 5.2 design pass: a cut-corner
+  hallmark punch with a halo struck into it, used as the O of HAL◯MARK; stamp-pad blue for the mark only.
+  Rejected directions (an HM maker's mark, a halo as the H's crossbar, a halo alone) are in
+  `app/media/08-halomark-brand/directions.png`. The blue is the main judgement call: an ink-only mark is the
+  fallback (`--brand` in globals.css and the colours in `src/lib/mark.ts`, then rerun the icon script).
+  User-visible names only: `screener` stays as the backend package, env var and storage-key prefix.
+  **Wordmark (owner, 2026-11-14):** in the app the O is the halo alone, in the text colour, not the blue boxed
+  mark; the boxed mark is the app icon (and the illustration in About's "The name").
+- **Verdict labels for angels (owner, 2026-11-14): "Meet / Look closer / Pass"** on screen, replacing "Advance /
+  Escalate / Pass" (fund language: a solo angel has nobody to escalate to). Display only: the contract,
+  backend, policy and research keep `advance` / `escalate` / `pass` as the internal values. MASTER_PLAN still
+  uses the old words; the owner may update it.
+- **No passcode (owner, 2026-11-14):** `ACCESS_TOKEN` stays unset. Vercel's login wall stays on, so only the
+  owner's Vercel team can open the app. Revisit before switching on real research (`AGENT=claude`), which spends credits.
+- **app-track merged into main (owner, 2026-11-14 evening):** clean merge, only `app/` changed. Adds ~100 MB of
+  `app/media` to main; the Kaggle runner shallow-clones the research branch, so only a later merge of main there
+  would make its clones bigger (seconds, not breakage).
+- **Vercel free plan:** about 100 deployments a day. On 2026-11-14 the limit was hit (many were failed builds of
+  the research branch, now skipped by the Ignored Build Step). Batch pushes to `app-track`.
+- **Voice (8b): speech-to-text only (owner, 2026-11-14).** No spoken memo briefing (E6) and no voice agent (E7):
+  the owner dropped both to save credits, so no voice was chosen. MASTER_PLAN 8b still lists them; the owner may
+  update it. ElevenLabs free plan (10,000 credits a month), notes capped at 60 seconds.
+- **Notes fill the form (owner chose option C, 2026-11-14):** a voice note fills the form as soon as it's
+  transcribed; typed notes get a "Fill the form from my notes" link. The investor checks every value; a
+  hand-picked answer is never overwritten. Notes still never reach the model (TRL and Kev read only the rendered
+  template). Education and jobs are never filled from notes (the merge would replace the agent's whole list).
+- **Note sorter: Claude Opus 5.5 at low effort** (the Claude API guidance's default model; cheaper models are
+  the owner's call). About 1–2 cents a note, charged to `AGENT_BUDGET_USD`. `NOTE_SORTER_MODEL=claude-haiku-5-5`
+  would cost roughly a fortieth of that if the owner wants it.
+- **ElevenLabs key:** set up with the ElevenLabs onboarding CLI (`onboard init` and `check` in `app/backend`,
+  which also asked for `load_dotenv` in `screener/config.py`). In this sandbox the key is a network secret on the
+  owner's Default cloud environment for `api.elevenlabs.io` (the proxy adds it; `app/backend/.env` holds only a
+  placeholder, git-ignored). Railway needs its own `ELEVENLABS_API_KEY`, plus `ANTHROPIC_API_KEY` to fill forms.
 
 - **PWA (Next.js), not Expo.** The owner's phone is an **iPhone 17 on the latest iOS**. iOS doesn't support
   the Web Share Target API, so sharing on iPhone uses an iOS Shortcut that opens `/share?url=...`. Web
@@ -114,6 +170,8 @@ The owner asked for the prototype on their phone (2026-11-14), which is the go-a
   - agent profiles will have more unknowns than the training data
   - template ambiguities (listed in `app/contract/README.md`)
   - thresholds built on val are optimistic and sparse for 5-year targets
-- **Voice features (8b):** don't build until the owner says go. Needs an ElevenLabs key, and whether the
-  hackathon has an ElevenLabs prize or credits (that decides how prominent to make it).
+- **Voice notes on the live app:** `ELEVENLABS_API_KEY` and `ANTHROPIC_API_KEY` are set on Railway (owner,
+  2026-11-14; `/health` shows `transcriber: elevenlabs`, `note_sorter: claude`). Railway only applied them after
+  the staged-changes Deploy. Next: the frontend deploy, then the first real note recorded on the iPhone. The
+  onboarding's own test (a short text-to-speech clip) is optional; recommended to skip it.
 - **Later keys:** TypeSafe (Jev) and the Kev endpoint, when the research outputs land.

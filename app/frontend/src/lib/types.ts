@@ -312,7 +312,86 @@ export interface Thresholds {
 export interface Health {
   status: "ok" | "degraded";
   env: string;
-  components: { agent: string; answerer: string; decider: string };
+  components: { agent: string; answerer: string; decider: string; transcriber?: string; note_sorter?: string };
   mock: boolean;
   errors: Record<string, string>;
+}
+
+// ---- batches ------------------------------------------------------------------------------
+
+export interface BatchItem {
+  index: number;
+  client_ref: string | null;
+  label: string;
+  status: "queued" | "running" | "complete" | "failed";
+  memo_id: string | null;
+  memo_url: string | null;
+  decision: Decision | null;
+  probability: number | null;
+  distributions?: Distributions | null;
+  facets: Facets | null;
+  filtered_out: boolean;
+  unknown_count?: number | null;
+  conflict_count?: number | null;
+  error: ApiErrorBody | null;
+}
+
+export interface BatchResponse {
+  schema_version: string;
+  batch_id: string;
+  batch_ref?: string | null;
+  status: "queued" | "running" | "complete" | "partial" | "failed";
+  created_at: string;
+  policy: PolicyUsed;
+  progress: { total: number; queued: number; running: number; complete: number; failed: number };
+  counts: { advance: number; escalate: number; pass: number; filtered_out: number };
+  items: BatchItem[];
+  events_url: string;
+  mock: boolean;
+  disclaimer: string;
+}
+
+// ---- push notifications -------------------------------------------------------------------
+
+export interface PushWatchRequest {
+  schema_version: typeof SCHEMA_VERSION;
+  subscription: PushSubscriptionJSON;
+  policy?: PolicyRequest;
+}
+
+export interface PushWatchResponse {
+  schema_version: string;
+  job_id: string;
+  status: "watching" | "sent" | "failed";
+}
+
+// ---- notes (voice notes and typed notes -> form fields) ----------------------------------
+
+export interface NoteTranscript {
+  schema_version: string;
+  text: string;
+  language_code: string | null;
+  /** True when the server has no speech-to-text and returned a fixed example instead of your words. */
+  example: boolean;
+}
+
+export interface NoteSortRequest {
+  schema_version: string;
+  text: string;
+  founding_date?: string;
+}
+
+export type NoteEvidenceField = "name" | "company_name" | "founding_date" | "industry" | "cofounders" | "background"
+  | "work_experience" | "industry_experience" | "prior_startups" | "prior_exits";
+
+export interface NoteSortResponse {
+  schema_version: string;
+  /** Only what the notes state; education and jobs are left to the research agent. */
+  fields: Partial<FieldValues>;
+  founder: { name?: string; company_name?: string };
+  founding_date: string | null;
+  evidence: { field: NoteEvidenceField; quote: string }[];
+  /** Facts that weren't used, mostly because they happened after founding. */
+  kept_out: string[];
+  sorter: "claude" | "mock";
 }

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Note sort response",
+  "description": "POST /v1/notes/sort. Template fields found in the notes, for the investor to check before screening. Only facts true on the founding date become fields; anything later (traction, funding, hires) is listed in kept_out and stays in the notes, which never reach the model. Names are never put into fields.",
+  "type": "object",
+  "required": ["schema_version", "fields", "founder", "founding_date", "evidence", "kept_out", "sorter"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "fields": {
+      "description": "Only the fields the notes state; a field left out means the notes don't say. Education and jobs are left to the research agent: a partial list from a note would replace its fuller one.",
+      "$ref": "common.schema.json#/$defs/profile_fields"
+    },
+    "founder": {
+      "description": "The founder's and company's names, if the notes give them. For the research agent only: never part of the profile the model reads.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "company_name": { "type": "string", "minLength": 1, "maxLength": 120 }
+      }
+    },
+    "founding_date": {
+      "description": "The founding date, if the notes give it; otherwise null.",
+      "oneOf": [{ "$ref": "common.schema.json#/$defs/date_partial" }, { "type": "null" }]
+    },
+    "evidence": {
+      "description": "The words in the notes behind each value, so the investor can see why it was filled.",
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "required": ["field", "quote"],
+        "additionalProperties": false,
+        "properties": {
+          "field": { "enum": ["name", "company_name", "founding_date", "industry", "cofounders", "background", "work_experience", "industry_experience", "prior_startups", "prior_exits"] },
+          "quote": { "type": "string", "minLength": 1, "maxLength": 300 }
+        }
+      }
+    },
+    "kept_out": {
+      "description": "Short descriptions of facts in the notes that were not used for fields, mostly because they happened after the founding date (e.g. 'raised a seed round').",
+      "type": "array",
+      "maxItems": 20,
+      "items": { "type": "string", "minLength": 1, "maxLength": 200 }
+    },
+    "sorter": {
+      "description": "'claude' for the real sorter; 'mock' for the keyword-matching stand-in used in tests and local demos.",
+      "enum": ["claude", "mock"]
+    }
+  }
+}
