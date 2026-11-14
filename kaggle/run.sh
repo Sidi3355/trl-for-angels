@@ -90,6 +90,10 @@ case "$TASK" in
       --out "$WORK/runs/prod" > "$OUT/kev/train_prod.log" 2>&1) || exit 1
     cp "$WORK/runs/prod/report.json" "$OUT/kev/prod_report.json"
     cp "$WORK/runs/prod/chosen/temperatures.json" "$OUT/kev/prod_temperatures.json"
+    # Where export_artifacts.py reads them (data/models/prod/), via kaggle/import_run.py.
+    mkdir -p "$OUT/data/models/prod"
+    cp "$WORK/runs/prod/report.json" "$WORK/runs/prod/chosen/temperatures.json" \
+      "$OUT/data/models/prod/"
     # Publish the production model to a free Hugging Face model repo, for kev_server/.
     if [ -n "${HF_TOKEN:-}" ]; then
       "$WORK/kev/.venv/bin/python" "$REPO/research/hf_hub.py" --report "$OUT/hf.json" \

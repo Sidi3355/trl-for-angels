@@ -54,7 +54,7 @@ STYLE = {
     "extra": ("#6250d6", "X"), "c1a40": ("#e34948", "h"),
 }
 SURFACE, TEXT, TEXT_2, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df"
-DEFAULT_PLOTS = ("c1a,c1b,ctrl", "c1a,c2,c3,c4", "c3,c1a", "c1a40,ctrl,c2,c3")
+DEFAULT_PLOTS = ("c1a,c1b,ctrl", "c1a,c2,c3,c4", "c3,c1a", "c1a40,ctrl,c2,c3", "c2,extra,c3,c4")
 
 
 def read_predictions(pred_dir: Path) -> dict[tuple[str, str], dict]:
