@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+/* Colour tokens: iOS-like grouped surfaces, one accent, and the three verdict colours. */
+:root {
+  --bg: #f2f2f7;
+  --card: #ffffff;
+  --card-2: #f6f6f9;
+  --ink: #111114;
+  --ink-2: #3c3c43;
+  --muted: #6c6c74;
+  --line: rgba(60, 60, 67, 0.16);
+  --accent: #2756c5;
+  --accent-ink: #ffffff;
+  --accent-soft: #e6edfb;
+  --advance: #12784a;
+  --advance-soft: #e1f3e9;
+  --escalate: #9a5b06;
+  --escalate-soft: #fbefd9;
+  --pass: #5a5e69;
+  --pass-soft: #eceef2;
+  --danger: #b8321f;
+  --danger-soft: #fbe8e4;
+  --warn: #7f5400;
+  --warn-soft: #fff3d1;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --card: #1c1c1e;
+    --card-2: #2a2a2d;
+    --ink: #f4f4f6;
+    --ink-2: #d4d4d9;
+    --muted: #9a9aa2;
+    --line: rgba(120, 120, 128, 0.36);
+    --accent: #7c9dff;
+    --accent-ink: #0a1020;
+    --accent-soft: #1a2442;
+    --advance: #54d38f;
+    --advance-soft: #0f2a1c;
+    --escalate: #f1b553;
+    --escalate-soft: #2f2310;
+    --pass: #aeb2bc;
+    --pass-soft: #262629;
+    --danger: #ff7c68;
+    --danger-soft: #3a1611;
+    --warn: #f3c552;
+    --warn-soft: #2f2610;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-card: var(--card);
+  --color-card-2: var(--card-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-advance: var(--advance);
+  --color-advance-soft: var(--advance-soft);
+  --color-escalate: var(--escalate);
+  --color-escalate-soft: var(--escalate-soft);
+  --color-pass: var(--pass);
+  --color-pass-soft: var(--pass-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* iOS zooms into inputs under 16px; keep form text at 16px. */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.pulse-dot {
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise-in {
+  animation: rise-in 0.25s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-dot,
+  .rise-in {
+    animation: none;
+  }
+}

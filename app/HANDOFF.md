@@ -32,28 +32,32 @@ MASTER_PLAN.md that looks inconsistent instead of silently working around it.
 |---|---|---|
 | 1 | API contract and mocks (`app/contract/`) | Done |
 | 2 | FastAPI backend on mocks (`app/backend/`) | Done |
-| 3 | Research agent, merge, render; test on 5 real founders | **In progress:** 30 offline tests; first paid run (Awotona) done for $0.31. Next: the other four, after the owner approves |
-| 4 | Mobile-first Next.js PWA (`app/frontend/`): form, live progress, memo, client-side controls, what-ifs, disclaimer | Not started |
+| 3 | Research agent, merge, render; test on 5 real founders | **Done.** 5 founders for $1.21 in total; the owner has seen the profiles and sources |
+| 4 | Mobile-first Next.js app (`app/frontend/`): form, live progress, memo, client-side controls, what-ifs, disclaimer | **Done, on mocks.** Checked end to end in an emulated iPhone 17, light and dark |
 | 5 | PWA features: manifest, share target, web push; phone test instructions (iOS and Android differ) | Not started |
-| 6 | Hosting: frontend on Vercel, backend on Railway, both on mocks | Not started |
+| 6 | Hosting: frontend on Vercel, backend on Railway, both on mocks | **In progress:** deploy files pushed; the owner is setting up Railway |
 | 7 | Batch mode UI: CSV upload, triage view | Not started (the backend side exists) |
 
-## Next step (task 3, part 2)
+## Next step (task 6: get it on the owner's iPhone)
 
-1. Recreate the venv (it isn't committed):
-   `uv venv app/backend/.venv --python 3.13 && uv pip install --python app/backend/.venv/bin/python -r app/backend/requirements-dev.txt`
-2. Check `SCREENER_ANTHROPIC_API_KEY` is set (never print it). If not, ask the owner to add it as an
-   environment variable in the cloud environment's settings. Not `ANTHROPIC_API_KEY`: Claude Code itself reads that.
-3. ~~Run **one** founder~~ Done on 2026-11-14 (Awotona: $0.31, 62 s, 8 searches). It found three bugs,
-   all fixed: web fetch is refused from this sandbox, and the `submit_profile` schema was too large
-   for strict mode (first too many unions, then "compiled grammar is too large"). A fourth (education
-   dropped because the agent cited the 2025 QS page as its source) is fixed in the prompt; check it
-   holds on the next run.
-4. ~~Show the owner~~ Done. Still open: the owner to confirm in the Claude Console that the usage landed
-   on their key.
-5. Run the other four only after the owner approves, in this sandbox with web fetch off:
-   `AGENT_MAX_FETCHES=0 app/backend/.venv/bin/python app/backend/tools/research_founders.py --spend --only dubugras young paananen cheung`
-   Then stop: task 3 is done when the owner has seen the rendered profiles plus sources.
+The owner asked for the prototype on their phone (2026-11-14), which is the go-ahead to host it.
+
+1. **Railway (the owner does this; this session has no Railway access).** Steps are in `app/README.md`,
+   "Deploy": project from the GitHub repo, branch `app-track`, config file `/app/backend/railway.json`,
+   variables `ACCESS_TOKEN` (the owner's passcode; never ask for it) and `CORS_ORIGIN_REGEX`, then
+   generate a domain. Wait for the owner to send the domain, and check `<domain>/health`.
+2. **Vercel (through the connector).** Project `trl-for-angels`: root directory `app/frontend`, framework
+   Next.js, `NEXT_PUBLIC_API_URL` = the Railway domain, remove the "Ignored Build Step" (`exit 0`). Decide
+   with the owner which branch serves the phone (production branch, or a preview URL, which needs a
+   Vercel login on the phone).
+3. Open the Vercel URL in Safari on the iPhone, enter the passcode, screen a demo founder.
+
+### Task 3 notes, for later
+
+- Research runs in this sandbox need `AGENT_MAX_FETCHES=0`: the API refuses web fetch from here.
+- After the five-founder check the prompt was fixed twice (QS source; founding team from recent pages).
+  The second fix is untested: re-running `young` and `paananen` (about $0.40) would check it.
+- Still open: the owner to confirm in the Claude Console that the usage landed on their key.
 
 ## Decisions made
 

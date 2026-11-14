@@ -21,3 +21,7 @@ out/
 
 # Real-founder research output (task 3 checks): real people, never committed
 backend/.research_runs/
+
+# Next.js generated files
+frontend/next-env.d.ts
+*.tsbuildinfo

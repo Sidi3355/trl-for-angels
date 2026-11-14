@@ -14,8 +14,40 @@ accuracy is claimed.
 | Folder | What it is | Status |
 |---|---|---|
 | `contract/` | JSON Schemas for every request, response and artefact, plus mocks and validators. See `contract/README.md`. | Task 1: done |
-| `backend/` | FastAPI service: screening, live progress (SSE), memos, what-if, batch, artefacts, and the research agent | Task 2: done, on mocks. Task 3: agent built and tested offline; real-founder test pending the key |
-| `frontend/` | Mobile-first Next.js PWA: form, live progress, memo, controls, batch triage | Tasks 4, 5, 7 |
+| `backend/` | FastAPI service: screening, live progress (SSE), memos, what-if, batch, artefacts, and the research agent | Task 2: done, on mocks. Task 3: done (agent tested on 5 real founders) |
+| `frontend/` | Mobile-first Next.js app: form, live progress, memo, client-side controls, what-ifs | Task 4: done, on mocks. PWA features (task 5) and batch UI (task 7) to come |
+
+## Run the frontend locally
+
+Node 20.9 or later. With the backend running on port 8000 (below):
+
+```bash
+cd app/frontend
+npm ci
+npm run dev          # http://localhost:3000; the backend's default CORS setting allows it
+npm test             # the client-side controls must reproduce the backend's verdicts exactly
+npm run typecheck
+```
+
+`NEXT_PUBLIC_API_URL` (default `http://localhost:8000`) points it at another backend. It is read at
+build time, so set it before `npm run build` or in Vercel's environment variables.
+
+What the frontend does, screen by screen:
+
+- **Screen** (`/`): founder name, company, a LinkedIn or website link and the founding date, plus
+  optional "what you already know" fields and notes. The three demo founders start a screening in one tap.
+  "This session" lists earlier memos (kept in `sessionStorage`, so they go when the app closes).
+- **Progress** (`/screenings/[jobId]`): the pipeline's stages and a live feed of searches, sources and
+  fields over server-sent events. It opens the memo when it's ready, and falls back to polling the job if
+  the stream drops.
+- **Memo** (`/memos/[memoId]`): the verdict with a threshold track and the validation hit rates; the
+  controls (target, timeline, risk, filters), recomputed on the phone by `src/lib/policy.ts`, a port of
+  `backend/screener/policy.py` tested against the mock verdicts; the drivers ranked for the current
+  controls, each with a what-if toggle that re-scores through the backend; the outcome and years
+  distributions; every field with its provenance and sources; conflicts, unknowns, notes, sources and
+  the exact text the model read.
+- **Passcode:** if the backend has `ACCESS_TOKEN` set, the app asks for it on the first refused request
+  and keeps it in `sessionStorage` only.
 
 ## Run the backend locally
 
@@ -135,6 +167,20 @@ features), and the `VAPID_*` push-notification keys. `app/backend/.env.example` 
 
 ## Deploy
 
-Planned for task 6: the frontend on Vercel (root directory `app/frontend`), the backend on Railway.
-Note: automatic Vercel builds are switched off for now (the project's "Ignored Build Step" is set to
-`exit 0`), because the repo has no frontend yet and every push made a failed build. Task 6 removes it.
+The frontend goes on Vercel (root directory `app/frontend`) and the backend on Railway.
+
+**Backend (Railway).** `backend/Dockerfile` builds from the repo root and keeps the repo layout, because
+the service reads `app/contract` and `shared/`. `backend/railway.json` points Railway at it and adds the
+`/health` check. One-time setup in Railway's dashboard: create a project from the GitHub repo, then in
+the service's settings set the branch, set the config file path to `/app/backend/railway.json`, add the
+variables below, and generate a domain. Keep it to one replica: jobs and memos live in memory.
+
+| Variable | Value |
+|---|---|
+| `ACCESS_TOKEN` | A passcode of your choice. The app asks for it once per session. |
+| `CORS_ORIGIN_REGEX` | `https://trl-for-angels[a-z0-9-]*\.vercel\.app` (production and preview URLs) |
+| `AGENT`, `SCREENER_ANTHROPIC_API_KEY` | Only for real research: `AGENT=claude` and the key. Leave out to stay on mocks. |
+
+**Frontend (Vercel).** Root directory `app/frontend`, framework Next.js, and `NEXT_PUBLIC_API_URL` set to
+the Railway domain. Until task 6, the Vercel project's "Ignored Build Step" is `exit 0`, so pushes don't
+build; task 6 removes it.
