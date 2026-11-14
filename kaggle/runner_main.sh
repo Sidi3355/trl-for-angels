@@ -13,26 +13,30 @@ TRL_BRANCH="feature/decision-combiner"
 export REPO=/tmp/work/repo WORK=/tmp/work OUT=/kaggle/working/out
 rm -rf "$OUT" && mkdir -p "$OUT"
 LOG="$OUT/run.log"
+# One folder per run, pushed twice: when the run starts (status only) and when it ends.
+TASK=$(sed -n 's/^TASK="\(.*\)"$/\1/p' "$REPO/kaggle/run.sh" | head -1)
+RUN_ID="$(date -u +%Y%m%d-%H%M%S)-${TASK:-unknown}"
+
+status() { echo "$1 $(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$OUT/status.txt"; }
 
 push_results() {
-  local stamp task dest
-  stamp=$(date -u +%Y%m%d-%H%M%S)
-  task=$(cat "$OUT/task.txt" 2>/dev/null || echo unknown)
-  cd "$WORK" && rm -rf results
+  local dest
+  (cd "$WORK" && rm -rf results)
+  cd "$WORK" || return 1
   if ! git -c http.extraHeader="$AUTH" clone -q --depth 1 -b "$RESULTS_BRANCH" "$REPO_URL" results 2>/dev/null; then
     git -c http.extraHeader="$AUTH" clone -q --depth 1 "$REPO_URL" results || return 1
     (cd results && git checkout -q --orphan "$RESULTS_BRANCH" && git rm -rqf --ignore-unmatch .)
   fi
-  dest="$WORK/results/runs/$stamp-$task"
+  dest="$WORK/results/runs/$RUN_ID"
   mkdir -p "$dest"
   (cd "$OUT" && find . -type f -size -5M ! -name '*.safetensors' ! -name '*.pt' ! -name '*.bin' \
      -exec cp --parents {} "$dest/" \;)
   cd results
   git config user.name "kaggle-runner"
   git config user.email "kaggle-runner@users.noreply.github.com"
-  git add -A && git commit -q -m "Kaggle run $stamp ($task)"
+  git add -A && git commit -q -m "Kaggle run $RUN_ID: $(cut -d' ' -f1 "$OUT/status.txt")"
   git -c http.extraHeader="$AUTH" push -q origin "$RESULTS_BRANCH" \
-    && echo "Pushed runs/$stamp-$task to the $RESULTS_BRANCH branch."
+    && echo "Pushed runs/$RUN_ID ($(cat "$OUT/status.txt")) to the $RESULTS_BRANCH branch."
 }
 
 setup() {
@@ -53,6 +57,9 @@ setup() {
     "import torch; print('torch', torch.__version__, 'CUDA available:', torch.cuda.is_available())"
 }
 
+status started
+push_results || echo "PUSH FAILED at start: check that GITHUB_TOKEN has Contents: Read and write"
+
 {
   echo "repo commit: $(git -C "$REPO" rev-parse --short HEAD)"
   if setup; then
@@ -66,4 +73,5 @@ setup() {
 } 2>&1 | tee "$LOG"
 
 echo "== push"
+if grep -q "^run.sh exit: 0$" "$LOG"; then status finished; else status failed; fi
 push_results || echo "PUSH FAILED: check that GITHUB_TOKEN has Contents: Read and write"
