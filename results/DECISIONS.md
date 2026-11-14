@@ -146,6 +146,23 @@ while doing the work: date, decision, reason, evidence. Newest last.
   `Bearer ` header was illegal and stopped every call, including from any saved and reloaded
   model, since saving drops keys.
 
+## 2026-11-14 · Hosting Kev for the app: a free Hugging Face Space (user decision)
+
+- **Decision:** the app's two Kev servers (base Kev answering, the production model deciding)
+  run on a free CPU Docker Space, and the production weights live in a Hugging Face model repo.
+- **Reason:** zero budget, and Kaggle can't serve a live endpoint. Modal's free credit wasn't
+  an option (possible card, and `modal.com` is blocked from this session).
+- **Design:** `hf_space/` runs `kev.serve` (Kev `2074cc4`, CPU torch 2.8, fp32) twice, with a
+  small front door (`proxy.py`) routing `/answerer` and `/decider` and checking `KEV_API_KEY`.
+  The decider serves raw probabilities; the app applies `model.json`'s per-question
+  temperatures. Until D3 publishes the production model, the decider is base Kev as a stand-in,
+  and `/health` says so.
+- **Public repos:** the Space and model repo are public. They hold no secrets, and the endpoint
+  needs the key. The owner can switch them to private, at the cost of an `HF_TOKEN` secret on
+  the Space.
+- **Checked locally (no Docker):** both servers came up on CPU behind the front door. TRL calls
+  through it returned probabilities from both, and a request without the key got 401.
+
 ## 2026-11-14 · Research pipeline: how the Kaggle stages fit together
 
 - **Stages** (`kaggle/run.sh` tasks; each Kaggle run is self-contained, because nothing on

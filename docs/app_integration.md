@@ -51,10 +51,13 @@ For the app session (`app-track`), passed on by the owner. Checked against `app-
    ```
 
    Read `answers.<id>.probabilities`, then apply the temperatures.
-6. **Two Kev servers, not one:** base Kev answers the rules, and the production checkpoint
-   decides. Where they're hosted for the demo, and where the production weights live (likely a free
-   Hugging Face model repo), is still open: Kaggle can't serve a live endpoint, and Kev-0.6B on
-   CPU takes a few seconds per founder.
+6. **Two Kev servers, one Hugging Face Space.** A free CPU Space,
+   `https://<user>-trl-for-angels-kev.hf.space`, serves base Kev at `/answerer/v1/systemone`
+   (the answerer) and the production model at `/decider/v1/systemone` (raw: apply the
+   temperatures). Both need `Authorization: Bearer <KEV_API_KEY>`; set the same key on the
+   backend. `GET /health` reports readiness, and whether the decider is still base Kev standing
+   in. Expect a few seconds per founder on CPU, and about a minute to wake from sleep, so keep
+   the demo cache as the backup. `model.json`'s `endpoint.base_url` will point at `/decider`.
 
 ## Optional
 
