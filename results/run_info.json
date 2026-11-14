@@ -50,8 +50,38 @@
     "global": 42
   },
   "splits": {
-    "planned": {"train": 2000, "val": 400, "test": 600},
+    "planned": {
+      "train": 2000,
+      "val": 400,
+      "test": 600
+    },
     "actual": null
   },
-  "costs_usd": {}
+  "costs_usd": {},
+  "measurements": {
+    "a3_kaggle_t4": {
+      "run": "kaggle-results: runs/20261114-124358-a3",
+      "gpu": "Tesla T4 x2 (one used), driver 580, fp32",
+      "kev_load_seconds": 36.1,
+      "answers_per_second_through_trl": 104.1,
+      "projected_hours_300k_answers": 0.8,
+      "finetune_short_states": {
+        "tokens_mean": 141,
+        "batch": 8,
+        "checkpointing": 0,
+        "seconds_per_step": 1.24,
+        "peak_gpu_mib": 8052,
+        "projected_hours_2000x2epochs": 0.17
+      },
+      "finetune_long_states": {
+        "tokens_mean": 1468,
+        "batch": 8,
+        "checkpointing": 1,
+        "seconds_per_step": 24.55,
+        "peak_gpu_mib": 5710,
+        "projected_hours_2000x2epochs": 3.41,
+        "note": "batch 8 without checkpointing ran out of memory"
+      }
+    }
+  }
 }

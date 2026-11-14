@@ -99,6 +99,24 @@ while doing the work: date, decision, reason, evidence. Newest last.
   short-state training all worked. The long-state training ran out of CPU memory, which is why
   the T4 run checks it.
 
+## 2026-11-14 · A3 · Kev on a Kaggle T4: passed
+
+- **Run:** `kaggle-results` branch, `runs/20261114-124358-a3/` (runner at repo commit `dddaa04`).
+- **Environment:** Tesla T4 (sm 7.5, in torch 2.8+cu128's arch list), driver 580, no native bf16,
+  so Kev runs in fp32. Kaggle gave two T4s; one was used.
+- **Endpoint (A3 "done when"):** Kev-0.6B served on CUDA in fp32 (loaded in 36 s), and one call
+  through TRL's `LLMSession` returned probabilities identical to the CPU run.
+- **Answering speed:** 4,000 answers (40 profiles × 100 questions) in 38 s through TRL, about
+  104 answers/s, so all ~300,000 answers take about 0.8 GPU-hours.
+- **Fine-tuning with Kev's recipe, `--max_state 4096`, fp32:**
+  - short states (C4-like, about 141 tokens): batch 8, 1.24 s/step, 8.1 GB peak, so 2,000 records
+    × 2 epochs take about 0.17 h.
+  - long states (C3-like, 1,468 tokens with synthetic questions): batch 8 runs out of memory
+    on 15 GB; with gradient checkpointing it works at 24.6 s/step and 5.7 GB, so about 3.4 h for
+    2 epochs. Real RRF questions may be longer, which would push this up.
+- **To decide at C1-train:** for C3, use both T4s, train 1 epoch, or a shorter serialisation;
+  choose once the real state lengths are known. Every option fits one Kaggle session.
+
 ## 2026-11-14 · A1 · Open item: TRL's cache location
 
 - **Note:** TRL's disk cache defaults to `~/.cache/think_reason_learn/llm-cache-v2.sqlite`, which
