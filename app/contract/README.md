@@ -19,10 +19,13 @@ Contract version: `0.1.0` (every document carries `schema_version`).
 | `artifacts/*.schema.json` | **Proposed** formats for the research outputs `rules.json`, `thresholds.json`, `model.json`, for the research session to confirm |
 | `mocks/` | Mock artefacts with the real file names (`rules.json`, `thresholds.json`, `model.json`) plus `mock_memo.json` (3 founders) |
 | `examples/` | One valid example of every other request and response, plus `batch.csv` |
-| `tools/template.py` | Renders and parses the frozen template; the grammar check for every rendered profile |
-| `tools/policy.py` | Reference implementation of the investor controls (the frontend ports it) |
-| `tools/mock_model.py` | Mock answerer and decider, so the mocks are internally consistent. **Not the real model.** |
-| `tools/build_mocks.py`, `tools/validate.py` | Regenerate the mocks; validate everything |
+| `tools/build_mocks.py` | Regenerates `mocks/` and `examples/`. The memos, events and what-if come from running the backend's own pipeline on the demo founders |
+| `tools/validate.py` | Validates everything: schemas plus cross-file rules (verdicts, sources, template grammar) |
+
+The logic these tools use lives in the backend package, so the service and the mocks can't drift:
+`app/backend/screener/template.py` (renders and parses the frozen template), `screener/policy.py`
+(the investor controls; the frontend ports it), `screener/mocks/model.py` (mock answerer and decider,
+**not the real model**) and `screener/mocks/founders.py` (the three fictional demo founders).
 
 ```bash
 pip install -r app/contract/requirements.txt
@@ -31,7 +34,7 @@ python app/contract/tools/validate.py        # schemas + cross-file consistency
 python app/contract/tools/validate.py --artifacts shared/artifacts   # once the real artefacts exist
 ```
 
-## API surface (implemented in task 2)
+## API surface (implemented in `app/backend`)
 
 | Method and path | Body | Returns |
 |---|---|---|
@@ -44,6 +47,11 @@ python app/contract/tools/validate.py --artifacts shared/artifacts   # once the 
 | `POST /v1/batches` | batch request (JSON) or a CSV file | batch response (202) |
 | `GET /v1/batches/{batch_id}` and `/events` | | batch response; SSE stream of `batch_item` events |
 | `GET /v1/artifacts/{rules,thresholds,model}` | | the active artefacts, so the client can compute controls itself |
+| `GET /v1/demo/founders` | | investor inputs for the three fictional demo founders |
+
+Errors always look like `{"error": {"code", "message", "retryable"}, "details": [...]}`: 400 bad JSON,
+401 wrong access token, 404 not found or expired, 422 breaks the contract (details name the field, or the
+CSV row), 503 a component isn't configured. Event streams also accept `?after=N` and `?format=json`.
 
 ## Rules the schemas encode
 

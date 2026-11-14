@@ -11,6 +11,8 @@ plausible what-if results before Jev and the production Kev are wired in.
 
 from __future__ import annotations
 
+import hashlib
+import json
 import math
 import re
 
@@ -205,12 +207,39 @@ YEARS_GIVEN_OUTCOME = {  # shut-downs are mostly fast; big outcomes mostly take 
 }
 
 
-def mock_answer(fields: dict) -> list[float]:
-    """Mock Jev: P(yes) for each rule, in rule order, from merged template field values."""
-    f = {k: fields.get(k, U) for k in (
+_BY_ID = {rid: (fn, w) for rid, _, fn, w, _ in RULES}
+
+
+def _unit(*parts: str) -> float:
+    """A stable pseudo-random number in [0, 1) from the given strings."""
+    digest = hashlib.sha256("\x1f".join(parts).encode()).digest()
+    return int.from_bytes(digest[:8], "big") / 2**64
+
+
+def _full(fields: dict) -> dict:
+    return {k: fields.get(k, U) for k in (
         "industry", "cofounders", "background", "work_experience", "industry_experience",
         "education", "jobs", "prior_startups", "prior_exits")}
-    return [round(fn(f), 2) for _, _, fn, _, _ in RULES]
+
+
+def mock_answer(fields: dict, rule_ids: list[str] | None = None) -> list[float]:
+    """Mock Jev: P(yes) per rule, in rule order, from merged template field values.
+
+    Mock rules (r01-r20) use their hand-written answer functions. Any other rule ID (e.g. the real
+    rules.json while Jev is still mocked) gets a stable placeholder in [0.05, 0.95].
+    """
+    f = _full(fields)
+    ids = rule_ids if rule_ids is not None else RULE_IDS
+    key = json.dumps(f, sort_keys=True)
+    return [round(_BY_ID[r][0](f), 2) if r in _BY_ID else round(0.05 + 0.9 * _unit("answer", r, key), 2)
+            for r in ids]
+
+
+def rule_weight(rule_id: str, n_rules: int) -> float:
+    """The mock decider's weight on 'yes' for a rule; placeholder weights for unknown rules."""
+    if rule_id in _BY_ID:
+        return _BY_ID[rule_id][1]
+    return (-0.35 + 0.95 * _unit("weight", rule_id)) * math.sqrt(len(RULES) / max(n_rules, 1))
 
 
 def binary(p_yes: list[float], threshold: float = 0.5) -> list[int]:
@@ -221,9 +250,13 @@ def _sigmoid(z: float) -> float:
     return 1 / (1 + math.exp(-z))
 
 
-def mock_decide(x: list[int]) -> dict:
+def mock_decide(x: list[int], rule_ids: list[str] | None = None) -> dict:
     """Mock production Kev: outcome and years distributions from binary answers (rule order)."""
-    s = BIAS + SCALE * sum(w * xi for (_, _, _, w, _), xi in zip(RULES, x))
+    ids = rule_ids if rule_ids is not None else RULE_IDS
+    if ids == RULE_IDS:
+        s = BIAS + SCALE * sum(w * xi for (_, _, _, w, _), xi in zip(RULES, x))
+    else:  # unknown rules: centred so a founder with half yes answers sits near the base rates
+        s = SCALE * sum(rule_weight(r, len(ids)) * (xi - 0.5) for r, xi in zip(ids, x))
     above = [_sigmoid(s - c) for c in CUTS]
     probs = [1 - above[0], above[0] - above[1], above[1] - above[2], above[2] - above[3], above[3]]
     outcome = {b: round(p, 4) for b, p in zip(OUTCOME_BANDS, probs)}

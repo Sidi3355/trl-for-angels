@@ -23,6 +23,11 @@ FIELD_KEYS = (
     "industry", "cofounders", "background", "work_experience", "industry_experience",
     "education", "jobs", "prior_startups", "prior_exits",
 )
+FIELD_LABELS = {
+    "industry": "Industry", "cofounders": "Co-founders", "background": "Background",
+    "work_experience": "Work experience", "industry_experience": "Industry experience", "education": "Education",
+    "jobs": "Jobs", "prior_startups": "Prior startups", "prior_exits": "Prior exits",
+}
 COFOUNDERS = ("solo", "1", "2", "3+")
 BACKGROUND = ("technical", "business", "mixed", "domain specialist")
 WORK_EXPERIENCE = ("<5", "5-10", "10-15", "15+")

@@ -4,7 +4,8 @@ cross-file rules a schema can't express.
     python app/contract/tools/validate.py                         # mocks + examples
     python app/contract/tools/validate.py --artifacts shared/artifacts   # real artefacts too
 
-Needs `jsonschema` (pip install jsonschema). Exits non-zero on the first file with errors.
+Needs app/contract/requirements.txt. Exits non-zero if anything fails. Uses the backend's own
+template, policy and contract modules (app/backend/screener), so it checks what the service does.
 """
 
 from __future__ import annotations
@@ -15,18 +16,19 @@ import math
 import sys
 from pathlib import Path
 
-from jsonschema import Draft202012Validator, FormatChecker
-from referencing import Registry, Resource
+from jsonschema import Draft202012Validator
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE))
-
-import policy  # noqa: E402
-from template import TemplateError, consistency_issues, parse, render, unknown_paths  # noqa: E402
-
 CONTRACT = HERE.parent
+sys.path.insert(0, str(CONTRACT.parent / "backend"))
+
+from screener import policy  # noqa: E402
+from screener.contract import Contract  # noqa: E402
+from screener.template import TemplateError, consistency_issues, parse, render, unknown_paths  # noqa: E402
+
 SCHEMAS = CONTRACT / "schemas"
 ARTIFACT_SCHEMAS = CONTRACT / "artifacts"
+CONTRACT_SCHEMAS = Contract(CONTRACT)
 FAILURES: list[str] = []
 
 
@@ -34,40 +36,9 @@ def fail(where: str, msg: str) -> None:
     FAILURES.append(f"{where}: {msg}")
 
 
-def _registry() -> Registry:
-    def retrieve(uri: str):
-        name = uri.rsplit("/", 1)[-1]
-        for d in (SCHEMAS, ARTIFACT_SCHEMAS):
-            if (d / name).exists():
-                return Resource.from_contents(json.loads((d / name).read_text()))
-        raise LookupError(uri)
-    return Registry(retrieve=retrieve)
-
-
-REGISTRY = _registry()
-
-
-def validator(schema_path: Path) -> Draft202012Validator:
-    schema = json.loads(schema_path.read_text())
-    Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, registry=REGISTRY, format_checker=FormatChecker())
-
-
-def _leaf_errors(errors):
-    """Expand combinator errors and drop 'unevaluated properties' noise when a real error explains it."""
-    out = []
-    for err in errors:
-        out += _leaf_errors(err.context) if err.validator == "allOf" and err.context else [err]
-    real = {tuple(e.absolute_path)[:-1] for e in out if e.validator != "unevaluatedProperties"}
-    real |= {tuple(e.absolute_path) for e in out if e.validator != "unevaluatedProperties"}
-    return [e for e in out if not (e.validator == "unevaluatedProperties" and tuple(e.absolute_path) in real)] or out
-
-
 def check_schema(where: str, doc, schema_path: Path) -> None:
-    errors = _leaf_errors(list(validator(schema_path).iter_errors(doc)))
-    for err in sorted(errors, key=lambda e: [str(p) for p in e.absolute_path]):
-        path = "/".join(str(p) for p in err.absolute_path) or "(root)"
-        fail(where, f"{path}: {err.message[:300]}")
+    for err in CONTRACT_SCHEMAS.errors(schema_path.name.removesuffix(".schema.json"), doc):
+        fail(where, err)
 
 
 def close(a: float, b: float, tol: float = 1e-3) -> bool:

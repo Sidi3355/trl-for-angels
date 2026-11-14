@@ -388,7 +388,7 @@
       "required": ["code", "message"],
       "additionalProperties": false,
       "properties": {
-        "code": { "enum": ["mock_artifacts", "many_unknowns", "founding_date_assumed", "conflicts_present", "research_partial", "thresholds_sparse", "timeline_estimate"] },
+        "code": { "enum": ["mock_artifacts", "many_unknowns", "founding_date_assumed", "conflicts_present", "research_partial", "thresholds_sparse", "timeline_estimate", "profile_inconsistent"] },
         "message": { "type": "string", "maxLength": 400 }
       }
     },
