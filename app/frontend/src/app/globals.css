@@ -2,40 +2,49 @@
 
 /*
   Screener design tokens.
-  Layout: one calm column on phones (bottom tab bar), sidebar + wide two-column memo on desktop.
-  Colour: cool, slightly blue-biased neutrals; one ink-blue accent; verdict colours are status
-  colours (always with an icon and a label); charts use validated ramps (dataviz skill).
-  Type: Space Grotesk for display (titles, the verdict, big figures), Inter for everything else.
+  Direction: a printed odds slip. Neutral paper, black ink, one typeface (Archivo) used at three
+  widths: extra-condensed for the big figures, normal for reading, wide capitals for small labels.
+  Colour is saved for the verdict: a full-colour slab (green, amber or ink) carries the decision,
+  everything around it stays black on paper. Buttons and selections are ink, not a brand hue.
+  Verdicts always come with an icon and a label; charts keep the validated ramps (dataviz skill).
 */
 :root {
-  --bg: #f4f5f8;
+  --bg: #eeeeea;
   --surface: #ffffff;
-  --surface-2: #f0f2f6;
-  --surface-3: #e6e9f0;
-  --ink: #0d1120;
-  --ink-2: #3a4155;
-  --muted: #687087;
-  --faint: #9ba2b3;
-  --line: #e3e6ed;
-  --line-strong: #cfd4de;
-  --accent: #2446d8;
-  --accent-hover: #1c39b8;
+  --surface-2: #f4f4f1;
+  --surface-3: #e3e3de;
+  --ink: #0e0f0e;
+  --ink-2: #2e302e;
+  --muted: #5b5e5a;
+  --faint: #6c6f6a;
+  --line: #dededa;
+  --line-strong: #c4c4be;
+  --accent: #0e0f0e;
+  --accent-hover: #2c2e2c;
   --accent-ink: #ffffff;
-  --accent-soft: #e9eefd;
+  --accent-soft: #e3e3de;
 
-  --advance: #0f7f3f;
-  --advance-fill: #16a34a;
-  --advance-soft: #e3f4ea;
-  --escalate: #985b00;
-  --escalate-fill: #f5a524;
-  --escalate-soft: #fdf0d9;
-  --pass: #586075;
-  --pass-fill: #8a92a6;
-  --pass-soft: #eceef3;
-  --danger: #c2352c;
-  --danger-soft: #fdecea;
-  --warn: #855400;
-  --warn-soft: #fff3d2;
+  --advance: #0a6a3a;
+  --advance-fill: #1fb96b;
+  --advance-soft: #d9f4e4;
+  --escalate: #7f4d00;
+  --escalate-fill: #f0a21a;
+  --escalate-soft: #fcebc7;
+  --pass: #44474b;
+  --pass-fill: #7c8086;
+  --pass-soft: #e5e5e1;
+  --danger: #b3261e;
+  --danger-soft: #fbe4e1;
+  --warn: #7a4b00;
+  --warn-soft: #fbebc8;
+
+  /* the verdict slab: one loud block per memo */
+  --slab-advance: #35d685;
+  --slab-advance-ink: #04210f;
+  --slab-escalate: #ffb930;
+  --slab-escalate-ink: #2a1800;
+  --slab-pass: #17181a;
+  --slab-pass-ink: #f4f4f0;
 
   /* charts (validated with the dataviz palette script) */
   --viz-o1: #86b6ef;
@@ -48,44 +57,51 @@
   --viz-y3: #a8431a;
   --viz-up: #2a78d6;
   --viz-down: #e34948;
-  --viz-track: #e7eaf1;
+  --viz-track: #e3e3de;
 
-  --shadow-1: 0 1px 2px rgba(13, 17, 32, 0.05), 0 1px 1px rgba(13, 17, 32, 0.03);
-  --shadow-2: 0 12px 32px -12px rgba(13, 17, 32, 0.22), 0 2px 6px rgba(13, 17, 32, 0.06);
-  --overlay: rgba(9, 12, 22, 0.42);
+  --dock: #0e0f0e;
+  --dock-ink: #ffffff;
+  --shadow-1: 0 1px 0 rgba(14, 15, 14, 0.04);
+  --shadow-2: 0 24px 48px -16px rgba(14, 15, 14, 0.28), 0 4px 10px rgba(14, 15, 14, 0.08);
+  --overlay: rgba(14, 15, 14, 0.5);
+  /* room for the floating tab dock on phones */
+  --dock-clear: calc(max(env(safe-area-inset-bottom), 12px) + 76px);
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #090b10;
-    --surface: #12151d;
-    --surface-2: #191d27;
-    --surface-3: #232836;
-    --ink: #eef0f6;
-    --ink-2: #c5cad7;
-    --muted: #8c94a8;
-    --faint: #5f677b;
-    --line: #232837;
-    --line-strong: #333a4c;
-    --accent: #7e96ff;
-    --accent-hover: #95a8ff;
-    --accent-ink: #0a1024;
-    --accent-soft: #1a2245;
+    --bg: #0b0c0c;
+    --surface: #151616;
+    --surface-2: #1d1e1e;
+    --surface-3: #2a2c2b;
+    --ink: #f3f3ef;
+    --ink-2: #cfd0cb;
+    --muted: #9c9e99;
+    --faint: #878984;
+    --line: #262727;
+    --line-strong: #3b3d3c;
+    --accent: #f3f3ef;
+    --accent-hover: #ffffff;
+    --accent-ink: #0e0f0e;
+    --accent-soft: #2a2c2b;
 
-    --advance: #45d184;
-    --advance-fill: #22a85a;
-    --advance-soft: #0f2a1c;
-    --escalate: #f4b552;
-    --escalate-fill: #e0961c;
-    --escalate-soft: #2f2410;
-    --pass: #a9afbd;
-    --pass-fill: #6d7487;
-    --pass-soft: #1e212a;
-    --danger: #ff7d70;
+    --advance: #4fe396;
+    --advance-fill: #2cc777;
+    --advance-soft: #0f2a1b;
+    --escalate: #ffc65c;
+    --escalate-fill: #e9a01f;
+    --escalate-soft: #2e220b;
+    --pass: #b9bbb6;
+    --pass-fill: #6f7375;
+    --pass-soft: #202121;
+    --danger: #ff8479;
     --danger-soft: #3a1714;
     --warn: #f4c653;
     --warn-soft: #2f2611;
+
+    --slab-pass: #27292b;
+    --slab-pass-ink: #f3f3ef;
 
     --viz-o1: #184f95;
     --viz-o2: #256abf;
@@ -97,11 +113,13 @@
     --viz-y3: #f49a6e;
     --viz-up: #3987e5;
     --viz-down: #e66767;
-    --viz-track: #232836;
+    --viz-track: #2a2c2b;
 
-    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-2: 0 16px 40px -12px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(0, 0, 0, 0.4);
-    --overlay: rgba(0, 0, 0, 0.6);
+    --dock: #232525;
+    --dock-ink: #f3f3ef;
+    --shadow-1: 0 1px 0 rgba(0, 0, 0, 0.4);
+    --shadow-2: 0 24px 48px -16px rgba(0, 0, 0, 0.8), 0 4px 10px rgba(0, 0, 0, 0.4);
+    --overlay: rgba(0, 0, 0, 0.66);
     color-scheme: dark;
   }
 }
@@ -134,8 +152,10 @@
   --color-danger-soft: var(--danger-soft);
   --color-warn: var(--warn);
   --color-warn-soft: var(--warn-soft);
-  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-display: var(--font-grotesk), var(--font-inter), -apple-system, "Segoe UI", sans-serif;
+  --color-dock: var(--dock);
+  --color-dock-ink: var(--dock-ink);
+  --font-sans: var(--font-archivo), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-archivo), -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --shadow-card: var(--shadow-1);
   --shadow-float: var(--shadow-2);
@@ -150,7 +170,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
-  font-feature-settings: "cv11", "ss01";
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
@@ -171,19 +191,71 @@ textarea {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--ink);
   outline-offset: 2px;
   border-radius: 8px;
 }
 
-.tabular {
-  font-variant-numeric: tabular-nums;
+::selection {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+@layer components {
+  /* Archivo's width axis is the voice: condensed figures, wide capital labels. */
+  .cond {
+    font-stretch: 62%;
+    font-variation-settings: "wdth" 62;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+  .semi-cond {
+    font-stretch: 80%;
+    font-variation-settings: "wdth" 80;
+  }
+  .wide {
+    font-stretch: 116%;
+    font-variation-settings: "wdth" 116;
+  }
+  .eyebrow {
+    font-stretch: 116%;
+    font-variation-settings: "wdth" 116;
+    font-size: 10.5px;
+    font-weight: 650;
+    letter-spacing: 0.09em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The verdict slab's paper grain. */
+  .slab {
+    position: relative;
+    isolation: isolate;
+  }
+  .slab::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0.22;
+    mix-blend-mode: soft-light;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* Hatching marks the "pass" zone of a gauge, so zones differ by pattern as well as tone. */
+  .hatch {
+    background-image: repeating-linear-gradient(135deg, currentColor 0 1.5px, transparent 1.5px 5px);
+  }
 }
 
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -195,6 +267,16 @@ textarea {
     transform: translateY(100%);
   }
   to {
+    transform: none;
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
     transform: none;
   }
 }
@@ -212,7 +294,7 @@ textarea {
     opacity: 1;
   }
   50% {
-    opacity: 0.35;
+    opacity: 0.3;
   }
 }
 @keyframes shimmer {
@@ -225,21 +307,43 @@ textarea {
 }
 
 .anim-fade-up {
-  animation: fade-up 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: fade-up 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 .anim-fade-in {
   animation: fade-in 0.2s ease-out both;
 }
 .anim-sheet-up {
-  animation: sheet-up 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: sheet-up 0.38s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+@media (min-width: 640px) {
+  .anim-sheet-up {
+    animation-name: pop-in;
+    animation-duration: 0.26s;
+  }
 }
 .anim-pulse {
-  animation: pulse-soft 1.4s ease-in-out infinite;
+  animation: pulse-soft 1.2s ease-in-out infinite;
 }
 .skeleton {
   background: linear-gradient(90deg, var(--surface-2) 0%, var(--surface-3) 50%, var(--surface-2) 100%);
   background-size: 200% 100%;
   animation: shimmer 1.6s linear infinite;
+}
+/* Children of a .stagger container rise in one after another. */
+.stagger > * {
+  animation: fade-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.stagger > *:nth-child(2) {
+  animation-delay: 60ms;
+}
+.stagger > *:nth-child(3) {
+  animation-delay: 120ms;
+}
+.stagger > *:nth-child(4) {
+  animation-delay: 180ms;
+}
+.stagger > *:nth-child(n + 5) {
+  animation-delay: 240ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -247,8 +351,12 @@ textarea {
   .anim-fade-in,
   .anim-sheet-up,
   .anim-pulse,
-  .skeleton {
+  .skeleton,
+  .stagger > * {
     animation: none;
+  }
+  * {
+    transition-duration: 0.01ms !important;
   }
 }
 

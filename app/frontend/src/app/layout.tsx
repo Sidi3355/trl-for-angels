@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Archivo } from "next/font/google";
 import type { ReactNode } from "react";
 
 import { AppShell } from "@/components/AppShell";
@@ -8,8 +8,8 @@ import { PasscodeGate } from "@/components/PasscodeGate";
 import "./globals.css";
 
 // Self-hosted at build time by next/font: no request to Google from the user's phone.
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const grotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-grotesk", display: "swap", weight: ["500", "600", "700"] });
+// One variable family; its width axis gives the condensed figures and the wide labels.
+const archivo = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-archivo", display: "swap" });
 
 export const metadata: Metadata = {
   title: { default: "Screener", template: "%s · Screener" },
@@ -28,14 +28,14 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f4f5f8" },
-    { media: "(prefers-color-scheme: dark)", color: "#090b10" },
+    { media: "(prefers-color-scheme: light)", color: "#eeeeea" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0c0c" },
   ],
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${grotesk.variable}`}>
+    <html lang="en" className={archivo.variable}>
       <body>
         <AppStateProvider>
           <AppShell>{children}</AppShell>

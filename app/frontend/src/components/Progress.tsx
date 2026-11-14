@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { IconAlert, IconCheck, IconDoc, IconFlip, IconSearch, IconUser } from "@/components/icons";
-import { Button, Card, Notice, Page, Spinner, cx } from "@/components/ui";
+import { Button, Notice, Page, Spinner, VerdictBadge, cx, linkClass } from "@/components/ui";
 import { api, eventsUrl, type ApiError } from "@/lib/api";
 import { DECISION_LABELS } from "@/lib/format";
 import { EVENT_TYPES, type Decision, type ProgressEvent, type Stage } from "@/lib/types";
@@ -24,7 +24,7 @@ const FEED = new Set(["search", "source", "field", "conflict", "warning", "error
 function FeedIcon({ type }: { type: string }) {
   const c = "mt-[1px] shrink-0";
   if (type === "search") return <IconSearch size={17} className={cx(c, "text-faint")} />;
-  if (type === "source") return <IconDoc size={17} className={cx(c, "text-accent")} />;
+  if (type === "source") return <IconDoc size={17} className={cx(c, "text-ink")} />;
   if (type === "field") return <IconUser size={17} className={cx(c, "text-advance")} />;
   if (type === "conflict") return <IconFlip size={17} className={cx(c, "text-escalate")} />;
   return <IconAlert size={17} className={cx(c, "text-warn")} />;
@@ -109,33 +109,65 @@ export function Progress({ jobId }: { jobId: string }) {
   };
   const feed = showAll ? events : events.slice(-6);
 
+  const stepNo = Math.min(STEPS.length, Math.max(1, at));
+
   return (
     <Page>
-      <div className="pt-6 lg:pt-4">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.06em] text-muted">{ready ? "Done" : error ? "Stopped" : "Screening"}</p>
-        <h1 className="mt-1 font-display text-[30px] font-semibold leading-[1.1] tracking-[-0.02em] lg:text-[36px]">
-          {ready ? "Memo ready" : who ? `Researching ${who}` : "Starting…"}
-        </h1>
-        <p className="mt-2 text-[15px] text-muted" aria-live="polite">
-          {ready ? `Verdict: ${DECISION_LABELS[ready.decision]}. Opening the memo…` : error ? "The screening couldn't finish." : current?.detail ?? "Getting ready"}
-        </p>
-
-        <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-surface-3" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label="Progress">
-          <div className={cx("h-full rounded-full transition-[width] duration-700 ease-out", error ? "bg-danger" : ready ? "bg-advance-fill" : "bg-accent")} style={{ width: `${ready ? 100 : pct}%` }} />
+      <div className="pt-4 lg:pt-2">
+        <div className="flex items-end justify-between gap-4">
+          <div className="min-w-0">
+            <p className="eyebrow text-muted">{ready ? "Done" : error ? "Stopped" : "Screening"}</p>
+            <h1 className="mt-2 text-[36px] font-extrabold leading-[1] tracking-[-0.04em] lg:text-[50px]">
+              {ready ? "Memo ready" : who ? `Researching ${who}` : "Starting…"}
+            </h1>
+          </div>
+          <p className="cond shrink-0 text-[64px] font-black leading-[0.78] lg:text-[84px]" aria-hidden>
+            {stepNo}
+            <span className="text-[0.5em] text-faint">/{STEPS.length}</span>
+          </p>
         </div>
-        <ol className="mt-3 grid grid-cols-3 gap-x-3 gap-y-1.5 text-[12.5px] sm:grid-cols-6">
+
+        <div className="mt-6 flex gap-1.5" role="progressbar" aria-valuenow={Math.round(ready ? 100 : pct)} aria-valuemin={0} aria-valuemax={100} aria-label="Progress">
           {STEPS.map((s) => {
             const idx = ORDER.indexOf(s.stage);
             const isDone = at > idx;
             const isNow = at === idx && !error;
             return (
-              <li key={s.stage} className={cx("flex shrink-0 items-center gap-1 font-medium", isDone ? "text-ink-2" : isNow ? "text-accent" : "text-faint")}>
-                {isDone ? <IconCheck size={14} strokeWidth={2.4} className="text-advance" /> : isNow ? <Spinner size={12} /> : null}
+              <span key={s.stage} className={cx("h-2.5 flex-1 rounded-full transition-colors duration-500", error && at === idx ? "bg-danger" : isDone ? "bg-ink" : isNow ? "anim-pulse bg-ink" : "bg-line-strong")} />
+            );
+          })}
+        </div>
+        <ol className="mt-2.5 hidden gap-1.5 text-[12.5px] sm:flex">
+          {STEPS.map((s) => {
+            const idx = ORDER.indexOf(s.stage);
+            const isDone = at > idx;
+            const isNow = at === idx && !error;
+            return (
+              <li key={s.stage} className={cx("flex flex-1 items-center gap-1", isDone ? "font-medium text-ink-2" : isNow ? "font-bold text-ink" : "text-faint")}>
+                {isDone && <IconCheck size={13} strokeWidth={2.6} />}
                 {s.label}
               </li>
             );
           })}
         </ol>
+        <p className="mt-4 flex min-h-[1.5em] items-start gap-2 text-[16px] font-medium text-ink-2" aria-live="polite">
+          {ready ? (
+            <>
+              <span className="sr-only">Verdict: {DECISION_LABELS[ready.decision]}.</span>
+              <VerdictBadge decision={ready.decision} /> Opening the memo…
+            </>
+          ) : error ? (
+            "The screening couldn't finish."
+          ) : (
+            <>
+              <Spinner size={15} className="mt-[4px] shrink-0 text-muted" />
+              <span>
+                <span className="font-bold text-ink sm:hidden">{current?.label ?? "Getting ready"}. </span>
+                {current?.detail ?? "Getting ready"}
+              </span>
+            </>
+          )}
+        </p>
       </div>
 
       {error && (
@@ -147,18 +179,25 @@ export function Progress({ jobId }: { jobId: string }) {
         </div>
       )}
 
-      <Card className="mt-8 overflow-hidden">
-        <div className="flex items-center justify-between border-b border-line px-4 py-3">
-          <h2 className="text-[15px] font-semibold">What the agent found</h2>
-          <span className="text-[13px] tabular text-muted">
-            {counts.sources} source{counts.sources === 1 ? "" : "s"} · {counts.facts} fact{counts.facts === 1 ? "" : "s"}
-          </span>
+      <section className="mt-10" aria-labelledby="found">
+        <div className="flex items-end justify-between gap-4 border-t-2 border-ink pt-3">
+          <h2 id="found" className="text-[21px] font-bold tracking-[-0.025em]">
+            What the agent found
+          </h2>
+          <p className="flex items-baseline gap-4 text-[13px] font-medium text-muted">
+            <span>
+              <span className="cond mr-1 text-[26px] font-extrabold leading-none text-ink">{counts.sources}</span>source{counts.sources === 1 ? "" : "s"}
+            </span>
+            <span>
+              <span className="cond mr-1 text-[26px] font-extrabold leading-none text-ink">{counts.facts}</span>fact{counts.facts === 1 ? "" : "s"}
+            </span>
+          </p>
         </div>
-        <div className="px-4 py-2">
+        <div className="mt-2">
           {events.length === 0 ? (
-            <div className="space-y-3 py-2">
+            <div className="space-y-4 py-3">
               {[70, 55, 80].map((w) => (
-                <div key={w} className="flex items-center gap-2.5">
+                <div key={w} className="flex items-center gap-3">
                   <span className="skeleton h-4 w-4 rounded" />
                   <span className="skeleton h-3.5 rounded" style={{ width: `${w}%` }} />
                 </div>
@@ -167,13 +206,13 @@ export function Progress({ jobId }: { jobId: string }) {
           ) : (
             <>
               {!showAll && events.length > 6 && (
-                <button type="button" onClick={() => setShowAll(true)} className="w-full py-2 text-left text-[13px] font-medium text-accent">
+                <button type="button" onClick={() => setShowAll(true)} className={cx(linkClass, "my-2 text-[13.5px]")}>
                   Show {events.length - 6} earlier
                 </button>
               )}
               <ul>
                 {feed.map((ev) => (
-                  <li key={ev.seq} className={cx("anim-fade-up flex gap-2.5 py-2 text-[14.5px] leading-snug", ev.type === "search" ? "text-muted" : "text-ink-2")}>
+                  <li key={ev.seq} className={cx("anim-fade-up flex gap-3 border-b border-line py-3 text-[15px] leading-snug", ev.type === "search" ? "text-muted" : "text-ink")}>
                     <FeedIcon type={ev.type} />
                     <span className="min-w-0 break-words">{ev.message}</span>
                   </li>
@@ -182,8 +221,8 @@ export function Progress({ jobId }: { jobId: string }) {
             </>
           )}
         </div>
-      </Card>
-      <p className="mt-3 px-1 text-[12.5px] leading-snug text-faint">Only facts from before the founding date reach the model. Anything later goes to the memo&apos;s notes.</p>
+      </section>
+      <p className="mt-4 text-[12.5px] leading-snug text-faint">Only facts from before the founding date reach the model. Anything later goes to the memo&apos;s notes.</p>
     </Page>
   );
 }

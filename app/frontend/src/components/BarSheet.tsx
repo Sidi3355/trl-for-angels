@@ -54,17 +54,17 @@ function BarSheetBody({ bar, setBar, thresholdsReady, onClose }: { bar: Policy; 
     const table = tableFor(thresholdsReady, bar.target, bar.timeline_years);
     readout = (
       <div className="space-y-3">
-        <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-2xl bg-surface p-3">
-            <p className="font-display text-[26px] font-semibold leading-none tabular">{percent(r.expected_precision)}</p>
-            <p className="mt-1.5 text-[12.5px] leading-snug text-muted">of founders you advance reach {target}{horizon} ({oneIn(r.expected_precision)})</p>
+        <div className="grid grid-cols-2 gap-5">
+          <div>
+            <p className="cond text-[56px] font-black leading-[0.82]">{percent(r.expected_precision)}</p>
+            <p className="mt-2 text-[13px] leading-snug text-ink-2">of founders you advance reach {target}{horizon} ({oneIn(r.expected_precision)})</p>
           </div>
-          <div className="rounded-2xl bg-surface p-3">
-            <p className="font-display text-[26px] font-semibold leading-none tabular">{percent(r.expected_recall)}</p>
-            <p className="mt-1.5 text-[12.5px] leading-snug text-muted">of the founders who reach it get advanced</p>
+          <div>
+            <p className="cond text-[56px] font-black leading-[0.82]">{percent(r.expected_recall)}</p>
+            <p className="mt-2 text-[13px] leading-snug text-ink-2">of the founders who reach it get advanced</p>
           </div>
         </div>
-        <p className="text-[13px] leading-snug text-muted">
+        <p className="border-t border-line-strong pt-3 text-[13px] leading-snug text-muted">
           For comparison, {percent(table.base_rate)} of all founders reach {target}
           {horizon}. Auto-pass skips {percent(r.missed_winners_if_pass)} of eventual winners.
           {r.sparse && (
@@ -88,10 +88,10 @@ function BarSheetBody({ bar, setBar, thresholdsReady, onClose }: { bar: Policy; 
       title="Your bar"
       footer={
         <div className="flex items-center gap-3">
-          <Button variant="secondary" onClick={() => setBar(DEFAULT_POLICY)}>
+          <Button variant="secondary" size="lg" onClick={() => setBar(DEFAULT_POLICY)}>
             Reset
           </Button>
-          <Button full onClick={onClose}>
+          <Button full size="lg" onClick={onClose}>
             Done
           </Button>
         </div>
@@ -101,7 +101,7 @@ function BarSheetBody({ bar, setBar, thresholdsReady, onClose }: { bar: Policy; 
 
       <div className="mt-5 space-y-5">
         <div>
-          <p className="mb-2 text-[14px] font-semibold">Target outcome</p>
+          <p className="mb-2 text-[15px] font-bold tracking-[-0.01em]">Target outcome</p>
           <Segmented
             label="Target outcome"
             size="lg"
@@ -115,7 +115,7 @@ function BarSheetBody({ bar, setBar, thresholdsReady, onClose }: { bar: Policy; 
           />
         </div>
         <div>
-          <p className="mb-2 text-[14px] font-semibold">Within</p>
+          <p className="mb-2 text-[15px] font-bold tracking-[-0.01em]">Within</p>
           <Segmented
             label="Timeline"
             value={bar.timeline_years}
@@ -129,7 +129,7 @@ function BarSheetBody({ bar, setBar, thresholdsReady, onClose }: { bar: Policy; 
           {bar.timeline_years !== null && <p className="mt-1.5 text-[12.5px] text-muted">With a timeline the chance is an estimate: it treats outcome size and timing as independent.</p>}
         </div>
         <div>
-          <p className="mb-2 text-[14px] font-semibold">Risk appetite</p>
+          <p className="mb-2 text-[15px] font-bold tracking-[-0.01em]">Risk appetite</p>
           <Segmented
             label="Risk appetite"
             size="lg"
@@ -143,15 +143,15 @@ function BarSheetBody({ bar, setBar, thresholdsReady, onClose }: { bar: Policy; 
           />
         </div>
 
-        <div className="rounded-[20px] bg-surface-2 p-4">
-          <p className="mb-3 text-[14px] font-semibold">What this bar means</p>
+        <div className="rounded-[20px] bg-surface-2 p-5 ring-1 ring-inset ring-line">
+          <p className="eyebrow mb-4 text-muted">What this bar means</p>
           {readout}
         </div>
 
         <div className="border-t border-line pt-4">
           <button type="button" onClick={() => setShowFilters((v) => !v)} aria-expanded={showFilters} className="flex w-full items-center justify-between text-left">
             <span>
-              <span className="block text-[14px] font-semibold">
+              <span className="block text-[15px] font-bold tracking-[-0.01em]">
                 Hard filters{activeFilterCount(bar) > 0 && <span className="ml-1.5 rounded-full bg-accent px-1.5 py-[1px] text-[11px] text-accent-ink">{activeFilterCount(bar)}</span>}
               </span>
               <span className="block text-[13px] text-muted">Founders outside them are flagged, whatever their score.</span>
@@ -161,15 +161,15 @@ function BarSheetBody({ bar, setBar, thresholdsReady, onClose }: { bar: Policy; 
           {showFilters && (
             <div className="mt-4 space-y-4">
               <div>
-                <p className="mb-1.5 text-[13px] text-muted">Team</p>
+                <p className="mb-1.5 text-[13.5px] font-medium text-ink-2">Team</p>
                 <Segmented label="Team" value={f.team ?? "any"} onChange={(v) => setFilter({ team: v === "any" ? null : (v as "solo" | "team") })} options={[{ value: "any", label: "Any" }, { value: "solo", label: "Solo" }, { value: "team", label: "Team" }]} />
               </div>
               <div>
-                <p className="mb-1.5 text-[13px] text-muted">Technical founder</p>
+                <p className="mb-1.5 text-[13.5px] font-medium text-ink-2">Technical founder</p>
                 <Segmented label="Technical founder" value={triOf(f.technical)} onChange={(v) => setFilter({ technical: boolOf(v) })} options={[{ value: "any", label: "Any" }, { value: "yes", label: "Yes" }, { value: "no", label: "No" }]} />
               </div>
               <div>
-                <p className="mb-1.5 text-[13px] text-muted">Has founded before</p>
+                <p className="mb-1.5 text-[13.5px] font-medium text-ink-2">Has founded before</p>
                 <Segmented label="Has founded before" value={triOf(f.repeat_founder)} onChange={(v) => setFilter({ repeat_founder: boolOf(v) })} options={[{ value: "any", label: "Any" }, { value: "yes", label: "Repeat" }, { value: "no", label: "First-time" }]} />
               </div>
               <div>
@@ -184,7 +184,7 @@ function BarSheetBody({ bar, setBar, thresholdsReady, onClose }: { bar: Policy; 
                     setFilter({ sectors: sectors.length ? sectors : null });
                   }}
                   placeholder="e.g. fintech, climate"
-                  className="h-11 w-full rounded-xl border border-line bg-surface px-3.5 outline-none focus:border-accent"
+                  className="h-12 w-full rounded-[12px] border border-line-strong bg-surface px-3.5 outline-none transition-colors placeholder:text-faint focus:border-ink"
                 />
               </div>
               <p className="text-[12.5px] text-muted">A founder whose value is unknown fails an active filter.</p>

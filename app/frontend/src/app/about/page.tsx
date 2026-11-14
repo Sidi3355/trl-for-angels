@@ -5,17 +5,20 @@ import { useEffect, useState } from "react";
 
 import { useApp } from "@/components/AppState";
 import { BarSummary } from "@/components/BarSheet";
-import { IconEye, IconLock, IconSearch, IconSliders, IconSparkle } from "@/components/icons";
-import { Button, Card, Disclaimer, Page, PageHeader, SectionTitle, VerdictBadge, cx } from "@/components/ui";
+import { IconLock } from "@/components/icons";
+import { Button, Disclaimer, Page, PageHeader, SectionTitle, VerdictTile, cx } from "@/components/ui";
 import { API_URL, getPasscode, setPasscode } from "@/lib/api";
+import { DECISION_LABELS } from "@/lib/format";
 import { clearDeals } from "@/lib/session";
 
 const STEPS = [
-  { icon: IconSearch, title: "Research", body: "An AI agent searches the web for the founder's background, and keeps only what was true on the day the company was founded. Every fact links to its source." },
-  { icon: IconEye, title: "Anonymise", body: "Names of people, companies and universities are removed, and the background is written into the same standard profile the model was trained on." },
-  { icon: IconSparkle, title: "Score", body: "Screening questions are answered from the profile, and a calibrated decision model estimates how big the outcome could be, and how long it could take." },
-  { icon: IconSliders, title: "Decide", body: "Your bar turns that chance into advance, escalate or pass. Change it any time: every verdict updates instantly." },
+  { title: "Research", body: "An AI agent searches the web for the founder's background, and keeps only what was true on the day the company was founded. Every fact links to its source." },
+  { title: "Anonymise", body: "Names of people, companies and universities are removed, and the background is written into the same standard profile the model was trained on." },
+  { title: "Score", body: "Screening questions are answered from the profile, and a calibrated decision model estimates how big the outcome could be, and how long it could take." },
+  { title: "Decide", body: "Your bar turns that chance into advance, escalate or pass. Change it any time: every verdict updates instantly." },
 ];
+
+const row = "flex items-center justify-between gap-4 border-b border-line py-4";
 
 export default function AboutPage() {
   const { bar, openBarSheet, health, healthError, deals } = useApp();
@@ -27,28 +30,25 @@ export default function AboutPage() {
     <Page>
       <PageHeader title="How it works" subtitle="Angels screen alone. Screener does the first pass for you: research, a calibrated score, and the reasons behind it." />
 
-      <ol className="space-y-3">
-        {STEPS.map(({ icon: Icon, title, body }, i) => (
-          <li key={title}>
-            <Card className="flex gap-4 p-4">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent">
-                <Icon size={20} />
-              </span>
-              <div>
-                <p className="text-[15px] font-semibold">
-                  <span className="mr-1.5 text-faint tabular">{i + 1}</span>
-                  {title}
-                </p>
-                <p className="mt-1 text-[14px] leading-relaxed text-muted">{body}</p>
-              </div>
-            </Card>
+      <ol className="grid gap-x-10 sm:grid-cols-2">
+        {STEPS.map(({ title, body }, i) => (
+          <li key={title} className="flex gap-4 border-t border-line-strong py-5">
+            <span className="cond w-7 shrink-0 text-[56px] font-black leading-[0.8]" aria-hidden>
+              {i + 1}
+            </span>
+            <div>
+              <p className="text-[19px] font-bold tracking-[-0.02em]">{title}</p>
+              <p className="mt-1.5 text-[14.5px] leading-relaxed text-muted">{body}</p>
+            </div>
           </li>
         ))}
       </ol>
 
       <section className="mt-10">
-        <SectionTitle>Reading a verdict</SectionTitle>
-        <Card className="divide-y divide-line">
+        <SectionTitle note="The chance is the share of founders with a background like this who reached your target in the model's data. It is calibrated, so 30% means about 3 in 10.">
+          Reading a verdict
+        </SectionTitle>
+        <ul>
           {(
             [
               ["advance", "The chance clears your bar. Worth a meeting."],
@@ -56,43 +56,43 @@ export default function AboutPage() {
               ["pass", "Below your bar. Few founders like this reached your target in testing."],
             ] as const
           ).map(([d, text]) => (
-            <div key={d} className="flex items-center gap-3 px-4 py-3.5">
-              <span className="w-[92px] shrink-0">
-                <VerdictBadge decision={d} />
-              </span>
-              <p className="text-[14px] leading-snug text-ink-2">{text}</p>
-            </div>
+            <li key={d} className="flex items-center gap-4 border-b border-line py-3.5">
+              <VerdictTile decision={d} size={44} />
+              <p className="text-[15px] leading-snug text-ink-2">
+                <strong className="block text-[17px] font-bold tracking-[-0.015em] text-ink">{DECISION_LABELS[d]}</strong>
+                {text}
+              </p>
+            </li>
           ))}
-        </Card>
-        <p className="mt-2 px-1 text-[12.5px] leading-snug text-faint">
-          The chance is the share of founders with a background like this who reached your target in the model&apos;s data. It is calibrated, so 30% means about 3 in 10.
-        </p>
+        </ul>
       </section>
 
-      <section className="mt-10">
+      <section className="mt-12">
         <SectionTitle>Settings</SectionTitle>
-        <Card className="divide-y divide-line">
-          <button type="button" onClick={openBarSheet} className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left hover:bg-surface-2">
-            <span>
-              <span className="block text-[15px] font-medium">Your bar</span>
-              <span className="block text-[13px] text-muted">
+        <div className="-mt-3.5">
+          <div className={row}>
+            <span className="min-w-0">
+              <span className="block text-[15.5px] font-semibold">Your bar</span>
+              <span className="block text-[13.5px] text-muted">
                 <BarSummary bar={bar} />
               </span>
             </span>
-            <span className="text-[14px] font-medium text-accent">Change</span>
-          </button>
-          <div className="flex items-center justify-between gap-3 px-4 py-3.5">
-            <span>
-              <span className="block text-[15px] font-medium">This session&apos;s founders</span>
-              <span className="block text-[13px] text-muted">{cleared ? "Cleared." : `${deals.length} founder${deals.length === 1 ? "" : "s"}. Gone when you close the app.`}</span>
+            <Button variant="secondary" onClick={openBarSheet}>
+              Change
+            </Button>
+          </div>
+          <div className={row}>
+            <span className="min-w-0">
+              <span className="block text-[15.5px] font-semibold">This session&apos;s founders</span>
+              <span className="block text-[13.5px] text-muted">{cleared ? "Cleared." : `${deals.length} founder${deals.length === 1 ? "" : "s"}. Gone when you close the app.`}</span>
             </span>
             <Button variant="secondary" disabled={!deals.length} onClick={() => { clearDeals(); setCleared(true); }}>
               Clear
             </Button>
           </div>
           {hasCode && (
-            <div className="flex items-center justify-between gap-3 px-4 py-3.5">
-              <span className="flex items-center gap-2 text-[15px] font-medium">
+            <div className={row}>
+              <span className="flex items-center gap-2 text-[15.5px] font-semibold">
                 <IconLock size={17} className="text-muted" /> Passcode saved for this session
               </span>
               <Button variant="secondary" onClick={() => { setPasscode(null); setHasCode(false); }}>
@@ -100,30 +100,36 @@ export default function AboutPage() {
               </Button>
             </div>
           )}
-          <div className="flex items-center justify-between gap-3 px-4 py-3.5">
+          <div className={row}>
             <span className="min-w-0">
-              <span className="block text-[15px] font-medium">Service</span>
-              <span className="block truncate text-[13px] text-muted">{API_URL.replace(/^https?:\/\//, "")}</span>
+              <span className="block text-[15.5px] font-semibold">Service</span>
+              <span className="block truncate text-[13.5px] text-muted">{API_URL.replace(/^https?:\/\//, "")}</span>
             </span>
-            <span className={cx("shrink-0 text-[13px] font-medium", healthError ? "text-danger" : health ? "text-advance" : "text-muted")}>
-              {healthError ? "Offline" : health ? (health.mock ? "Online · prototype" : "Online") : "Checking…"}
+            <span className={cx("flex shrink-0 items-center gap-1.5 text-[13.5px] font-semibold", healthError ? "text-danger" : health ? "text-ink" : "text-muted")}>
+              {health && !healthError && <span className={cx("h-2 w-2 rounded-full", health.mock ? "bg-escalate-fill" : "bg-advance-fill")} aria-hidden />}
+              {healthError ? "Offline" : health ? (health.mock ? "Online · prototype, example scores" : "Online") : "Checking…"}
             </span>
           </div>
-        </Card>
+        </div>
       </section>
 
-      <section className="mt-10">
+      <section className="mt-12">
         <SectionTitle>Privacy</SectionTitle>
-        <Card className="p-4">
-          <ul className="space-y-2 text-[14px] leading-relaxed text-ink-2">
-            <li>Only public information is used.</li>
-            <li>Your notes appear in the memo and are never sent to the model.</li>
-            <li>Nothing is kept after your session: memos are deleted on the server, and the deals list lives only in this app until you close it.</li>
-          </ul>
-        </Card>
+        <ul className="space-y-2.5 text-[15px] leading-relaxed text-ink-2">
+          {[
+            "Only public information is used.",
+            "Your notes appear in the memo and are never sent to the model.",
+            "Nothing is kept after your session: memos are deleted on the server, and the founders list lives only in this app until you close it.",
+          ].map((t) => (
+            <li key={t} className="flex gap-3">
+              <span className="mt-[0.6em] h-[3px] w-3 shrink-0 rounded-full bg-ink" aria-hidden />
+              {t}
+            </li>
+          ))}
+        </ul>
       </section>
 
-      <Disclaimer className="mt-10" />
+      <Disclaimer className="mt-12" />
     </Page>
   );
 }

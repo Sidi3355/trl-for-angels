@@ -28,28 +28,31 @@ function Stacked({ title, bands, colors, counted, bracketLabel }: { title: strin
 
   return (
     <div>
-      <div className="flex items-baseline justify-between gap-3">
-        <h3 className="text-[15px] font-semibold">{title}</h3>
+      <div className="flex items-end justify-between gap-3">
+        <h3 className="text-[15px] font-bold">{title}</h3>
+        {first >= 0 && (
+          <p className="text-right text-[13px] font-medium leading-tight text-muted">
+            {bracketLabel}
+            <span className="cond ml-2 align-[-0.12em] text-[30px] font-extrabold leading-none text-ink">{percent(sum)}</span>
+          </p>
+        )}
       </div>
       {first >= 0 && (
-        <div className="relative mt-3 h-6" aria-hidden>
-          <div className="absolute bottom-0 h-2.5 rounded-t-md border-x-2 border-t-2 border-ink/70" style={{ left: `${left}%`, width: `calc(${width}% - 2px)` }} />
-          <span className="absolute bottom-3 whitespace-nowrap text-[12px] font-semibold text-ink" style={left + width / 2 > 70 ? { right: `${100 - left - width}%` } : { left: `${left}%` }}>
-            {bracketLabel}: {percent(sum)}
-          </span>
+        <div className="relative mt-2 h-2.5" aria-hidden>
+          <div className="absolute bottom-0 h-2 rounded-t-[4px] border-x-2 border-t-2 border-ink" style={{ left: `${left}%`, width: `max(4px, calc(${width}% - 2px))` }} />
         </div>
       )}
-      <div className="mt-1 flex h-4 gap-[2px] overflow-hidden rounded-[6px]" role="img" aria-label={bands.map((b) => `${b.label} ${percent(b.p)}`).join(", ")}>
+      <div className="mt-1 flex h-7 gap-[2px] overflow-hidden rounded-[8px]" role="img" aria-label={bands.map((b) => `${b.label} ${percent(b.p)}`).join(", ")}>
         {bands.map((b, i) => (
-          <div key={b.key} title={`${b.label}: ${percent(b.p)}`} className="h-full first:rounded-l-[6px] last:rounded-r-[6px]" style={{ width: `${(b.p / total) * 100}%`, minWidth: b.p > 0 ? 2 : 0, background: colors[i] }} />
+          <div key={b.key} title={`${b.label}: ${percent(b.p)}`} className="h-full transition-[width] duration-500 ease-out" style={{ width: `${(b.p / total) * 100}%`, minWidth: b.p > 0 ? 2 : 0, background: colors[i] }} />
         ))}
       </div>
-      <ul className="mt-3 grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2">
+      <ul className="mt-3.5 grid grid-cols-1 gap-x-8 gap-y-1.5 sm:grid-cols-2">
         {bands.map((b, i) => (
-          <li key={b.key} className="flex items-center gap-2 text-[13.5px]">
-            <span className="h-2.5 w-2.5 shrink-0 rounded-[3px]" style={{ background: colors[i] }} aria-hidden />
-            <span className={cx("flex-1", counted(i) ? "font-medium text-ink" : "text-muted")}>{b.label}</span>
-            <span className={cx("tabular", counted(i) ? "font-semibold text-ink" : "text-muted")}>{percent(b.p)}</span>
+          <li key={b.key} className="flex items-center gap-2.5 text-[14px]">
+            <span className="h-3 w-3 shrink-0 rounded-[3px]" style={{ background: colors[i] }} aria-hidden />
+            <span className={cx("flex-1", counted(i) ? "font-semibold text-ink" : "text-muted")}>{b.label}</span>
+            <span className={cx("tabular", counted(i) ? "font-bold text-ink" : "text-muted")}>{percent(b.p)}</span>
           </li>
         ))}
       </ul>
@@ -63,7 +66,7 @@ export function Outcome({ d, bar }: { d: Distributions; bar: Policy }) {
   return (
     <section aria-labelledby="outcome">
       <SectionTitle id="outcome">How it could end</SectionTitle>
-      <Card className="space-y-7 p-5">
+      <Card className="space-y-8 p-5 sm:p-6">
         <Stacked
           title="Outcome"
           bands={OUTCOME_BANDS.map((b) => ({ key: b, label: OUTCOME_LABEL[b], p: d.outcome[b] }))}

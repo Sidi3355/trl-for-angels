@@ -2,7 +2,7 @@
 
 // Building blocks shared by every screen.
 import Link from "next/link";
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { IconAlert, IconArrowUpRight, IconChevronLeft, IconMinus, IconX } from "@/components/icons";
 import type { Decision } from "@/lib/types";
@@ -13,13 +13,13 @@ export function cx(...parts: (string | false | null | undefined)[]): string {
 
 // ---- layout -----------------------------------------------------------------------------------
 
-/** A page's content column. `wide` for the memo's two-column desktop layout. */
+/** A page's content column. `wide` for the two-column desktop layouts. */
 export function Page({ children, wide = false, className }: { children: ReactNode; wide?: boolean; className?: string }) {
   return (
     <div
       className={cx(
-        "mx-auto w-full pb-10 pl-[max(16px,env(safe-area-inset-left))] pr-[max(16px,env(safe-area-inset-right))] pt-[max(env(safe-area-inset-top),12px)] sm:px-6 lg:px-10 lg:pt-10",
-        wide ? "max-w-6xl" : "max-w-3xl",
+        "mx-auto w-full pb-10 pl-[max(20px,env(safe-area-inset-left))] pr-[max(20px,env(safe-area-inset-right))] pt-2 sm:px-8 lg:px-12 lg:pt-12",
+        wide ? "max-w-[1120px]" : "max-w-[720px]",
         className,
       )}
     >
@@ -28,18 +28,19 @@ export function Page({ children, wide = false, className }: { children: ReactNod
   );
 }
 
-export function PageHeader({ title, subtitle, back, action }: { title: ReactNode; subtitle?: ReactNode; back?: { href: string; label: string }; action?: ReactNode }) {
+export function PageHeader({ title, subtitle, back, action, eyebrow }: { title: ReactNode; subtitle?: ReactNode; back?: { href: string; label: string }; action?: ReactNode; eyebrow?: ReactNode }) {
   return (
-    <header className="pb-5 pt-2 lg:pt-0">
+    <header className="pb-6 pt-3 lg:pt-0">
       {back && (
-        <Link href={back.href} className="-ml-1.5 mb-2 inline-flex items-center gap-0.5 rounded-lg py-1 pr-2 text-[15px] font-medium text-accent active:opacity-60 lg:hover:text-accent-hover">
-          <IconChevronLeft size={20} /> {back.label}
+        <Link href={back.href} className="-ml-1.5 mb-3 inline-flex items-center gap-0.5 rounded-lg py-1 pr-2 text-[14px] font-medium text-muted transition-colors hover:text-ink active:opacity-60">
+          <IconChevronLeft size={18} /> {back.label}
         </Link>
       )}
+      {eyebrow && <p className="eyebrow mb-2 text-muted">{eyebrow}</p>}
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="font-display text-[30px] font-semibold leading-[1.1] tracking-[-0.02em] lg:text-[36px]">{title}</h1>
-          {subtitle && <p className="mt-1.5 text-[15px] leading-snug text-muted">{subtitle}</p>}
+          <h1 className="text-[34px] font-extrabold leading-[1.02] tracking-[-0.035em] lg:text-[46px]">{title}</h1>
+          {subtitle && <div className="mt-2.5 max-w-[54ch] text-[15.5px] leading-snug text-muted">{subtitle}</div>}
         </div>
         {action && <div className="shrink-0 pt-1">{action}</div>}
       </div>
@@ -47,19 +48,23 @@ export function PageHeader({ title, subtitle, back, action }: { title: ReactNode
   );
 }
 
-export function SectionTitle({ children, action, id }: { children: ReactNode; action?: ReactNode; id?: string }) {
+export function SectionTitle({ children, action, id, note }: { children: ReactNode; action?: ReactNode; id?: string; note?: ReactNode }) {
   return (
-    <div className="mb-3 flex items-end justify-between gap-3">
-      <h2 id={id} className="font-display text-[19px] font-semibold tracking-[-0.01em]">
-        {children}
-      </h2>
-      {action}
+    <div className="mb-3.5 border-t-2 border-ink pt-3">
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 id={id} className="text-[21px] font-bold leading-tight tracking-[-0.025em]">
+          {children}
+        </h2>
+        {action}
+      </div>
+      {note && <p className="mt-1 text-[13.5px] leading-snug text-muted">{note}</p>}
     </div>
   );
 }
 
+/** A plain panel. Used sparingly: most sections sit straight on the paper under a rule. */
 export function Card({ children, className, as: As = "div" }: { children: ReactNode; className?: string; as?: "div" | "section" }) {
-  return <As className={cx("rounded-[20px] border border-line bg-surface shadow-card", className)}>{children}</As>;
+  return <As className={cx("rounded-[18px] border border-line bg-surface", className)}>{children}</As>;
 }
 
 // ---- controls ---------------------------------------------------------------------------------
@@ -77,11 +82,11 @@ export function Button({ children, variant = "primary", size = "md", full, class
     <button
       {...rest}
       className={cx(
-        "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-[background,opacity,transform] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50",
-        size === "lg" ? "h-[52px] px-6 text-[16px]" : "h-10 px-4 text-[15px]",
+        "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-[background,opacity,transform] duration-150 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-45",
+        size === "lg" ? "h-[54px] px-7 text-[16.5px]" : "h-10 px-4.5 text-[14.5px]",
         variant === "primary" && "bg-accent text-accent-ink hover:bg-accent-hover",
-        variant === "secondary" && "bg-surface-2 text-ink hover:bg-surface-3",
-        variant === "ghost" && "text-accent hover:bg-accent-soft",
+        variant === "secondary" && "bg-surface-3 text-ink hover:bg-line-strong",
+        variant === "ghost" && "text-ink underline decoration-line-strong decoration-2 underline-offset-4 hover:decoration-ink",
         full && "w-full",
         className,
       )}
@@ -90,6 +95,9 @@ export function Button({ children, variant = "primary", size = "md", full, class
     </button>
   );
 }
+
+/** An inline text action: ink, underlined. */
+export const linkClass = "font-semibold text-ink underline decoration-line-strong decoration-[1.5px] underline-offset-[3px] transition-colors hover:decoration-ink";
 
 export function Segmented<T extends string | number | null>({
   label,
@@ -105,7 +113,7 @@ export function Segmented<T extends string | number | null>({
   size?: "md" | "lg";
 }) {
   return (
-    <div role="radiogroup" aria-label={label} className="flex gap-1 rounded-[14px] bg-surface-2 p-1">
+    <div role="radiogroup" aria-label={label} className="flex gap-1 rounded-[16px] bg-surface-2 p-1 ring-1 ring-inset ring-line">
       {options.map((o) => {
         const on = o.value === value;
         return (
@@ -116,13 +124,13 @@ export function Segmented<T extends string | number | null>({
             aria-checked={on}
             onClick={() => onChange(o.value)}
             className={cx(
-              "flex-1 rounded-[10px] px-2 text-center font-medium",
+              "flex-1 rounded-[12px] px-2 text-center transition-[background,color] duration-150",
               size === "lg" ? "py-2.5" : "py-2",
-              on ? "bg-surface text-ink shadow-[0_1px_3px_rgba(13,17,32,0.14)] dark:bg-surface-3" : "text-muted hover:text-ink",
+              on ? "bg-ink text-bg" : "text-ink-2 hover:bg-surface-3",
             )}
           >
-            <span className="block text-[14px] leading-tight">{o.label}</span>
-            {o.hint && <span className={cx("mt-0.5 block text-[11px] leading-tight", on ? "text-muted" : "text-faint")}>{o.hint}</span>}
+            <span className={cx("block leading-tight", size === "lg" ? "text-[16px] font-bold tracking-[-0.01em]" : "text-[14px] font-semibold")}>{o.label}</span>
+            {o.hint && <span className={cx("mt-0.5 block text-[11.5px] leading-tight", on ? "opacity-70" : "text-muted")}>{o.hint}</span>}
           </button>
         );
       })}
@@ -139,9 +147,9 @@ export function Switch({ id, checked, onChange, label }: { id?: string; checked:
       aria-checked={checked}
       aria-label={label}
       onClick={() => onChange(!checked)}
-      className={cx("relative h-[31px] w-[51px] shrink-0 rounded-full transition-colors", checked ? "bg-advance-fill" : "bg-surface-3")}
+      className={cx("relative h-[32px] w-[54px] shrink-0 rounded-full transition-colors duration-200", checked ? "bg-ink" : "bg-line-strong")}
     >
-      <span className={cx("absolute top-[2px] h-[27px] w-[27px] rounded-full bg-white shadow-[0_2px_4px_rgba(0,0,0,0.2)] transition-[left] duration-200", checked ? "left-[22px]" : "left-[2px]")} />
+      <span className={cx("absolute top-[3px] h-[26px] w-[26px] rounded-full bg-bg shadow-[0_1px_3px_rgba(0,0,0,0.3)] transition-[left] duration-200", checked ? "left-[25px]" : "left-[3px]")} />
     </button>
   );
 }
@@ -160,8 +168,8 @@ export function ChipPicker<T extends string>({ label, value, options, onChange }
             aria-checked={on}
             onClick={() => onChange(on ? "" : o.value)}
             className={cx(
-              "h-9 rounded-full border px-3.5 text-[14px] font-medium transition-colors",
-              on ? "border-accent bg-accent text-accent-ink" : "border-line-strong bg-surface text-ink-2 hover:border-faint",
+              "h-10 rounded-full border px-4 text-[14.5px] font-medium transition-colors duration-150",
+              on ? "border-ink bg-ink text-bg" : "border-line-strong text-ink-2 hover:border-ink",
             )}
           >
             {o.label}
@@ -180,19 +188,36 @@ const VERDICT_STYLE: Record<Decision, { pill: string; dot: string; label: string
   pass: { pill: "bg-pass-soft text-pass", dot: "bg-pass-fill", label: "Pass" },
 };
 
+/** The slab colours: the verdict as a block of colour with its own ink. */
+export const SLAB: Record<Decision, string> = {
+  advance: "bg-[var(--slab-advance)] text-[var(--slab-advance-ink)]",
+  escalate: "bg-[var(--slab-escalate)] text-[var(--slab-escalate-ink)]",
+  pass: "bg-[var(--slab-pass)] text-[var(--slab-pass-ink)]",
+};
+
 export function VerdictIcon({ decision, size = 14 }: { decision: Decision; size?: number }) {
-  if (decision === "advance") return <IconArrowUpRight size={size} strokeWidth={2.4} />;
-  if (decision === "escalate") return <IconAlert size={size} strokeWidth={2.2} />;
-  return <IconMinus size={size} strokeWidth={2.6} />;
+  if (decision === "advance") return <IconArrowUpRight size={size} strokeWidth={2.6} />;
+  if (decision === "escalate") return <IconAlert size={size} strokeWidth={2.3} />;
+  return <IconMinus size={size} strokeWidth={2.8} />;
 }
 
 /** The verdict as a status pill: colour plus icon plus label, never colour alone. */
 export function VerdictBadge({ decision, size = "md" }: { decision: Decision; size?: "sm" | "md" }) {
   const s = VERDICT_STYLE[decision];
   return (
-    <span className={cx("inline-flex items-center gap-1 rounded-full font-semibold", s.pill, size === "sm" ? "px-2 py-0.5 text-[12px]" : "px-2.5 py-1 text-[13px]")}>
+    <span className={cx("inline-flex items-center gap-1 rounded-full font-bold", s.pill, size === "sm" ? "px-2 py-[3px] text-[12px]" : "px-2.5 py-1 text-[13px]")}>
       <VerdictIcon decision={decision} size={size === "sm" ? 12 : 14} />
       {s.label}
+    </span>
+  );
+}
+
+/** A small square of the slab colour with the verdict's icon: the verdict at a glance in lists. */
+export function VerdictTile({ decision, size = 44 }: { decision: Decision | null; size?: number }) {
+  if (!decision) return <span className="skeleton shrink-0 rounded-[12px]" style={{ width: size, height: size }} />;
+  return (
+    <span aria-hidden className={cx("inline-flex shrink-0 items-center justify-center rounded-[12px]", SLAB[decision])} style={{ width: size, height: size }}>
+      <VerdictIcon decision={decision} size={Math.round(size * 0.45)} />
     </span>
   );
 }
@@ -203,25 +228,35 @@ export function verdictDot(decision: Decision): string {
 
 export function Tag({ children, tone = "neutral", title }: { children: ReactNode; tone?: "neutral" | "accent" | "warn" | "good"; title?: string }) {
   const tones = {
-    neutral: "bg-surface-2 text-muted",
-    accent: "bg-accent-soft text-accent",
+    neutral: "bg-surface-3 text-ink-2",
+    accent: "bg-ink text-bg",
     warn: "bg-warn-soft text-warn",
     good: "bg-advance-soft text-advance",
   };
   return (
-    <span title={title} className={cx("inline-flex items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-[1px] text-[11.5px] font-medium", tones[tone])}>
+    <span title={title} className={cx("inline-flex items-center gap-1 whitespace-nowrap rounded-[6px] px-1.5 py-[2px] text-[11.5px] font-semibold leading-none", tones[tone])}>
       {children}
     </span>
   );
 }
 
-export function Notice({ tone, title, children, action }: { tone: "warn" | "danger" | "info"; title?: string; children: ReactNode; action?: ReactNode }) {
-  const tones = { warn: "bg-warn-soft text-warn", danger: "bg-danger-soft text-danger", info: "bg-accent-soft text-accent" };
+/** A footnote-style source number that jumps to the source list. */
+export function SourceRef({ id }: { id: string }) {
   return (
-    <div className={cx("flex items-start gap-3 rounded-2xl px-4 py-3 text-[14px] leading-snug", tones[tone])} role={tone === "danger" ? "alert" : undefined}>
+    <a href={`#source-${id}`} className="tabular inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full border border-line-strong px-1 text-[11px] font-semibold leading-none text-ink-2 transition-colors hover:border-ink hover:bg-ink hover:text-bg">
+      {id.replace(/^s/, "")}
+    </a>
+  );
+}
+
+export function Notice({ tone, title, children, action }: { tone: "warn" | "danger" | "info"; title?: string; children: ReactNode; action?: ReactNode }) {
+  const tones = { warn: "bg-warn-soft text-warn", danger: "bg-danger-soft text-danger", info: "bg-surface-3 text-ink-2" };
+  return (
+    <div className={cx("flex items-start gap-3 rounded-[14px] px-4 py-3 text-[14px] leading-snug", tones[tone])} role={tone === "danger" ? "alert" : undefined}>
+      <IconAlert size={18} className="mt-[1px] shrink-0" />
       <div className="min-w-0 flex-1">
-        {title && <p className="font-semibold">{title}</p>}
-        <div className={title ? "mt-0.5 opacity-90" : undefined}>{children}</div>
+        {title && <p className="font-bold">{title}</p>}
+        <div className={title ? "mt-0.5" : undefined}>{children}</div>
       </div>
       {action}
     </div>
@@ -237,6 +272,7 @@ export function Spinner({ size = 16, className }: { size?: number; className?: s
   );
 }
 
+/** A monogram: the founder's initials, set tight in a square. */
 export function Avatar({ name, size = 40 }: { name: string; size?: number }) {
   const initials = name
     .split(/\s+/)
@@ -247,12 +283,38 @@ export function Avatar({ name, size = 40 }: { name: string; size?: number }) {
   return (
     <span
       aria-hidden
-      className="inline-flex shrink-0 items-center justify-center rounded-full bg-surface-3 font-display font-semibold text-ink-2"
-      style={{ width: size, height: size, fontSize: size * 0.38 }}
+      className="semi-cond inline-flex shrink-0 items-center justify-center rounded-[12px] bg-surface-3 font-extrabold tracking-[-0.02em] text-ink"
+      style={{ width: size, height: size, fontSize: size * 0.42 }}
     >
       {initials || "?"}
     </span>
   );
+}
+
+/** Counts a number up (or across) to its new value. Jumps straight there with reduced motion. */
+export function useCountTo(target: number, ms = 520): number {
+  const [shown, setShown] = useState(target);
+  const from = useRef(target);
+  useEffect(() => {
+    const start = from.current;
+    if (start === target || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      from.current = target;
+      setShown(target);
+      return;
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = (now: number) => {
+      const k = Math.min(1, (now - t0) / ms);
+      const v = start + (target - start) * (1 - Math.pow(1 - k, 3));
+      from.current = v;
+      setShown(v);
+      if (k < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, ms]);
+  return shown;
 }
 
 // ---- overlay ----------------------------------------------------------------------------------
@@ -275,20 +337,20 @@ export function Sheet({ open, onClose, title, children, footer }: { open: boolea
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-label={title}>
-      <button type="button" aria-label="Close" onClick={onClose} className="anim-fade-in absolute inset-0 cursor-default bg-[var(--overlay)]" />
+      <button type="button" aria-label="Close" onClick={onClose} className="anim-fade-in absolute inset-0 cursor-default bg-[var(--overlay)] backdrop-blur-[2px]" />
       <div
         ref={panel}
         tabIndex={-1}
-        className="anim-sheet-up relative flex max-h-[92dvh] w-full max-w-lg flex-col rounded-t-[28px] bg-surface shadow-float outline-none sm:rounded-[28px]"
+        className="anim-sheet-up relative flex max-h-[92dvh] w-full max-w-[520px] flex-col rounded-t-[30px] bg-surface shadow-float outline-none sm:rounded-[30px]"
       >
-        <div className="mx-auto mt-2.5 h-1.5 w-10 rounded-full bg-surface-3 sm:hidden" aria-hidden />
-        <div className="flex items-center justify-between px-6 pb-2 pt-4">
-          <h2 className="font-display text-[21px] font-semibold tracking-[-0.01em]">{title}</h2>
-          <button type="button" onClick={onClose} aria-label="Close" className="-mr-2 rounded-full p-2 text-muted hover:bg-surface-2 hover:text-ink">
-            <IconX size={20} />
+        <div className="mx-auto mt-2.5 h-[5px] w-10 rounded-full bg-line-strong sm:hidden" aria-hidden />
+        <div className="flex items-center justify-between px-6 pb-2 pt-4 sm:pt-6">
+          <h2 className="text-[26px] font-extrabold tracking-[-0.03em]">{title}</h2>
+          <button type="button" onClick={onClose} aria-label="Close" className="-mr-1.5 flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 text-ink-2 transition-colors hover:bg-surface-3 hover:text-ink">
+            <IconX size={18} />
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-4">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-5">{children}</div>
         {footer && <div className="border-t border-line px-6 pb-[max(env(safe-area-inset-bottom),16px)] pt-3">{footer}</div>}
       </div>
     </div>
@@ -297,19 +359,29 @@ export function Sheet({ open, onClose, title, children, footer }: { open: boolea
 
 export function Disclaimer({ text, className }: { text?: string; className?: string }) {
   return (
-    <p className={cx("text-[12px] leading-relaxed text-faint", className)}>
+    <p className={cx("max-w-[70ch] border-t border-line pt-4 text-[12.5px] leading-relaxed text-faint", className)}>
       {text ??
         "Screening aid, not investment advice. The model estimates the chance of a large outcome from a founder's background on the day the company was founded. It was trained on generated data, so its accuracy on real founders is unknown. Public information only; nothing is stored after the session."}
     </p>
   );
 }
 
+/** The mark: a founder (the dot) clearing a bar. */
 export function Logo({ size = 32 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden>
-      <rect width="32" height="32" rx="9" fill="var(--ink)" />
-      <path d="M8 21.5 13 16l3.5 3L24 10.5" fill="none" stroke="var(--bg)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="24" cy="10.5" r="2.4" fill="var(--accent)" stroke="var(--ink)" strokeWidth="1" />
+      <rect width="32" height="32" rx="8" fill="var(--ink)" />
+      <rect x="7" y="18.5" width="18" height="3.6" rx="1.8" fill="var(--bg)" />
+      <circle cx="20.5" cy="11.5" r="3.6" fill="var(--slab-advance)" />
     </svg>
+  );
+}
+
+export function Wordmark({ size = 28 }: { size?: number }) {
+  return (
+    <span className="flex items-center gap-2.5">
+      <Logo size={size} />
+      <span className="wide text-[17px] font-extrabold tracking-[-0.03em]">Screener</span>
+    </span>
   );
 }

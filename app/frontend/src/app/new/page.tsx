@@ -29,8 +29,8 @@ const EMPTY: Known = { industry: "", cofounders: "", background: "", work_experi
 
 function Field({ id, label, hint, children }: { id: string; label: string; hint?: string; children: React.ReactNode }) {
   return (
-    <div className="px-4 py-3">
-      <label htmlFor={id} className="block text-[13px] font-medium text-muted">
+    <div className="px-4 py-3.5 transition-colors focus-within:bg-surface-2">
+      <label htmlFor={id} className="eyebrow block text-muted">
         {label}
       </label>
       {children}
@@ -39,7 +39,7 @@ function Field({ id, label, hint, children }: { id: string; label: string; hint?
   );
 }
 
-const input = "mt-1 w-full bg-transparent text-[16px] outline-none placeholder:text-faint";
+const input = "mt-1.5 w-full bg-transparent text-[17px] font-medium outline-none placeholder:font-normal placeholder:text-faint";
 
 function NewScreening() {
   const params = useSearchParams();
@@ -74,7 +74,7 @@ function NewScreening() {
 
   return (
     <Page>
-      <PageHeader title="Screen a founder" subtitle="Tell us who. Anything else you know makes the result sharper, and your answers always win over the agent's." />
+      <PageHeader title="Screen a founder" subtitle="Say who. Anything else you know sharpens the result, and your answers always win over the agent's." />
 
       <form onSubmit={submit} noValidate className="space-y-4">
         <Card className="divide-y divide-line overflow-hidden">
@@ -92,7 +92,7 @@ function NewScreening() {
         <Card className="overflow-hidden">
           <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left">
             <span>
-              <span className="block text-[16px] font-semibold">
+              <span className="block text-[17px] font-bold tracking-[-0.01em]">
                 What you already know
                 {knownCount > 0 && <span className="ml-2 rounded-full bg-accent px-1.5 py-[1px] text-[11.5px] text-accent-ink">{knownCount}</span>}
               </span>
@@ -103,10 +103,10 @@ function NewScreening() {
           {open && (
             <div className="space-y-5 border-t border-line px-4 py-5">
               <div>
-                <label htmlFor="industry" className="mb-2 block text-[14px] font-semibold">
+                <label htmlFor="industry" className="mb-2 block text-[15px] font-bold tracking-[-0.01em]">
                   Industry
                 </label>
-                <input id="industry" list="industries" value={known.industry} onChange={(e) => setKnown({ ...known, industry: e.target.value })} placeholder="e.g. fintech" autoComplete="off" className="h-11 w-full rounded-xl border border-line bg-surface px-3.5 outline-none placeholder:text-faint focus:border-accent" />
+                <input id="industry" list="industries" value={known.industry} onChange={(e) => setKnown({ ...known, industry: e.target.value })} placeholder="e.g. fintech" autoComplete="off" className="h-12 w-full rounded-[12px] border border-line-strong bg-surface px-3.5 outline-none transition-colors placeholder:text-faint focus:border-ink" />
                 <datalist id="industries">
                   {INDUSTRIES.map((i) => (
                     <option key={i} value={i} />
@@ -124,7 +124,7 @@ function NewScreening() {
                 ] as const
               ).map(([key, label, opts]) => (
                 <div key={key}>
-                  <p className="mb-2 text-[14px] font-semibold">{label}</p>
+                  <p className="mb-2 text-[15px] font-bold tracking-[-0.01em]">{label}</p>
                   <ChipPicker label={label} value={known[key]} onChange={(v) => setKnown({ ...known, [key]: v })} options={opts.map(([value, l]) => ({ value, label: l }))} />
                 </div>
               ))}
@@ -138,9 +138,9 @@ function NewScreening() {
           </Field>
         </Card>
 
-        <Card className="flex items-center justify-between gap-4 px-4 py-3.5">
+        <Card className="flex items-center justify-between gap-4 px-4 py-4">
           <label htmlFor="research" className="min-w-0">
-            <span className="block text-[15px] font-semibold">Web research</span>
+            <span className="block text-[16px] font-bold tracking-[-0.01em]">Web research</span>
             <span className="block text-[13px] text-muted">{research ? "The agent fills in what you leave blank, with sources." : "Use only what you entered."}</span>
           </label>
           <Switch id="research" label="Web research" checked={research} onChange={setResearch} />
@@ -148,7 +148,7 @@ function NewScreening() {
 
         {error && <Notice tone="danger">{error}</Notice>}
 
-        <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+68px)] z-10 -mx-1 rounded-full bg-bg/80 p-1 backdrop-blur lg:static lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+        <div className="sticky bottom-[calc(var(--dock-clear)-4px)] z-10 -mx-1 rounded-full bg-bg/85 p-1 backdrop-blur lg:static lg:mx-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
           <Button type="submit" size="lg" full disabled={busy !== null}>
             {busy === "main" && <Spinner />} Screen founder
           </Button>
@@ -156,10 +156,10 @@ function NewScreening() {
       </form>
 
       <section className="mt-10" aria-labelledby="ex">
-        <h2 id="ex" className="mb-3 text-[13px] font-semibold uppercase tracking-[0.06em] text-muted">
+        <h2 id="ex" className="eyebrow mb-3 text-muted">
           Or try an example
         </h2>
-        <Examples onPick={(i, key) => start(i, key)} busy={busy} />
+        <Examples onPick={(i, key) => start(i, key)} busy={busy} columns />
       </section>
       <Disclaimer className="mt-12" />
     </Page>

@@ -54,9 +54,13 @@ on phones, a sidebar on desktop, light and dark themes):
   forget the passcode, service status) and privacy.
 - **Installable:** `app/manifest.ts` and `public/icons/`, so "Add to Home Screen" opens it full-screen with its
   own icon. Push and the share Shortcut are task 5.
-- **Design system:** tokens in `src/app/globals.css` (Inter for text, Space Grotesk for display; verdict colours
-  always paired with an icon and a label), building blocks in `src/components/ui.tsx`. Chart colours were
-  checked with the dataviz skill's palette validator in both themes.
+- **Design system ("the odds slip", second redesign by a Claude Fable 5.2 design pass):** black ink on neutral
+  paper, colour kept for the verdict alone, shown as a full-colour slab (green advance, amber escalate, ink pass)
+  with the chance in large condensed figures and a to-scale gauge whose zones differ by pattern as well as tone.
+  One variable family, Archivo, at three widths (condensed figures, normal text, wide labels). Buttons and
+  selections are ink, not a brand colour. A floating dock on phones, a sidebar on desktop. Tokens in
+  `src/app/globals.css`, building blocks in `src/components/ui.tsx`. Chart colours were checked with the dataviz
+  skill's palette validator against both themes' surfaces.
 - **Logic:** `src/lib/policy.ts` ports `backend/screener/policy.py` (tested against the mock verdicts);
   `src/lib/bar.ts` applies the bar to the Deals list; `src/lib/api.ts` talks to the backend.
 - **Passcode:** if the backend has `ACCESS_TOKEN` set, the app asks for it on the first refused request and

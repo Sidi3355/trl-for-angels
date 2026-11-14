@@ -2,21 +2,24 @@
 
 // The memo: verdict at the investor's bar, what drives it, what-ifs, then the evidence.
 // Desktop: verdict pinned on the left, detail on the right. Phone: one column.
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useApp } from "@/components/AppState";
-import { IconGlobe, IconLink } from "@/components/icons";
+import { IconChevronLeft, IconGlobe, IconLink } from "@/components/icons";
 import { Notes, Sources, UnderTheHood, WorthKnowing } from "@/components/memo/Evidence";
 import { Factors } from "@/components/memo/Factors";
 import { Outcome } from "@/components/memo/Outcome";
 import { Profile } from "@/components/memo/Profile";
 import { VerdictCard } from "@/components/memo/Verdict";
-import { Avatar, Disclaimer, Notice, Page, PageHeader, Spinner, Tag, VerdictBadge } from "@/components/ui";
+import { Disclaimer, Notice, Page, PageHeader, SLAB, Spinner, Tag, VerdictIcon, cx } from "@/components/ui";
 import { api, type ApiError } from "@/lib/api";
-import { foundedLabel, foundedSource, percent, sectorLabel } from "@/lib/format";
+import { DECISION_LABELS, foundedLabel, foundedSource, percent, sectorLabel } from "@/lib/format";
 import { verdict as computeVerdict } from "@/lib/policy";
 import { rememberDeal } from "@/lib/session";
 import { SCHEMA_VERSION, type Driver, type FieldValues, type Memo, type Thresholds, type WhatIfChange, type WhatIfResponse } from "@/lib/types";
+
+const chip = "inline-flex h-8 items-center gap-1.5 rounded-full border border-line-strong px-3.5 text-[13.5px] font-semibold text-ink-2 transition-colors hover:border-ink hover:text-ink";
 
 function plainFields(memo: Memo): FieldValues {
   return Object.fromEntries(Object.entries(memo.fields).map(([k, f]) => [k, f.value])) as unknown as FieldValues;
@@ -110,8 +113,8 @@ export function MemoView({ memoId }: { memoId: string }) {
         <div className="pt-12">
           <div className="skeleton h-9 w-64 rounded-xl" />
           <div className="skeleton mt-3 h-4 w-48 rounded" />
-          <div className="mt-8 grid gap-8 lg:grid-cols-[400px_minmax(0,1fr)]">
-            <div className="skeleton h-[420px] rounded-[20px]" />
+          <div className="mt-8 grid gap-x-14 gap-y-8 lg:grid-cols-[420px_minmax(0,1fr)]">
+            <div className="skeleton h-[480px] rounded-[30px]" />
             <div className="space-y-4">
               <div className="skeleton h-40 rounded-[20px]" />
               <div className="skeleton h-40 rounded-[20px]" />
@@ -136,40 +139,39 @@ export function MemoView({ memoId }: { memoId: string }) {
 
   return (
     <Page wide>
-      <PageHeader
-        back={{ href: "/", label: "Founders" }}
-        title={
-          <span className="flex items-center gap-3">
-            <Avatar name={memo.founder.display_name} size={44} />
-            <span className="min-w-0 truncate">{memo.founder.display_name}</span>
-          </span>
-        }
-        subtitle={
-          <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span>{[memo.founder.company_name, sector, `Founded ${foundedLabel(fd.value)}`].filter(Boolean).join(" · ")}</span>
-            {fd.provenance === "assumed" && <Tag tone="warn">Date assumed</Tag>}
-            {fd.provenance === "agent" && <Tag tone="accent">Date {foundedSource(fd.provenance)}</Tag>}
-            {memo.mock && <Tag>Example data</Tag>}
-          </span>
-        }
-      />
-      {(ids.linkedin_url || ids.website_url) && (
-        <div className="-mt-2 mb-5 flex flex-wrap gap-2">
-          {ids.linkedin_url && (
-            <a href={ids.linkedin_url} target="_blank" rel="noopener noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-[13px] font-medium text-ink-2 hover:bg-surface-2">
-              <IconLink size={15} /> LinkedIn
-            </a>
-          )}
-          {ids.website_url && (
-            <a href={ids.website_url} target="_blank" rel="noopener noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-[13px] font-medium text-ink-2 hover:bg-surface-2">
-              <IconGlobe size={15} /> Website
-            </a>
+      <header className="pb-5 pt-1 lg:pb-6 lg:pt-0">
+        <Link href="/" className="-ml-1.5 mb-1.5 lg:mb-3 inline-flex items-center gap-0.5 rounded-lg py-1 pr-2 text-[14px] font-medium text-muted transition-colors hover:text-ink active:opacity-60">
+          <IconChevronLeft size={18} /> Founders
+        </Link>
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+          <div className="min-w-0">
+            <h1 className="text-[36px] font-extrabold leading-[0.98] tracking-[-0.04em] lg:text-[54px]">{memo.founder.display_name}</h1>
+            <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[15px] text-muted">
+              <span>{[memo.founder.company_name, sector, `Founded ${foundedLabel(fd.value)}`].filter(Boolean).join(" · ")}</span>
+              {fd.provenance === "assumed" && <Tag tone="warn">Date assumed</Tag>}
+              {fd.provenance === "agent" && <Tag>Date {foundedSource(fd.provenance)}</Tag>}
+              {memo.mock && <Tag>Example data</Tag>}
+            </p>
+          </div>
+          {(ids.linkedin_url || ids.website_url) && (
+            <div className="flex flex-wrap gap-2">
+              {ids.linkedin_url && (
+                <a href={ids.linkedin_url} target="_blank" rel="noopener noreferrer" className={chip}>
+                  <IconLink size={15} /> LinkedIn
+                </a>
+              )}
+              {ids.website_url && (
+                <a href={ids.website_url} target="_blank" rel="noopener noreferrer" className={chip}>
+                  <IconGlobe size={15} /> Website
+                </a>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </header>
 
-      <div className="grid items-start gap-8 lg:grid-cols-[400px_minmax(0,1fr)]">
-        <div className="space-y-4 lg:sticky lg:top-8">
+      <div className="grid items-start gap-x-14 gap-y-10 lg:grid-cols-[420px_minmax(0,1fr)]">
+        <div className="anim-fade-up space-y-3 lg:sticky lg:top-8">
           <VerdictCard verdict={current} baseline={baseline} whatIf={whatIfOn} loading={loading} onReset={reset} />
           {memo.mock && (
             <p className="px-1 text-[12.5px] leading-snug text-faint">
@@ -178,7 +180,7 @@ export function MemoView({ memoId }: { memoId: string }) {
           )}
         </div>
 
-        <div className="min-w-0 space-y-10">
+        <div className="stagger min-w-0 space-y-12">
           <Factors drivers={memo.drivers} base={memo.distributions} bar={bar} flipped={new Set(flipped.keys())} onToggle={toggle} loading={loading} enabled={enabled} error={whatIfError} />
           <Outcome d={whatIf ? whatIf.distributions : memo.distributions} bar={bar} />
           <Profile memo={memo} />
@@ -192,14 +194,16 @@ export function MemoView({ memoId }: { memoId: string }) {
 
       {whatIfOn && <div className="h-20 lg:hidden" aria-hidden />}
       {whatIfOn && (
-        <div className="anim-fade-up fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+66px)] z-20 px-4 lg:hidden">
-          <div className="mx-auto flex max-w-md items-center gap-3 rounded-full bg-ink py-2 pl-4 pr-2 text-bg shadow-float">
-            <span className="min-w-0 flex-1 truncate text-[14px]">
-              What-if: <strong className="font-semibold tabular">{percent(current.probability)}</strong>
-              <span className="opacity-60"> (was {percent(baseline.probability)})</span>
+        <div className="anim-fade-up fixed inset-x-0 bottom-[calc(var(--dock-clear)-4px)] z-20 px-4 lg:hidden">
+          <div
+            className={cx("mx-auto flex max-w-md items-center gap-2.5 rounded-full py-2 pl-4 pr-2 shadow-float ring-[3px] ring-bg transition-colors duration-500", SLAB[current.decision])}
+          >
+            <VerdictIcon decision={current.decision} size={16} />
+            <span className="min-w-0 flex-1 truncate text-[14.5px] font-semibold">
+              What-if: {DECISION_LABELS[current.decision]} <span className="tabular">{percent(current.probability)}</span>
+              <span className="font-medium opacity-70"> (was {percent(baseline.probability)})</span>
             </span>
-            <VerdictBadge decision={current.decision} size="sm" />
-            <button type="button" onClick={reset} className="rounded-full bg-bg/15 px-3 py-1.5 text-[13px] font-semibold hover:bg-bg/25">
+            <button type="button" onClick={reset} className="rounded-full border-[1.5px] border-current px-3 py-1 text-[13px] font-bold">
               Reset
             </button>
           </div>

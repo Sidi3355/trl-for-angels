@@ -71,6 +71,11 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   on every memo); memo leads with the verdict and a to-scale gauge; detail behind progressive disclosure.
   Inter + Space Grotesk; cool neutrals with one ink-blue accent; chart ramps validated with the dataviz
   skill. Installable (manifest and icons); push and share stay in task 5.
+- **Second redesign (2026-11-14, owner: "still looks AI generated, make it look cool", asked for Fable 5.2):**
+  a Claude Fable 5.2 design agent chose "the odds slip": ink on paper, colour only for the verdict slab,
+  Archivo at three widths, floating dock on phones. Reviewed here: logic untouched, tests and build pass,
+  every verdict colour, not-found, passcode and overflow at 390px checked; the gauge marker was changed to a
+  solid needle (the hollow ring read as a zero).
 - **Voice (8b) is go** (owner asked about ElevenLabs, 2026-11-14). Waiting on: the key in Railway as
   `ELEVENLABS_API_KEY` (and the secure form for this sandbox), a voice choice, and whether the hackathon
   has an ElevenLabs prize. Free tier only (zero-budget amendment).
