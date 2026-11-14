@@ -46,7 +46,7 @@ Deployed on 2026-11-14; `app/README.md`, "Deploy", has the settings and addresse
   `app-track`, mocks. Variables: `RAILWAY_DOCKERFILE_PATH`, `ACCESS_TOKEN` (the owner's passcode; never ask
   for it) and `CORS_ORIGIN_REGEX`. The "Railway config file" setting didn't take; the variable did.
 - **Frontend (Vercel, set up through the connector):** framework Next.js, root `app/frontend`, Node 22,
-  `NEXT_PUBLIC_API_URL` = the Railway domain, Ignored Build Step removed. Phone URL: the `app-track` branch
+  `NEXT_PUBLIC_API_URL` = the Railway domain, Ignored Build Step now builds only `app-track` and `main`. Phone URL: the `app-track` branch
   alias, `https://trl-for-angels-git-app-track-siddarths-projects-2714c925.vercel.app`, behind Vercel's login.
 - This sandbox can't reach `railway.app` or `vercel.app` (network policy), so checks on the live app come
   from the owner or from the Vercel connector's logs.

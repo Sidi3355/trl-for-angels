@@ -198,8 +198,8 @@ way to point Railway at the Dockerfile. Leave Root Directory empty.
 | `AGENT`, `SCREENER_ANTHROPIC_API_KEY` | Only for real research: `AGENT=claude` and the key. Leave out to stay on mocks. |
 
 **Frontend (Vercel).** Project `trl-for-angels`: root directory `app/frontend`, framework Next.js, Node 22,
-and `NEXT_PUBLIC_API_URL` set to the Railway domain (read at build time, so change it and redeploy). Every
-push builds. Each branch gets a stable address, `trl-for-angels-git-<branch>-siddarths-projects-2714c925.vercel.app`;
+and `NEXT_PUBLIC_API_URL` set to the Railway domain (read at build time, so change it and redeploy). Pushes to
+`app-track` and `main` build; the Ignored Build Step skips every other branch (the research branch has no frontend). Each branch gets a stable address, `trl-for-angels-git-<branch>-siddarths-projects-2714c925.vercel.app`;
 all deployments are behind Vercel's login (the project's deployment protection), so you sign in to Vercel
 once on the phone.
 
