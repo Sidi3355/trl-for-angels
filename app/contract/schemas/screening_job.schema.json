@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Screening job",
+  "description": "Returned by POST /v1/screenings (202) and GET /v1/screenings/{job_id}. Research runs in the background; follow events_url for progress, then fetch memo_url.",
+  "type": "object",
+  "required": ["schema_version", "job_id", "status", "created_at", "events_url", "memo_id", "memo_url", "error"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "job_id": { "$ref": "common.schema.json#/$defs/id" },
+    "client_ref": { "type": ["string", "null"], "maxLength": 80 },
+    "status": { "enum": ["queued", "running", "complete", "failed"] },
+    "stage": { "$ref": "progress_event.schema.json#/$defs/stage" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "events_url": {
+      "description": "Server-sent events stream of progress_event objects. Supports Last-Event-ID to resume.",
+      "type": "string"
+    },
+    "memo_id": { "oneOf": [{ "$ref": "common.schema.json#/$defs/id" }, { "type": "null" }] },
+    "memo_url": { "type": ["string", "null"] },
+    "error": { "oneOf": [{ "$ref": "common.schema.json#/$defs/error" }, { "type": "null" }] }
+  }
+}

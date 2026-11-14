@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Batch request",
+  "description": "POST /v1/batches with Content-Type application/json. A CSV upload (text/csv, columns in app/contract/README.md) is converted to this shape by the backend. Each founder is researched, scored and triaged.",
+  "type": "object",
+  "required": ["schema_version", "founders"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "batch_ref": { "type": "string", "maxLength": 80 },
+    "founders": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": { "$ref": "investor_input.schema.json" }
+    },
+    "policy": {
+      "description": "Controls used to triage the whole batch. Each founder's own policy, if set, is ignored.",
+      "$ref": "common.schema.json#/$defs/policy_request"
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "concurrency": { "type": "integer", "minimum": 1, "maximum": 10, "default": 3 },
+        "research": { "type": "boolean", "default": true },
+        "max_searches_per_founder": { "type": "integer", "minimum": 0, "maximum": 50 }
+      }
+    }
+  }
+}

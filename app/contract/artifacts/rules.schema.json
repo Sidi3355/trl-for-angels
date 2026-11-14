@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "rules.json (proposed format, for the research session to confirm)",
+  "description": "The fitted RRF's question list (step B1): rrf.rules_ in rule order, with the matching rrf.questions_ rows. The app sends these to the answerer and, in answers mode, serialises the answers for Kev in exactly this order.",
+  "type": "object",
+  "required": ["schema_version", "source", "task", "rules"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "mock": { "description": "True only for the app's mock.", "type": "boolean" },
+    "source": {
+      "type": "object",
+      "required": ["trl_version", "trl_commit", "generator", "answerer", "rrf_params", "created_at"],
+      "additionalProperties": false,
+      "properties": {
+        "trl_version": { "type": "string" },
+        "trl_commit": { "type": "string" },
+        "generator": { "type": "string", "description": "RRF generator model spec, e.g. 'anthropic:<model>'." },
+        "answerer": { "type": "string", "description": "e.g. 'jev', or the Kev fallback spec." },
+        "rrf_params": { "type": "object", "description": "Every non-default constructor argument (beta, random_state, combiner, ...)." },
+        "created_at": { "type": "string", "format": "date-time" },
+        "n_train": { "type": ["integer", "null"] }
+      }
+    },
+    "task": {
+      "description": "The RRF task string, exactly as passed to RRF(task=...).",
+      "type": "string"
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "index", "question"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "Stable rule ID. Any scheme works if it never changes for a fitted model.",
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_.:-]{1,80}$"
+          },
+          "index": {
+            "description": "0-based position in rrf.rules_. Must equal the array position.",
+            "type": "integer",
+            "minimum": 0
+          },
+          "question": {
+            "description": "The question text exactly as in rrf.rules_.",
+            "type": "string",
+            "minLength": 1
+          },
+          "elastic_net_coef": {
+            "description": "Optional: the C1a elastic-net coefficient, for comparing drivers.",
+            "type": ["number", "null"]
+          },
+          "details": {
+            "description": "Optional: any other rrf.questions_ columns, as plain JSON.",
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

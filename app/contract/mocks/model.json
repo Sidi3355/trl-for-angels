@@ -1,0 +1,56 @@
+{
+  "schema_version": "0.1.0",
+  "mock": true,
+  "model_id": "kev-0.6b-prod-mock",
+  "created_at": "2026-11-14T12:00:00Z",
+  "endpoint": {
+    "base_url": "https://mock-kev.example.com",
+    "path": "/v1/systemone",
+    "auth": {
+      "type": "none"
+    },
+    "timeout_s": 30
+  },
+  "decider_input": "answers",
+  "request": {
+    "questions": {
+      "outcome": {
+        "type": "choice",
+        "instructions": "What was the company's final outcome?",
+        "criteria": {
+          "shut down": null,
+          "under $50M": null,
+          "$50M-$500M": null,
+          "$500M-$1B": null,
+          "over $1B": null
+        }
+      },
+      "years": {
+        "type": "choice",
+        "instructions": "How many years from founding to that outcome?",
+        "criteria": {
+          "under 5": null,
+          "5-8": null,
+          "over 8": null
+        }
+      }
+    },
+    "response_format": "mock: research to confirm the kev.serve response shape"
+  },
+  "temperature": {
+    "applied_by": "server",
+    "outcome": null,
+    "years": null
+  },
+  "answerer": {
+    "spec": "jev",
+    "via": "trl"
+  },
+  "answer_serialisation": {
+    "format": "binary",
+    "threshold": 0.5,
+    "line_template": "{question} {answer}",
+    "separator": "\n",
+    "order": "rules.json"
+  }
+}

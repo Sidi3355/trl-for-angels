@@ -1,0 +1,140 @@
+{
+  "schema_version": "0.1.0",
+  "mock": true,
+  "source": {
+    "trl_version": "0.3.0",
+    "trl_commit": "3437d64",
+    "generator": "mock",
+    "answerer": "jev",
+    "rrf_params": {
+      "beta": 0.5,
+      "random_state": 42,
+      "combiner": "elasticnet"
+    },
+    "created_at": "2026-11-14T12:00:00Z",
+    "n_train": null
+  },
+  "task": "Predict whether this startup founder's company will succeed (exit, IPO or funding over $500M).",
+  "rules": [
+    {
+      "id": "r01",
+      "index": 0,
+      "question": "Has the founder previously founded a company that was acquired or went public?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r02",
+      "index": 1,
+      "question": "Has the founder had an exit worth $50M or more as a co-founder?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r03",
+      "index": 2,
+      "question": "Is this the founder's first startup?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r04",
+      "index": 3,
+      "question": "Does the founder have a technical background, such as engineering or computer science?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r05",
+      "index": 4,
+      "question": "Does the founder hold a degree from a university ranked in the QS top 100?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r06",
+      "index": 5,
+      "question": "Does the founder hold a graduate degree (master's, MBA, PhD or equivalent)?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r07",
+      "index": 6,
+      "question": "Does the founder have more than 10 years of work experience?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r08",
+      "index": 7,
+      "question": "Does the founder have deep prior experience in the startup's industry?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r09",
+      "index": 8,
+      "question": "Has the founder worked at a company with more than 1,000 employees?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r10",
+      "index": 9,
+      "question": "Has the founder held a senior engineering or technical leadership role?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r11",
+      "index": 10,
+      "question": "Has the founder held a management or leadership role?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r12",
+      "index": 11,
+      "question": "Did the founder start the company with at least one co-founder?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r13",
+      "index": 12,
+      "question": "Does the founding team have three or more people?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r14",
+      "index": 13,
+      "question": "Has the founder spent five or more years with a single employer?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r15",
+      "index": 14,
+      "question": "Has the founder worked in a technical or product role at a company with 1,000 or fewer employees?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r16",
+      "index": 15,
+      "question": "Has the founder worked in the same industry as the startup?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r17",
+      "index": 16,
+      "question": "Has the founder spent most of their career at organisations with more than 5,000 employees?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r18",
+      "index": 17,
+      "question": "Does the founder have less than five years of work experience?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r19",
+      "index": 18,
+      "question": "Is the founder a domain specialist, such as a clinician or scientist?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r20",
+      "index": 19,
+      "question": "Has the founder changed industries more than twice?",
+      "elastic_net_coef": null
+    }
+  ]
+}
