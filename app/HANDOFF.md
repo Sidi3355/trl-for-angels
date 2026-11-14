@@ -165,7 +165,8 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   - agent profiles will have more unknowns than the training data
   - template ambiguities (listed in `app/contract/README.md`)
   - thresholds built on val are optimistic and sparse for 5-year targets
-- **Voice notes on the live app:** the owner adds `ELEVENLABS_API_KEY` (and `ANTHROPIC_API_KEY` for form filling)
-  in Railway's Variables; then the first real test is a note recorded on the iPhone. The onboarding's own
-  test (a short text-to-speech clip, a few credits) waits for the owner's yes.
+- **Voice notes on the live app:** `ELEVENLABS_API_KEY` and `ANTHROPIC_API_KEY` are set on Railway (owner,
+  2026-11-14; `/health` shows `transcriber: elevenlabs`, `note_sorter: claude`). Railway only applied them after
+  the staged-changes Deploy. Next: the frontend deploy, then the first real note recorded on the iPhone. The
+  onboarding's own test (a short text-to-speech clip) is optional; recommended to skip it.
 - **Later keys:** TypeSafe (Jev) and the Kev endpoint, when the research outputs land.
