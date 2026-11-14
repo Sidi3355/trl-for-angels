@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.1.0",
+  "subscription": {
+    "endpoint": "https://web.push.apple.com/QExample-endpoint-token",
+    "expirationTime": null,
+    "keys": {
+      "p256dh": "BExampleP256dhKeyFromTheBrowser0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP",
+      "auth": "ExampleAuthSecret01"
+    }
+  },
+  "policy": { "target": "$500M", "timeline_years": null, "risk": "balanced" }
+}

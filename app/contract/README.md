@@ -48,6 +48,9 @@ python app/contract/tools/validate.py --artifacts shared/artifacts   # once the 
 | `GET /v1/batches/{batch_id}` and `/events` | | batch response; SSE stream of `batch_item` events |
 | `GET /v1/artifacts/{rules,thresholds,model}` | | the active artefacts, so the client can compute controls itself |
 | `GET /v1/demo/founders` | | investor inputs for the three fictional demo founders |
+| `GET /v1/push/key` | | push key: the server's public VAPID key, for the browser's push subscription |
+| `POST /v1/screenings/{job_id}/notify` | push watch request | push watch response (202): one notification when it finishes, at the investor's bar |
+| `POST /v1/batches/{batch_id}/notify` | push watch request | push watch response (202): one notification when the list is done |
 
 Errors always look like `{"error": {"code", "message", "retryable"}, "details": [...]}`: 400 bad JSON,
 401 wrong access token, 404 not found or expired, 422 breaks the contract (details name the field, or the

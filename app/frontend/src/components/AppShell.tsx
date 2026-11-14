@@ -3,11 +3,11 @@
 // Navigation: a sidebar on desktop, a floating dock on phones.
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import { useApp } from "@/components/AppState";
 import { BarSheet, BarSummary } from "@/components/BarSheet";
-import { IconDeals, IconInfo, IconPlus, IconSliders } from "@/components/icons";
+import { IconDeals, IconInfo, IconPlus, IconSliders, IconUpload } from "@/components/icons";
 import { VerdictIcon, Wordmark, cx } from "@/components/ui";
 import { quickVerdict } from "@/lib/bar";
 import { percent } from "@/lib/format";
@@ -38,6 +38,7 @@ function Sidebar() {
   const { bar, deals, thresholds, openBarSheet } = useApp();
   const nav = [
     { href: "/", label: "Founders", icon: IconDeals, on: pathname === "/" },
+    { href: "/batch", label: "Screen a list", icon: IconUpload, on: pathname === "/batch" },
     { href: "/about", label: "How it works", icon: IconInfo, on: pathname === "/about" },
   ];
   return (
@@ -109,15 +110,38 @@ function TopBar() {
   );
 }
 
+/** True while the page is being scrolled down, so the dock can step aside (iOS-style); false on the way up. */
+function useScrollingDown(): boolean {
+  const [down, setDown] = useState(false);
+  useEffect(() => {
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      const nearBottom = window.innerHeight + y >= document.documentElement.scrollHeight - 40;
+      if (y < 80 || nearBottom) setDown(false);
+      else if (y > last + 6) setDown(true);
+      else if (y < last - 6) setDown(false);
+      last = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return down;
+}
+
 function Dock() {
   const pathname = usePathname();
+  const hidden = useScrollingDown();
+  useEffect(() => {
+    document.documentElement.toggleAttribute("data-dock-hidden", hidden);
+  }, [hidden]);
   const tabs = [
     { href: "/", label: "Founders", icon: IconDeals, on: pathname === "/" || pathname.startsWith("/memos") },
-    { href: "/new", label: "Screen", icon: IconPlus, on: pathname === "/new" || pathname.startsWith("/screenings"), primary: true },
+    { href: "/new", label: "Screen", icon: IconPlus, on: pathname === "/new" || pathname === "/batch" || pathname === "/share" || pathname.startsWith("/screenings"), primary: true },
     { href: "/about", label: "About", icon: IconInfo, on: pathname === "/about" },
   ];
   return (
-    <nav aria-label="Main" className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center pb-[max(env(safe-area-inset-bottom),12px)] lg:hidden">
+    <nav aria-label="Main" className={cx("pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center pb-[max(env(safe-area-inset-bottom),12px)] transition-transform duration-300 ease-out motion-reduce:transition-none lg:hidden", hidden && "translate-y-[150%]")}>
       <div className="pointer-events-auto flex h-[60px] items-center gap-1 rounded-full bg-dock p-1.5 text-dock-ink shadow-float ring-1 ring-white/10">
         {tabs.map(({ href, label, icon: Icon, on, primary }) =>
           primary ? (

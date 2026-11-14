@@ -28,6 +28,7 @@ from .pipeline.agent import ClaudeAgent
 from .pipeline.budget import Budget
 from .pipeline.research import MockAgent
 from .pipeline.whatif import WhatIfError
+from .push import Pusher
 from .service import InvalidRequest, NotFound, Service
 
 log = logging.getLogger("screener")
@@ -58,6 +59,15 @@ def build_components(settings: Settings, artifacts, contract: Contract, budget: 
     return built, errors
 
 
+def _make_pusher(settings: Settings) -> Pusher | None:
+    """Web push, with keys from VAPID_PRIVATE_KEY or generated for this process. Off if the library is missing."""
+    try:
+        return Pusher(private_key=secret(settings.vapid_private_key), subject=settings.vapid_subject or "mailto:push@example.com")
+    except ImportError as e:
+        log.error("push notifications off: %s", e)
+        return None
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings()
 
@@ -85,7 +95,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 app.state.service = Service(
                     pipeline, contract, retention_minutes=settings.retention_minutes,
                     max_concurrent=settings.max_concurrent_screenings,
-                    batch_concurrency=settings.batch_max_concurrency, validate=settings.validate_responses)
+                    batch_concurrency=settings.batch_max_concurrency, validate=settings.validate_responses,
+                    pusher=_make_pusher(settings))
         for part, msg in app.state.errors.items():
             log.error("not configured: %s: %s", part, msg)
         sweeper = asyncio.create_task(_sweep_forever(app))
@@ -271,6 +282,22 @@ def _router(settings: Settings) -> APIRouter:
                                last_event_id: str | None = Header(default=None),
                                svc: Service = Depends(service)):
         return _events(svc.job(job_id), request, after, last_event_id, format)
+
+    @r.get("/push/key", tags=["push"], summary="The public key a browser needs to subscribe to push notifications")
+    async def push_key(svc: Service = Depends(service)):
+        if svc.pusher is None:
+            raise NotConfigured("push notifications aren't available on this server")
+        return svc._check("push_key", {"schema_version": VERSION, "public_key": svc.pusher.public_key})
+
+    @r.post("/screenings/{job_id}/notify", status_code=202, tags=["push"],
+            summary="Push a notification to this browser when the screening finishes (body: push_watch_request)")
+    async def screening_notify(job_id: str, request: Request, svc: Service = Depends(service)):
+        return JSONResponse(await svc.watch(job_id, "screening", await _json_body(request)), status_code=202)
+
+    @r.post("/batches/{batch_id}/notify", status_code=202, tags=["push"],
+            summary="Push a notification to this browser when the batch finishes (body: push_watch_request)")
+    async def batch_notify(batch_id: str, request: Request, svc: Service = Depends(service)):
+        return JSONResponse(await svc.watch(batch_id, "batch", await _json_body(request)), status_code=202)
 
     @r.get("/memos/{memo_id}", tags=["memos"])
     async def get_memo(memo_id: str, svc: Service = Depends(service)):

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Push watch request",
+  "description": "POST /v1/screenings/{job_id}/notify or /v1/batches/{batch_id}/notify: send one push notification to this browser subscription when the job finishes. The subscription is kept in memory with the job and dropped after it is used (nothing stored after the session).",
+  "type": "object",
+  "required": ["schema_version", "subscription"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "subscription": {
+      "description": "PushSubscription.toJSON() from the browser.",
+      "type": "object",
+      "required": ["endpoint", "keys"],
+      "additionalProperties": true,
+      "properties": {
+        "endpoint": { "type": "string", "format": "uri", "pattern": "^https://", "maxLength": 2000 },
+        "expirationTime": { "type": ["number", "null"] },
+        "keys": {
+          "type": "object",
+          "required": ["p256dh", "auth"],
+          "additionalProperties": false,
+          "properties": {
+            "p256dh": { "type": "string", "minLength": 20, "maxLength": 200 },
+            "auth": { "type": "string", "minLength": 8, "maxLength": 100 }
+          }
+        }
+      }
+    },
+    "policy": {
+      "description": "The investor's bar, so the notification states the verdict they will see in the app.",
+      "$ref": "common.schema.json#/$defs/policy_request"
+    }
+  }
+}

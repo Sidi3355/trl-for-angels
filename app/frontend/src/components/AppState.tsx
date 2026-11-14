@@ -6,6 +6,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 
 import { api } from "@/lib/api";
 import { loadBar, saveBar } from "@/lib/bar";
+import { registerServiceWorker } from "@/lib/push";
 import { DEFAULT_POLICY, type Policy } from "@/lib/policy";
 import { listDeals, onDealsChange, type Deal } from "@/lib/session";
 import type { Health, Thresholds } from "@/lib/types";
@@ -35,6 +36,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setBarState(loadBar());
     setDeals(listDeals());
+    registerServiceWorker();
     const off = onDealsChange(() => setDeals(listDeals()));
     api.health().then(setHealth, (e: Error) => setHealthError(e.message));
     api.thresholds().then(setThresholds, () => setThresholds(null));

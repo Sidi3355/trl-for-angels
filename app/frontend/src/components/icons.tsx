@@ -150,3 +150,21 @@ export const IconClock = (p: P) => (
     <path d="M12 7.5V12l3 2" />
   </Svg>
 );
+export const IconBell = (p: P) => (
+  <Svg {...p}>
+    <path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2H4.5l1.5-2Z" />
+    <path d="M10 20.5a2 2 0 0 0 4 0" />
+  </Svg>
+);
+export const IconShare = (p: P) => (
+  <Svg {...p}>
+    <path d="M12 3.5v11M8 7.5l4-4 4 4" />
+    <path d="M6 11.5H5v9h14v-9h-1" />
+  </Svg>
+);
+export const IconUpload = (p: P) => (
+  <Svg {...p}>
+    <path d="M12 15.5v-11M8 8.5l4-4 4 4" />
+    <path d="M4.5 15.5v4h15v-4" />
+  </Svg>
+);

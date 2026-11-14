@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { IconAlert, IconCheck, IconDoc, IconFlip, IconSearch, IconUser } from "@/components/icons";
 import { Button, Notice, Page, Spinner, VerdictBadge, cx, linkClass } from "@/components/ui";
+import { NotifyButton } from "@/components/NotifyButton";
 import { api, eventsUrl, type ApiError } from "@/lib/api";
 import { DECISION_LABELS } from "@/lib/format";
 import { EVENT_TYPES, type Decision, type ProgressEvent, type Stage } from "@/lib/types";
@@ -169,6 +170,8 @@ export function Progress({ jobId }: { jobId: string }) {
           )}
         </p>
       </div>
+
+      {!ready && !error && <NotifyButton kind="screening" id={jobId} className="mt-5" />}
 
       {error && (
         <div className="mt-6 space-y-3">

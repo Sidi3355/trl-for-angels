@@ -55,6 +55,10 @@ function QuickScreen() {
         Reads only what was public before they started the company.{" "}
         <Link href={q.trim() ? `/new?q=${encodeURIComponent(q.trim())}` : "/new"} className={cx(linkClass, "whitespace-nowrap")}>
           Add what you know
+        </Link>{" "}
+        or{" "}
+        <Link href="/batch" className={cx(linkClass, "whitespace-nowrap")}>
+          screen a list
         </Link>
       </p>
       {error && (

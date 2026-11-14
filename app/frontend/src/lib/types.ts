@@ -316,3 +316,51 @@ export interface Health {
   mock: boolean;
   errors: Record<string, string>;
 }
+
+// ---- batches ------------------------------------------------------------------------------
+
+export interface BatchItem {
+  index: number;
+  client_ref: string | null;
+  label: string;
+  status: "queued" | "running" | "complete" | "failed";
+  memo_id: string | null;
+  memo_url: string | null;
+  decision: Decision | null;
+  probability: number | null;
+  distributions?: Distributions | null;
+  facets: Facets | null;
+  filtered_out: boolean;
+  unknown_count?: number | null;
+  conflict_count?: number | null;
+  error: ApiErrorBody | null;
+}
+
+export interface BatchResponse {
+  schema_version: string;
+  batch_id: string;
+  batch_ref?: string | null;
+  status: "queued" | "running" | "complete" | "partial" | "failed";
+  created_at: string;
+  policy: PolicyUsed;
+  progress: { total: number; queued: number; running: number; complete: number; failed: number };
+  counts: { advance: number; escalate: number; pass: number; filtered_out: number };
+  items: BatchItem[];
+  events_url: string;
+  mock: boolean;
+  disclaimer: string;
+}
+
+// ---- push notifications -------------------------------------------------------------------
+
+export interface PushWatchRequest {
+  schema_version: typeof SCHEMA_VERSION;
+  subscription: PushSubscriptionJSON;
+  policy?: PolicyRequest;
+}
+
+export interface PushWatchResponse {
+  schema_version: string;
+  job_id: string;
+  status: "watching" | "sent" | "failed";
+}

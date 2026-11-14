@@ -53,7 +53,18 @@ on phones, a sidebar on desktop, light and dark themes):
 - **How it works** (`/about`): the four steps, how to read a verdict, settings (your bar, clear the session,
   forget the passcode, service status) and privacy.
 - **Installable:** `app/manifest.ts` and `public/icons/`, so "Add to Home Screen" opens it full-screen with its
-  own icon. Push and the share Shortcut are task 5.
+  own icon.
+- **Notifications** (task 5): "Notify me when it's ready" on the progress and list screens. `public/sw.js` shows
+  the notification and opens the memo; `src/lib/push.ts` subscribes; the backend (`screener/push.py`) sends one
+  notification per watched job, stating the verdict at the investor's bar, then forgets the subscription. Keys
+  are generated at startup unless `VAPID_PRIVATE_KEY` is set. iPhones allow web push only once the app is on the
+  Home Screen, so there the button becomes that instruction.
+- **Share into Screener** (task 5): `/share?url=…` shows what came in and screens it with one tap. Android gets it
+  through the manifest's `share_target`; iPhones through a Shortcut, with steps and a copyable link on How it works.
+- **Screen a list** (task 7, `/batch`): upload or paste a CSV (template download included, up to 200 founders), then
+  watch them sort into Meet / Look closer / Pass at your bar; each finished founder joins the Founders list.
+- **Scrolling:** on phones the dock steps aside while you scroll down and returns when you scroll up; the memo's
+  what-if bar appears only once the verdict has scrolled out of view.
 - **Design system ("the odds slip", second redesign by a Claude Fable 5.2 design pass):** black ink on neutral
   paper, colour kept for the verdict alone, shown as a full-colour slab (green Meet, amber Look closer, ink Pass)
   with the chance in large condensed figures and a to-scale gauge whose zones differ by pattern as well as tone.

@@ -113,6 +113,8 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <ShareSetup />
+
       <section className="mt-12">
         <SectionTitle>Privacy</SectionTitle>
         <ul className="space-y-2.5 text-[15px] leading-relaxed text-ink-2">
@@ -131,5 +133,54 @@ export default function AboutPage() {
 
       <Disclaimer className="mt-12" />
     </Page>
+  );
+}
+
+/** How to send a LinkedIn profile or website from another app straight into Screener. */
+function ShareSetup() {
+  const [origin, setOrigin] = useState("");
+  const [copied, setCopied] = useState(false);
+  useEffect(() => setOrigin(window.location.origin), []);
+  const link = `${origin}/share?url=`;
+  return (
+    <section className="mt-12" aria-labelledby="share-setup">
+      <SectionTitle id="share-setup" note="Shared links open a confirm screen, so nothing is screened until you tap Screen founder.">
+        Share from other apps
+      </SectionTitle>
+      <div className="space-y-6 text-[15px] leading-relaxed text-ink-2">
+        <div>
+          <p className="font-bold text-ink">iPhone: a one-time Shortcut</p>
+          <ol className="mt-2 list-decimal space-y-1.5 pl-5">
+            <li>Open the Shortcuts app and tap <strong className="text-ink">+</strong> to make a new shortcut. Name it &ldquo;Screen founder&rdquo;.</li>
+            <li>Turn on <strong className="text-ink">Show in Share Sheet</strong> (in the shortcut&apos;s settings) and set it to receive <strong className="text-ink">URLs</strong>.</li>
+            <li>Add the action <strong className="text-ink">URL Encode</strong> with the Shortcut Input.</li>
+            <li>Add the action <strong className="text-ink">Open URLs</strong>, with this address followed by the URL Encoded Text:</li>
+          </ol>
+          <div className="mt-3 flex items-center gap-2 rounded-[14px] border-[1.5px] border-line-strong bg-surface p-1.5 pl-3.5">
+            <code id="share-link" className="min-w-0 flex-1 truncate font-mono text-[13px] text-ink">{link}</code>
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(link);
+                  setCopied(true);
+                } catch {
+                  const el = document.getElementById("share-link");
+                  if (el) window.getSelection()?.selectAllChildren(el);
+                }
+              }}
+              className="shrink-0 rounded-full bg-ink px-3.5 py-2 text-[13px] font-bold text-bg"
+            >
+              {copied ? "Copied" : "Copy"}
+            </button>
+          </div>
+          <p className="mt-2 text-[13.5px] text-muted">Then, in LinkedIn or Safari, tap Share and choose Screen founder. It opens in Safari.</p>
+        </div>
+        <div>
+          <p className="font-bold text-ink">Android</p>
+          <p className="mt-1">Add Screener to your home screen (Chrome menu, then Install app). Screener then appears in the share menu of any app.</p>
+        </div>
+      </div>
+    </section>
   );
 }

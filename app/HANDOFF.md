@@ -34,9 +34,9 @@ MASTER_PLAN.md that looks inconsistent instead of silently working around it.
 | 2 | FastAPI backend on mocks (`app/backend/`) | Done |
 | 3 | Research agent, merge, render; test on 5 real founders | **Done.** 5 founders for $1.21 in total; the owner has seen the profiles and sources |
 | 4 | Mobile-first Next.js app (`app/frontend/`): form, live progress, memo, client-side controls, what-ifs, disclaimer | **Done, on mocks; redesigned 2026-11-14** at the owner's request (simpler, product-grade, phone and desktop). Checked on an emulated iPhone 17 and a 1440px desktop, light and dark |
-| 5 | PWA features: manifest, share target, web push; phone test instructions (iOS and Android differ) | Not started |
+| 5 | PWA features: manifest, share target, web push; phone test instructions (iOS and Android differ) | **Done (2026-11-14):** push notifications, `/share` with Android share target and iPhone Shortcut steps. Real push delivery can't be tested from this sandbox (push services unreachable); checked with a simulated subscription |
 | 6 | Hosting: frontend on Vercel, backend on Railway, both on mocks | **Deployed** (2026-11-14). Waiting for the owner's test on the iPhone |
-| 7 | Batch mode UI: CSV upload, triage view | Not started (the backend side exists) |
+| 7 | Batch mode UI: CSV upload, triage view | **Done (2026-11-14):** `/batch`, checked end to end on phone and desktop |
 
 ## Next step (task 6: the owner tests on the iPhone)
 

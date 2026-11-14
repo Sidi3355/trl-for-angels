@@ -11,6 +11,8 @@ export default function manifest(): MetadataRoute.Manifest {
     display: "standalone",
     background_color: "#eeeeea",
     theme_color: "#eeeeea",
+    // Android: once installed, Screener appears in the share menu; a shared link opens /share.
+    share_target: { action: "/share", method: "GET", params: { title: "title", text: "text", url: "url" } },
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
       { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },

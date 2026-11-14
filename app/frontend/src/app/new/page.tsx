@@ -1,12 +1,13 @@
 "use client";
 
 // New screening: who, plus anything the investor already knows. Everything but the founder is optional.
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
 import { Examples } from "@/components/Examples";
 import { IconChevronDown } from "@/components/icons";
-import { Button, Card, ChipPicker, Disclaimer, Notice, Page, PageHeader, Spinner, Switch, cx } from "@/components/ui";
+import { Button, Card, ChipPicker, Disclaimer, Notice, Page, PageHeader, Spinner, Switch, cx, linkClass } from "@/components/ui";
 import type { FieldValues } from "@/lib/types";
 import { parseFounder, useStartScreening } from "@/lib/useScreening";
 
@@ -154,6 +155,13 @@ function NewScreening() {
           </Button>
         </div>
       </form>
+
+      <p className="mt-6 text-[14px] text-muted">
+        Got a list of founders?{" "}
+        <Link href="/batch" className={linkClass}>
+          Screen a whole list from a spreadsheet
+        </Link>
+      </p>
 
       <section className="mt-10" aria-labelledby="ex">
         <h2 id="ex" className="eyebrow mb-3 text-muted">

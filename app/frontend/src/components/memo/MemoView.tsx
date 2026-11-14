@@ -40,6 +40,15 @@ export function MemoView({ memoId }: { memoId: string }) {
   const [loading, setLoading] = useState(false);
   const [whatIfError, setWhatIfError] = useState<string | null>(null);
   const requestNo = useRef(0);
+  // The floating what-if bar shows only once the verdict itself has scrolled out of view.
+  const [verdictEl, setVerdictEl] = useState<HTMLDivElement | null>(null);
+  const [verdictOnScreen, setVerdictOnScreen] = useState(true);
+  useEffect(() => {
+    if (!verdictEl || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => setVerdictOnScreen(e.isIntersecting), { threshold: 0.12 });
+    io.observe(verdictEl);
+    return () => io.disconnect();
+  }, [verdictEl]);
 
   useEffect(() => {
     Promise.all([api.memo(memoId), api.thresholds()]).then(
@@ -171,7 +180,7 @@ export function MemoView({ memoId }: { memoId: string }) {
       </header>
 
       <div className="grid items-start gap-x-14 gap-y-10 lg:grid-cols-[420px_minmax(0,1fr)]">
-        <div className="anim-fade-up space-y-3 lg:sticky lg:top-8">
+        <div ref={setVerdictEl} className="anim-fade-up space-y-3 lg:sticky lg:top-8">
           <VerdictCard verdict={current} baseline={baseline} whatIf={whatIfOn} loading={loading} onReset={reset} />
           {memo.mock && (
             <p className="px-1 text-[12.5px] leading-snug text-faint">
@@ -193,7 +202,7 @@ export function MemoView({ memoId }: { memoId: string }) {
       </div>
 
       {whatIfOn && <div className="h-20 lg:hidden" aria-hidden />}
-      {whatIfOn && (
+      {whatIfOn && !verdictOnScreen && (
         <div className="anim-fade-up fixed inset-x-0 bottom-[calc(var(--dock-clear)-4px)] z-20 px-4 lg:hidden">
           <div
             className={cx("mx-auto flex max-w-md items-center gap-2.5 rounded-full py-2 pl-4 pr-2 shadow-float ring-[3px] ring-bg transition-colors duration-500", SLAB[current.decision])}
