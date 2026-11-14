@@ -142,3 +142,18 @@ while doing the work: date, decision, reason, evidence. Newest last.
   earlier startup was still running at founding has "1 still operating".
 - **Validation:** `research/validate.py --profile sample50` passes with no errors or warnings
   (`results/data/validation_sample50.md`).
+
+## 2026-11-14 · A5 · 3,000-row dataset: the real 50 plus 2,950 synthetic (user decision)
+
+- **Decision:** `data/raw/full.jsonl` is the 50 real-grounded sample rows followed by 2,950
+  synthetic rows from `research/generate_dataset.py` (seed 42). The user allowed made-up profiles
+  "based on the 50 real ones" instead of grounding all 3,000 in real companies.
+- **How outcomes work:** a background score from the profile plus Gaussian noise (sd 0.62),
+  ranked within each batch of 50 into exact band counts. Details in `results/data/README.md`.
+- **Noise level chosen:** 0.62 gives AUC 0.69 and F0.5 0.36 for a logistic model on profile
+  fields. Raising it to 0.72–0.82 lifted the "surprising" share only from 20% to about 24% while
+  dropping boosted-tree AUC to about 0.6, which would leave the learn-stage comparison too noisy.
+  So the surprising share is 20%, below the prompt's "about 30%".
+- **Validation (A5 "done when"):** `validate.py --profile full` passes with no errors or
+  warnings: band proportions exact (within ±3 points required), 0 rows dropped (under 2%
+  required), no duplicates or shared career paths.
