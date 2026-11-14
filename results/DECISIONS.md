@@ -69,6 +69,36 @@ while doing the work: date, decision, reason, evidence. Newest last.
   `Authorization: Bearer ` (empty), which the HTTP client rejects as an illegal header. A custom
   decision endpoint should omit the header when there is no key.
 
+## 2026-11-14 · Zero budget: Kaggle for all GPU work, Kev-0.6B as the answerer (user decision)
+
+- **Decision:** no spending. GPU work runs in Kaggle notebooks on a free T4. The answerer is
+  Kev-0.6B, the same checkpoint as the learn stage.
+- **Reason:** the user can't spend money and will train on Kaggle. A T4 has no bf16, so Kev
+  runs in fp32 there: Kev-0.6B needs about 2.4 GB, but Kev-4B needs about 16 GB for its weights
+  alone and won't fit. Kev-0.8B (Qwen3.5) uses fused kernels that may not run on a T4. Kev's
+  PyTorch build (2.8, CUDA 12.8) most likely doesn't support the P100, so notebooks use the T4.
+- **Cost of the choice:** noisier answers (see the Kev-0.6B probe above), and one model both
+  answers and decides. Both go in the write-up's limitations.
+- **Considered:** Kev-4B as the answerer (much more accurate, about $1–2 of GPU on Modal) and
+  Modal's reported $30/month free credit. Not used: the user can't risk any spending, and
+  `modal.com` is blocked from this session's network anyway.
+- **Generator:** Claude through the user's existing Claude Console API credits
+  (`anthropic:claude-opus-5-5` proposed; confirmed at A4).
+
+## 2026-11-14 · A3 prep · Kev's fine-tuning command needs two fixes
+
+- **`--max_state`:** Kev trains on states of at most 384 tokens by default and drops longer
+  records ("dropped 4 of 4 records that exceed the training context"). A C3 state (about 100
+  serialised answers) measured 1,468 tokens with synthetic questions, so every C3 record would be
+  dropped. Pass `--max_state 4096`.
+- **Recipe arguments:** Kev's own fine-tune script copies the starting checkpoint's architecture
+  into `kev.train`. For `kev-0.6b`: base `Qwen/Qwen3-0.6B-Base` at revision `da87bfb6`, LoRA 16,
+  head 256, LoRA targets all, `p_none_pair` 0.25, trained at lr 1e-4 and batch 8, temperature 1.0
+  (uncalibrated). The plan's command omitted these.
+- **Evidence:** a local CPU run of `kaggle/a3_check.py`. The endpoint, TRL speed path and
+  short-state training all worked. The long-state training ran out of CPU memory, which is why
+  the T4 run checks it.
+
 ## 2026-11-14 · A1 · Open item: TRL's cache location
 
 - **Note:** TRL's disk cache defaults to `~/.cache/think_reason_learn/llm-cache-v2.sqlite`, which
