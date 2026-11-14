@@ -11,6 +11,10 @@ For the app session (`app-track`), passed on by the owner. Checked against `app-
 - **The three artefacts.** `research/export_artifacts.py` writes `rules.json`, `thresholds.json`
   and `model.json` to `shared/artifacts/` and validates each against the app contract's schemas
   before writing (tested for both decider inputs). They appear once the real runs finish.
+  `rules.json` holds **40 questions** (the best by F0.5 on train, best first; TRL's
+  `max_rules=40`, decided 2026-11-14), so the app's answerer asks Kev 40 questions per founder.
+  If the D2 winner is C4 (Kev reads the profile directly), the app doesn't answer questions at
+  all: `model.json → input` says which.
 
 ## What the app needs to change
 
