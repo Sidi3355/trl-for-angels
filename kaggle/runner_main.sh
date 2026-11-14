@@ -52,8 +52,12 @@ push_results() {
 
 setup() {
   echo "== setup"
-  nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv \
-    || { echo "NO GPU: set Settings > Accelerator to GPU T4"; return 1; }
+  if ! nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv; then
+    case "${TASK:-}" in
+      hf_setup) echo "No GPU: fine for $TASK, which only talks to Hugging Face" ;;
+      *) echo "NO GPU: set Settings > Accelerator to GPU T4"; return 1 ;;
+    esac
+  fi
   pip install -q uv || return 1
   cd "$WORK" || return 1
   [ -d kev ] || git clone -q https://github.com/jaredpalmer/kev.git || return 1
