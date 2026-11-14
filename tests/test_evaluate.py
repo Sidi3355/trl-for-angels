@@ -45,6 +45,16 @@ def test_val_only_never_reads_test(tmp_path: Path) -> None:
     assert (tmp_path / "results/experiments/01_baselines/s1/predictions.csv").exists()
 
 
+def test_the_metrics_dictionary_is_copied_next_to_each_table(tmp_path: Path) -> None:
+    write_preds(tmp_path / "preds")
+    (tmp_path / "results/summary").mkdir(parents=True)
+    (tmp_path / "results/summary/metrics_dictionary.md").write_text("# columns")
+    ev.main(["--stage", "s2", "--predictions", str(tmp_path / "preds"),
+             "--results", str(tmp_path / "results"), "--bootstrap", "20"])
+    for d in ("summary/s2", "experiments/01_baselines/s2", "experiments/02_kev_zero_shot/s2"):
+        assert (tmp_path / "results" / d / "metrics_dictionary.md").read_text() == "# columns"
+
+
 def test_test_metrics_carry_cis_and_results_are_never_overwritten(tmp_path: Path) -> None:
     write_preds(tmp_path / "preds")
     args = ["--stage", "final", "--include-test", "--predictions", str(tmp_path / "preds"),

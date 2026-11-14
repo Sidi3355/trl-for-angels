@@ -195,6 +195,9 @@ def main(argv: list[str] | None = None) -> int:
                 per_exp[CONDITIONS[c][2]].append(row)
 
     write_csv(summary_dir / "metrics.csv", rows)
+    dictionary = args.results / "summary" / "metrics_dictionary.md"
+    if dictionary.exists():  # the column guide sits next to every metrics.csv
+        (summary_dir / "metrics_dictionary.md").write_text(dictionary.read_text())
     lines = [f"# Metrics ({args.stage})", "",
              "One row per condition, split and threshold rule. F0.5 (the main metric) "
              "weighs precision twice as much as recall; Brier and ECE are calibration "
@@ -232,6 +235,8 @@ def main(argv: list[str] | None = None) -> int:
     for exp, exp_rows in per_exp.items():
         exp_dir = args.results / "experiments" / exp / args.stage
         write_csv(exp_dir / "metrics.csv", exp_rows)
+        if dictionary.exists():
+            (exp_dir / "metrics_dictionary.md").write_text(dictionary.read_text())
         pred_rows = []
         for c in conds:
             if CONDITIONS[c][2] != exp or (c, plot_split) not in preds:
