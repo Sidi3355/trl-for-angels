@@ -140,3 +140,15 @@ def test_dataset_counts_on_a_synthetic_file(tmp_path: Path):
     by = {c.name: c for c in checks}
     assert by["Dropped rows"].status == "FAIL"
     assert by["Outcome counts"].status == "FAIL"
+
+
+def test_near_copies_are_found_among_many_templated_profiles():
+    # Every profile shares the template's wording, and every pair is compared, so a
+    # near copy is found however many profiles share that wording.
+    rows = [_row("shut down", "5-8", i) for i in range(250)]
+    copy = dict(rows[5])
+    copy["input"] = copy["input"].replace("Analyst,", "Senior Analyst,")
+    rows.append(copy)
+    recs = [v.parse_record(r, i) for i, r in enumerate(rows, 1)]
+    _, near = v.duplicates(recs)
+    assert (6, 251) in [(a, b) for a, b, _ in near]

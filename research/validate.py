@@ -567,20 +567,33 @@ def duplicates(records: list[Record], threshold: float = 0.8) -> tuple[list, lis
         exact[normalise(r.input)].append(r.row)
     exact_groups = [rows for rows in exact.values() if len(rows) > 1]
 
-    near = []
-    sh = [(r.row, _shingles(r.input)) for r in records]
-    # Bucket by a few shingles to avoid all-pairs on big files.
-    buckets: dict[str, set[int]] = defaultdict(set)
-    for idx, (_, s) in enumerate(sh):
-        for g in sorted(s)[:: max(1, len(s) // 8)][:8]:
-            buckets[g].add(idx)
-    pairs = {tuple(sorted((a, b))) for b_ in buckets.values() if len(b_) < 200
-             for a in b_ for b in b_ if a < b}
-    for a, b in sorted(pairs):
-        sa, sb = sh[a][1], sh[b][1]
-        jac = len(sa & sb) / len(sa | sb) if sa | sb else 0.0
-        if jac >= threshold and normalise(records[a].input) != normalise(records[b].input):
-            near.append((sh[a][0], sh[b][0], round(jac, 2)))
+    # Every pair, exactly: shared shingles from a sparse product. (Bucketing by a
+    # few shingles misses near copies when every profile shares the template's
+    # wording.) 3,000 profiles take about a second.
+    import numpy as np
+    from scipy import sparse
+
+    near: list[tuple[int, int, float]] = []
+    shingle_sets = [_shingles(r.input) for r in records]
+    vocab: dict[str, int] = {}
+    rows, cols = [], []
+    for i, s in enumerate(shingle_sets):
+        for g in s:
+            rows.append(i)
+            cols.append(vocab.setdefault(g, len(vocab)))
+    if not rows:
+        return exact_groups, near
+    m = sparse.csr_matrix((np.ones(len(rows), dtype=np.int32), (rows, cols)),
+                          shape=(len(records), len(vocab)))
+    sizes = np.asarray(m.sum(axis=1)).ravel()
+    shared = sparse.triu(m @ m.T, k=1).tocoo()
+    union = sizes[shared.row] + sizes[shared.col] - shared.data
+    jac = np.divide(shared.data, union, out=np.zeros(len(union)), where=union > 0)
+    texts = [normalise(r.input) for r in records]
+    for a, b, j in zip(shared.row, shared.col, jac):
+        if j >= threshold and texts[a] != texts[b]:
+            near.append((records[a].row, records[b].row, round(float(j), 2)))
+    near.sort()
     return exact_groups, near
 
 
