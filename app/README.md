@@ -15,7 +15,7 @@ accuracy is claimed.
 |---|---|---|
 | `contract/` | JSON Schemas for every request, response and artefact, plus mocks and validators. See `contract/README.md`. | Task 1: done |
 | `backend/` | FastAPI service: screening, live progress (SSE), memos, what-if, batch, artefacts, and the research agent | Task 2: done, on mocks. Task 3: done (agent tested on 5 real founders) |
-| `frontend/` | Mobile-first Next.js app: form, live progress, memo, client-side controls, what-ifs | Task 4: done, on mocks. PWA features (task 5) and batch UI (task 7) to come |
+| `frontend/` | Installable mobile-first Next.js app: deals, screening, live progress, memo, your bar, what-ifs | Task 4: done and redesigned, on mocks. Push and share (task 5) and batch UI (task 7) to come |
 
 ## Run the frontend locally
 
@@ -32,22 +32,35 @@ npm run typecheck
 `NEXT_PUBLIC_API_URL` (default `http://localhost:8000`) points it at another backend. It is read at
 build time, so set it before `npm run build` or in Vercel's environment variables.
 
-What the frontend does, screen by screen:
+What the frontend does, screen by screen (redesigned 2026-11-14 as an installable product: a bottom tab bar
+on phones, a sidebar on desktop, light and dark themes):
 
-- **Screen** (`/`): founder name, company, a LinkedIn or website link and the founding date, plus
-  optional "what you already know" fields and notes. The three demo founders start a screening in one tap.
-  "This session" lists earlier memos (kept in `sessionStorage`, so they go when the app closes).
-- **Progress** (`/screenings/[jobId]`): the pipeline's stages and a live feed of searches, sources and
-  fields over server-sent events. It opens the memo when it's ready, and falls back to polling the job if
-  the stream drops.
-- **Memo** (`/memos/[memoId]`): the verdict with a threshold track and the validation hit rates; the
-  controls (target, timeline, risk, filters), recomputed on the phone by `src/lib/policy.ts`, a port of
-  `backend/screener/policy.py` tested against the mock verdicts; the drivers ranked for the current
-  controls, each with a what-if toggle that re-scores through the backend; the outcome and years
-  distributions; every field with its provenance and sources; conflicts, unknowns, notes, sources and
-  the exact text the model read.
-- **Passcode:** if the backend has `ACCESS_TOKEN` set, the app asks for it on the first refused request
-  and keeps it in `sessionStorage` only.
+- **Deals** (`/`): one search-style box to screen a founder by name, LinkedIn or website, and the founders
+  screened this session with their verdict at your bar, filterable by advance, escalate or pass. Three
+  fictional examples run in one tap. The list lives in `sessionStorage`, so it goes when the app closes.
+- **Your bar** (a sheet, opened from Deals, the sidebar, any memo or About): target outcome, timeline, risk
+  appetite and hard filters, with a plain reading of what the setting means on validation founders. Set once,
+  applied to every verdict instantly (`localStorage`: a preference, not founder data).
+- **Screen** (`/new`): the founder, plus optional facts you already know (tap-to-pick chips), notes and the
+  research switch.
+- **Progress** (`/screenings/[jobId]`): a progress bar, the pipeline steps and a short live feed over
+  server-sent events; it opens the memo when it's ready, and falls back to polling the job if the stream drops.
+- **Memo** (`/memos/[memoId]`): the verdict with the chance and a to-scale gauge (pinned on the left on
+  desktop); the factors that move the score, ranked at your bar, each one tap away from a what-if that the
+  backend re-scores; how it could end (outcome and timing charts); the founder at founding with sources;
+  things worth knowing (conflicts, unknowns, warnings); notes; sources; and, under the hood, the exact
+  anonymised text and answers the model read.
+- **How it works** (`/about`): the four steps, how to read a verdict, settings (your bar, clear the session,
+  forget the passcode, service status) and privacy.
+- **Installable:** `app/manifest.ts` and `public/icons/`, so "Add to Home Screen" opens it full-screen with its
+  own icon. Push and the share Shortcut are task 5.
+- **Design system:** tokens in `src/app/globals.css` (Inter for text, Space Grotesk for display; verdict colours
+  always paired with an icon and a label), building blocks in `src/components/ui.tsx`. Chart colours were
+  checked with the dataviz skill's palette validator in both themes.
+- **Logic:** `src/lib/policy.ts` ports `backend/screener/policy.py` (tested against the mock verdicts);
+  `src/lib/bar.ts` applies the bar to the Deals list; `src/lib/api.ts` talks to the backend.
+- **Passcode:** if the backend has `ACCESS_TOKEN` set, the app asks for it on the first refused request and
+  keeps it in `sessionStorage` only.
 
 ## Run the backend locally
 

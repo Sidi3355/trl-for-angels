@@ -33,7 +33,7 @@ MASTER_PLAN.md that looks inconsistent instead of silently working around it.
 | 1 | API contract and mocks (`app/contract/`) | Done |
 | 2 | FastAPI backend on mocks (`app/backend/`) | Done |
 | 3 | Research agent, merge, render; test on 5 real founders | **Done.** 5 founders for $1.21 in total; the owner has seen the profiles and sources |
-| 4 | Mobile-first Next.js app (`app/frontend/`): form, live progress, memo, client-side controls, what-ifs, disclaimer | **Done, on mocks.** Checked end to end in an emulated iPhone 17, light and dark |
+| 4 | Mobile-first Next.js app (`app/frontend/`): form, live progress, memo, client-side controls, what-ifs, disclaimer | **Done, on mocks; redesigned 2026-11-14** at the owner's request (simpler, product-grade, phone and desktop). Checked on an emulated iPhone 17 and a 1440px desktop, light and dark |
 | 5 | PWA features: manifest, share target, web push; phone test instructions (iOS and Android differ) | Not started |
 | 6 | Hosting: frontend on Vercel, backend on Railway, both on mocks | **Deployed** (2026-11-14). Waiting for the owner's test on the iPhone |
 | 7 | Batch mode UI: CSV upload, triage view | Not started (the backend side exists) |
@@ -64,6 +64,15 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
 - Still open: the owner to confirm in the Claude Console that the usage landed on their key.
 
 ## Decisions made
+
+- **Redesign (2026-11-14, owner: "make it look amazing, feel like a fully fledged product, less complicated").**
+  Deals list as home; one smart search box; "Your bar" is a single global setting in a sheet (not controls
+  on every memo); memo leads with the verdict and a to-scale gauge; detail behind progressive disclosure.
+  Inter + Space Grotesk; cool neutrals with one ink-blue accent; chart ramps validated with the dataviz
+  skill. Installable (manifest and icons); push and share stay in task 5.
+- **Voice (8b) is go** (owner asked about ElevenLabs, 2026-11-14). Waiting on: the key in Railway as
+  `ELEVENLABS_API_KEY` (and the secure form for this sandbox), a voice choice, and whether the hackathon
+  has an ElevenLabs prize. Free tier only (zero-budget amendment).
 
 - **PWA (Next.js), not Expo.** The owner's phone is an **iPhone 17 on the latest iOS**. iOS doesn't support
   the Web Share Target API, so sharing on iPhone uses an iOS Shortcut that opens `/share?url=...`. Web
@@ -118,6 +127,5 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   - agent profiles will have more unknowns than the training data
   - template ambiguities (listed in `app/contract/README.md`)
   - thresholds built on val are optimistic and sparse for 5-year targets
-- **Voice features (8b):** don't build until the owner says go. Needs an ElevenLabs key, and whether the
-  hackathon has an ElevenLabs prize or credits (that decides how prominent to make it).
+- **Voice features (8b):** the owner said go on 2026-11-14; see "Decisions made" for what's still needed.
 - **Later keys:** TypeSafe (Jev) and the Kev endpoint, when the research outputs land.

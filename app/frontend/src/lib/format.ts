@@ -169,3 +169,38 @@ export function relativeTime(iso: string): string {
   if (s < 3600) return `${Math.round(s / 60)} min ago`;
   return `${Math.round(s / 3600)} h ago`;
 }
+
+// ---- plain-language copy for the redesigned screens ----------------------------------------
+
+export const DECISION_COPY: Record<Decision, { title: string; line: string }> = {
+  advance: { title: "Advance", line: "Clears your bar. Worth a meeting." },
+  escalate: { title: "Escalate", line: "Close to your bar. Take a closer look before you decide." },
+  pass: { title: "Pass", line: "Below your bar." },
+};
+
+export function targetShort(t: Target): string {
+  return TARGET_LABELS[t];
+}
+
+/** "a $500M+ outcome" or "$500M+ within 8 years" */
+export function chanceOf(target: Target, timeline: Timeline): string {
+  return timeline ? `${TARGET_LABELS[target]} within ${timeline} years` : `a ${TARGET_LABELS[target]} outcome`;
+}
+
+export function answerLabel(v: unknown): string {
+  if (typeof v !== "string") return JSON.stringify(v);
+  return v.length ? v.charAt(0).toUpperCase() + v.slice(1) : v;
+}
+
+export function sectorLabel(s: string | null | undefined): string | null {
+  if (!s || s === "unknown") return null;
+  return s === "B2B SaaS" ? s : s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+export function hostOf(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}

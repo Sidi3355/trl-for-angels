@@ -1,79 +1,144 @@
 @import "tailwindcss";
 
-/* Colour tokens: iOS-like grouped surfaces, one accent, and the three verdict colours. */
+/*
+  Screener design tokens.
+  Layout: one calm column on phones (bottom tab bar), sidebar + wide two-column memo on desktop.
+  Colour: cool, slightly blue-biased neutrals; one ink-blue accent; verdict colours are status
+  colours (always with an icon and a label); charts use validated ramps (dataviz skill).
+  Type: Space Grotesk for display (titles, the verdict, big figures), Inter for everything else.
+*/
 :root {
-  --bg: #f2f2f7;
-  --card: #ffffff;
-  --card-2: #f6f6f9;
-  --ink: #111114;
-  --ink-2: #3c3c43;
-  --muted: #6c6c74;
-  --line: rgba(60, 60, 67, 0.16);
-  --accent: #2756c5;
+  --bg: #f4f5f8;
+  --surface: #ffffff;
+  --surface-2: #f0f2f6;
+  --surface-3: #e6e9f0;
+  --ink: #0d1120;
+  --ink-2: #3a4155;
+  --muted: #687087;
+  --faint: #9ba2b3;
+  --line: #e3e6ed;
+  --line-strong: #cfd4de;
+  --accent: #2446d8;
+  --accent-hover: #1c39b8;
   --accent-ink: #ffffff;
-  --accent-soft: #e6edfb;
-  --advance: #12784a;
-  --advance-soft: #e1f3e9;
-  --escalate: #9a5b06;
-  --escalate-soft: #fbefd9;
-  --pass: #5a5e69;
-  --pass-soft: #eceef2;
-  --danger: #b8321f;
-  --danger-soft: #fbe8e4;
-  --warn: #7f5400;
-  --warn-soft: #fff3d1;
+  --accent-soft: #e9eefd;
+
+  --advance: #0f7f3f;
+  --advance-fill: #16a34a;
+  --advance-soft: #e3f4ea;
+  --escalate: #985b00;
+  --escalate-fill: #f5a524;
+  --escalate-soft: #fdf0d9;
+  --pass: #586075;
+  --pass-fill: #8a92a6;
+  --pass-soft: #eceef3;
+  --danger: #c2352c;
+  --danger-soft: #fdecea;
+  --warn: #855400;
+  --warn-soft: #fff3d2;
+
+  /* charts (validated with the dataviz palette script) */
+  --viz-o1: #86b6ef;
+  --viz-o2: #5598e7;
+  --viz-o3: #2a78d6;
+  --viz-o4: #1c5cab;
+  --viz-o5: #104281;
+  --viz-y1: #f3a37a;
+  --viz-y2: #e2622d;
+  --viz-y3: #a8431a;
+  --viz-up: #2a78d6;
+  --viz-down: #e34948;
+  --viz-track: #e7eaf1;
+
+  --shadow-1: 0 1px 2px rgba(13, 17, 32, 0.05), 0 1px 1px rgba(13, 17, 32, 0.03);
+  --shadow-2: 0 12px 32px -12px rgba(13, 17, 32, 0.22), 0 2px 6px rgba(13, 17, 32, 0.06);
+  --overlay: rgba(9, 12, 22, 0.42);
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #000000;
-    --card: #1c1c1e;
-    --card-2: #2a2a2d;
-    --ink: #f4f4f6;
-    --ink-2: #d4d4d9;
-    --muted: #9a9aa2;
-    --line: rgba(120, 120, 128, 0.36);
-    --accent: #7c9dff;
-    --accent-ink: #0a1020;
-    --accent-soft: #1a2442;
-    --advance: #54d38f;
+    --bg: #090b10;
+    --surface: #12151d;
+    --surface-2: #191d27;
+    --surface-3: #232836;
+    --ink: #eef0f6;
+    --ink-2: #c5cad7;
+    --muted: #8c94a8;
+    --faint: #5f677b;
+    --line: #232837;
+    --line-strong: #333a4c;
+    --accent: #7e96ff;
+    --accent-hover: #95a8ff;
+    --accent-ink: #0a1024;
+    --accent-soft: #1a2245;
+
+    --advance: #45d184;
+    --advance-fill: #22a85a;
     --advance-soft: #0f2a1c;
-    --escalate: #f1b553;
-    --escalate-soft: #2f2310;
-    --pass: #aeb2bc;
-    --pass-soft: #262629;
-    --danger: #ff7c68;
-    --danger-soft: #3a1611;
-    --warn: #f3c552;
-    --warn-soft: #2f2610;
+    --escalate: #f4b552;
+    --escalate-fill: #e0961c;
+    --escalate-soft: #2f2410;
+    --pass: #a9afbd;
+    --pass-fill: #6d7487;
+    --pass-soft: #1e212a;
+    --danger: #ff7d70;
+    --danger-soft: #3a1714;
+    --warn: #f4c653;
+    --warn-soft: #2f2611;
+
+    --viz-o1: #184f95;
+    --viz-o2: #256abf;
+    --viz-o3: #3987e5;
+    --viz-o4: #6da7ec;
+    --viz-o5: #9ec5f4;
+    --viz-y1: #8a3713;
+    --viz-y2: #d95926;
+    --viz-y3: #f49a6e;
+    --viz-up: #3987e5;
+    --viz-down: #e66767;
+    --viz-track: #232836;
+
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-2: 0 16px 40px -12px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(0, 0, 0, 0.4);
+    --overlay: rgba(0, 0, 0, 0.6);
     color-scheme: dark;
   }
 }
 
 @theme inline {
   --color-bg: var(--bg);
-  --color-card: var(--card);
-  --color-card-2: var(--card-2);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
   --color-muted: var(--muted);
+  --color-faint: var(--faint);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
   --color-advance: var(--advance);
+  --color-advance-fill: var(--advance-fill);
   --color-advance-soft: var(--advance-soft);
   --color-escalate: var(--escalate);
+  --color-escalate-fill: var(--escalate-fill);
   --color-escalate-soft: var(--escalate-soft);
   --color-pass: var(--pass);
+  --color-pass-fill: var(--pass-fill);
   --color-pass-soft: var(--pass-soft);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --color-warn: var(--warn);
   --color-warn-soft: var(--warn-soft);
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-grotesk), var(--font-inter), -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --shadow-card: var(--shadow-1);
+  --shadow-float: var(--shadow-2);
 }
 
 html {
@@ -85,18 +150,63 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
 }
 
-/* iOS zooms into inputs under 16px; keep form text at 16px. */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* iOS zooms into inputs under 16px. */
 input,
 select,
 textarea {
   font-size: 16px;
 }
 
-@keyframes pulse-dot {
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes pulse-soft {
   0%,
   100% {
     opacity: 1;
@@ -105,27 +215,47 @@ textarea {
     opacity: 0.35;
   }
 }
-.pulse-dot {
-  animation: pulse-dot 1.4s ease-in-out infinite;
-}
-
-@keyframes rise-in {
+@keyframes shimmer {
   from {
-    opacity: 0;
-    transform: translateY(4px);
+    background-position: -200% 0;
   }
   to {
-    opacity: 1;
-    transform: none;
+    background-position: 200% 0;
   }
 }
-.rise-in {
-  animation: rise-in 0.25s ease-out both;
+
+.anim-fade-up {
+  animation: fade-up 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.anim-fade-in {
+  animation: fade-in 0.2s ease-out both;
+}
+.anim-sheet-up {
+  animation: sheet-up 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.anim-pulse {
+  animation: pulse-soft 1.4s ease-in-out infinite;
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 0%, var(--surface-3) 50%, var(--surface-2) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pulse-dot,
-  .rise-in {
+  .anim-fade-up,
+  .anim-fade-in,
+  .anim-sheet-up,
+  .anim-pulse,
+  .skeleton {
     animation: none;
   }
+}
+
+/* Hide scrollbars on horizontal chip rows, keep them scrollable. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }

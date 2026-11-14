@@ -1,17 +1,21 @@
 "use client";
 
-// The memo: verdict at the investor's controls, what drives it, what-ifs, and the evidence.
+// The memo: verdict at the investor's bar, what drives it, what-ifs, then the evidence.
+// Desktop: verdict pinned on the left, detail on the right. Phone: one column.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { Controls } from "@/components/memo/Controls";
-import { Conflicts, DistributionsView, ModelInput, Notes, ProfileFields, Sources, Unknowns } from "@/components/memo/Details";
-import { Drivers } from "@/components/memo/Drivers";
-import { VerdictCard } from "@/components/memo/VerdictCard";
-import { Disclaimer, Notice, Page, Section, Spinner, TopBar } from "@/components/ui";
+import { useApp } from "@/components/AppState";
+import { IconGlobe, IconLink } from "@/components/icons";
+import { Notes, Sources, UnderTheHood, WorthKnowing } from "@/components/memo/Evidence";
+import { Factors } from "@/components/memo/Factors";
+import { Outcome } from "@/components/memo/Outcome";
+import { Profile } from "@/components/memo/Profile";
+import { VerdictCard } from "@/components/memo/Verdict";
+import { Avatar, Disclaimer, Notice, Page, PageHeader, Spinner, Tag, VerdictBadge } from "@/components/ui";
 import { api, type ApiError } from "@/lib/api";
-import { foundedLabel, foundedSource } from "@/lib/format";
-import { resolve, verdict as computeVerdict, withDefaults, type Policy } from "@/lib/policy";
-import { rememberScreening } from "@/lib/session";
+import { foundedLabel, foundedSource, percent, sectorLabel } from "@/lib/format";
+import { verdict as computeVerdict } from "@/lib/policy";
+import { rememberDeal } from "@/lib/session";
 import { SCHEMA_VERSION, type Driver, type FieldValues, type Memo, type Thresholds, type WhatIfChange, type WhatIfResponse } from "@/lib/types";
 
 function plainFields(memo: Memo): FieldValues {
@@ -19,20 +23,18 @@ function plainFields(memo: Memo): FieldValues {
 }
 
 function changeFor(d: Driver): WhatIfChange {
-  return d.kind === "answer"
-    ? { kind: "answer", rule_id: d.id, value: d.flipped as "yes" | "no" }
-    : { kind: "field", key: d.id as keyof FieldValues, value: d.flipped };
+  return d.kind === "answer" ? { kind: "answer", rule_id: d.id, value: d.flipped as "yes" | "no" } : { kind: "field", key: d.id as keyof FieldValues, value: d.flipped };
 }
 
 export function MemoView({ memoId }: { memoId: string }) {
+  const { bar } = useApp();
   const [memo, setMemo] = useState<Memo | null>(null);
   const [thresholds, setThresholds] = useState<Thresholds | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [policy, setPolicy] = useState<Policy | null>(null);
 
   const [flipped, setFlipped] = useState<Map<string, Driver>>(new Map());
   const [whatIf, setWhatIf] = useState<WhatIfResponse | null>(null);
-  const [whatIfLoading, setWhatIfLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [whatIfError, setWhatIfError] = useState<string | null>(null);
   const requestNo = useRef(0);
 
@@ -41,14 +43,15 @@ export function MemoView({ memoId }: { memoId: string }) {
       ([m, t]) => {
         setMemo(m);
         setThresholds(t);
-        setPolicy(withDefaults(m.verdict.policy));
-        rememberScreening({
+        rememberDeal({
           memo_id: m.memo_id,
           name: m.founder.display_name,
           company: m.founder.company_name,
-          decision: m.verdict.decision,
-          probability: m.verdict.probability,
+          sector: m.facets.sector,
+          distributions: m.distributions,
+          facets: m.facets,
           at: m.created_at,
+          mock: m.mock,
         });
       },
       (e: ApiError) => {
@@ -65,17 +68,17 @@ export function MemoView({ memoId }: { memoId: string }) {
       setWhatIfError(null);
       if (!next.size) {
         setWhatIf(null);
-        setWhatIfLoading(false);
+        setLoading(false);
         return;
       }
-      setWhatIfLoading(true);
+      setLoading(true);
       try {
         const res = await api.whatIf(memoId, { schema_version: SCHEMA_VERSION, changes: [...next.values()].map(changeFor) });
         if (n === requestNo.current) setWhatIf(res);
       } catch (e) {
         if (n === requestNo.current) setWhatIfError((e as ApiError).message);
       } finally {
-        if (n === requestNo.current) setWhatIfLoading(false);
+        if (n === requestNo.current) setLoading(false);
       }
     },
     [memoId],
@@ -96,135 +99,112 @@ export function MemoView({ memoId }: { memoId: string }) {
   if (error) {
     return (
       <Page>
-        <TopBar back={{ href: "/", label: "New" }} />
-        <div className="mt-6">
-          <Notice tone="danger">{error}</Notice>
-        </div>
+        <PageHeader title="Memo unavailable" back={{ href: "/", label: "Deals" }} />
+        <Notice tone="danger">{error}</Notice>
       </Page>
     );
   }
-  if (!memo || !thresholds || !policy || !fields) {
+  if (!memo || !thresholds || !fields) {
     return (
-      <Page>
-        <TopBar back={{ href: "/", label: "New" }} />
-        <div className="mt-24 flex justify-center text-muted">
-          <Spinner className="h-6 w-6" />
+      <Page wide>
+        <div className="pt-12">
+          <div className="skeleton h-9 w-64 rounded-xl" />
+          <div className="skeleton mt-3 h-4 w-48 rounded" />
+          <div className="mt-8 grid gap-8 lg:grid-cols-[400px_minmax(0,1fr)]">
+            <div className="skeleton h-[420px] rounded-[20px]" />
+            <div className="space-y-4">
+              <div className="skeleton h-40 rounded-[20px]" />
+              <div className="skeleton h-40 rounded-[20px]" />
+            </div>
+          </div>
+          <span className="sr-only">
+            <Spinner /> Loading the memo
+          </span>
         </div>
       </Page>
     );
   }
 
-  const resolved = resolve(thresholds, policy);
-  const baseline = computeVerdict(memo.distributions, thresholds, policy, fields);
-  const current = whatIf ? computeVerdict(whatIf.distributions, thresholds, policy, fields) : baseline;
+  const baseline = computeVerdict(memo.distributions, thresholds, bar, fields);
+  const current = whatIf ? computeVerdict(whatIf.distributions, thresholds, bar, fields) : baseline;
   const fd = memo.founder.founding_date;
-  const otherWarnings = memo.warnings.filter((w) => w.code !== "mock_artifacts");
-  const mockWarning = memo.warnings.find((w) => w.code === "mock_artifacts");
-  const links = [
-    memo.founder.identifier.linkedin_url && { href: memo.founder.identifier.linkedin_url, label: "LinkedIn" },
-    memo.founder.identifier.website_url && { href: memo.founder.identifier.website_url, label: "Website" },
-  ].filter(Boolean) as { href: string; label: string }[];
-  const fieldWhatIf = memo.what_if.field_changes;
-  const driversSupported = memo.drivers.every((d) => (d.kind === "answer" ? memo.what_if.answer_changes === "supported" : fieldWhatIf !== "unsupported"));
+  const sector = sectorLabel(memo.facets.sector);
+  const ids = memo.founder.identifier;
+  const fieldsWhatIf = memo.what_if.field_changes !== "unsupported";
+  const enabled = memo.drivers.every((d) => (d.kind === "answer" ? memo.what_if.answer_changes === "supported" : fieldsWhatIf));
+  const whatIfOn = flipped.size > 0;
 
   return (
-    <Page>
-      <TopBar back={{ href: "/", label: "New" }} />
-
-      <header className="mt-1">
-        <h1 className="text-[28px] font-bold leading-tight tracking-tight">{memo.founder.display_name}</h1>
-        <p className="mt-0.5 text-[15px] text-muted">
-          {[memo.founder.company_name, `Founded ${foundedLabel(fd.value)}, ${foundedSource(fd.provenance)}`].filter(Boolean).join(" · ")}
-        </p>
-        {links.length > 0 && (
-          <div className="mt-1 flex flex-wrap gap-x-3 text-[15px]">
-            {links.map((l) => (
-              <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" className="text-accent">
-                {l.label}
-              </a>
-            ))}
-          </div>
-        )}
-      </header>
-
-      {memo.mock && (
-        <div className="mt-4">
-          <Notice tone="info">
-            <strong className="font-semibold">Prototype memo.</strong> {mockWarning?.message ?? "Parts of this memo are mocked."}
-          </Notice>
+    <Page wide>
+      <PageHeader
+        back={{ href: "/", label: "Deals" }}
+        title={
+          <span className="flex items-center gap-3">
+            <Avatar name={memo.founder.display_name} size={44} />
+            <span className="min-w-0 truncate">{memo.founder.display_name}</span>
+          </span>
+        }
+        subtitle={
+          <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span>{[memo.founder.company_name, sector, `Founded ${foundedLabel(fd.value)}`].filter(Boolean).join(" · ")}</span>
+            {fd.provenance === "assumed" && <Tag tone="warn">Date assumed</Tag>}
+            {fd.provenance === "agent" && <Tag tone="accent">Date {foundedSource(fd.provenance)}</Tag>}
+            {memo.mock && <Tag>Example data</Tag>}
+          </span>
+        }
+      />
+      {(ids.linkedin_url || ids.website_url) && (
+        <div className="-mt-2 mb-5 flex flex-wrap gap-2">
+          {ids.linkedin_url && (
+            <a href={ids.linkedin_url} target="_blank" rel="noopener noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-[13px] font-medium text-ink-2 hover:bg-surface-2">
+              <IconLink size={15} /> LinkedIn
+            </a>
+          )}
+          {ids.website_url && (
+            <a href={ids.website_url} target="_blank" rel="noopener noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-[13px] font-medium text-ink-2 hover:bg-surface-2">
+              <IconGlobe size={15} /> Website
+            </a>
+          )}
         </div>
       )}
 
-      <div className="mt-4">
-        <VerdictCard verdict={current} resolved={resolved} baseline={whatIf ? baseline : null} whatIfActive={flipped.size > 0} whatIfLoading={whatIfLoading} onResetWhatIf={reset} />
+      <div className="grid items-start gap-8 lg:grid-cols-[400px_minmax(0,1fr)]">
+        <div className="space-y-4 lg:sticky lg:top-8">
+          <VerdictCard verdict={current} baseline={baseline} whatIf={whatIfOn} loading={loading} onReset={reset} />
+          {memo.mock && (
+            <p className="px-1 text-[12.5px] leading-snug text-faint">
+              Prototype: the score comes from a placeholder model until the real one is trained, so treat every number as an example.
+            </p>
+          )}
+        </div>
+
+        <div className="min-w-0 space-y-10">
+          <Factors drivers={memo.drivers} base={memo.distributions} bar={bar} flipped={new Set(flipped.keys())} onToggle={toggle} loading={loading} enabled={enabled} error={whatIfError} />
+          <Outcome d={whatIf ? whatIf.distributions : memo.distributions} bar={bar} />
+          <Profile memo={memo} />
+          <WorthKnowing memo={memo} />
+          <Notes memo={memo} />
+          <Sources memo={memo} />
+          <UnderTheHood memo={memo} />
+          <Disclaimer text={memo.disclaimer} />
+        </div>
       </div>
 
-      {otherWarnings.length > 0 && (
-        <div className="mt-3 space-y-2">
-          {otherWarnings.map((w) => (
-            <Notice key={w.code} tone="warn">
-              {w.message}
-            </Notice>
-          ))}
+      {whatIfOn && <div className="h-20 lg:hidden" aria-hidden />}
+      {whatIfOn && (
+        <div className="anim-fade-up fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+66px)] z-20 px-4 lg:hidden">
+          <div className="mx-auto flex max-w-md items-center gap-3 rounded-full bg-ink py-2 pl-4 pr-2 text-bg shadow-float">
+            <span className="min-w-0 flex-1 truncate text-[14px]">
+              What-if: <strong className="font-semibold tabular">{percent(current.probability)}</strong>
+              <span className="opacity-60"> (was {percent(baseline.probability)})</span>
+            </span>
+            <VerdictBadge decision={current.decision} size="sm" />
+            <button type="button" onClick={reset} className="rounded-full bg-bg/15 px-3 py-1.5 text-[13px] font-semibold hover:bg-bg/25">
+              Reset
+            </button>
+          </div>
         </div>
       )}
-
-      <Section title="Your controls" footer="Changes apply instantly, on your phone. No new research or scoring.">
-        <Controls policy={policy} onChange={setPolicy} facets={memo.facets} />
-      </Section>
-
-      <Section
-        title="What moves this score"
-        footer={
-          whatIfError ? (
-            <span className="text-danger">{whatIfError}</span>
-          ) : memo.decider.input_type === "answers" ? (
-            "Each line is one screening question. “Try” re-scores with that answer flipped; nothing is researched again."
-          ) : (
-            "Each line is one profile field. “Try” re-scores with it changed."
-          )
-        }
-      >
-        <Drivers drivers={memo.drivers} base={memo.distributions} policy={policy} flipped={new Set(flipped.keys())} onToggle={toggle} loading={whatIfLoading} supported={driversSupported} />
-      </Section>
-
-      <Section title="Predicted outcome">
-        <DistributionsView d={whatIf ? whatIf.distributions : memo.distributions} policy={policy} />
-      </Section>
-
-      <Section title="Founder profile" footer="As of the founding date. “You” means your input, which wins over the agent's findings.">
-        <ProfileFields memo={memo} />
-      </Section>
-
-      {memo.conflicts.length > 0 && (
-        <Section title="Conflicts">
-          <Conflicts conflicts={memo.conflicts} />
-        </Section>
-      )}
-
-      {memo.unknowns.length > 0 && (
-        <Section title="Unknown" footer="Unknown fields make the score less certain. Add what you know and screen again.">
-          <Unknowns paths={memo.unknowns} />
-        </Section>
-      )}
-
-      {(memo.notes.investor || memo.notes.post_founding.length > 0) && (
-        <Section title="Notes" footer="Memo only. Never sent to the model.">
-          <Notes memo={memo} />
-        </Section>
-      )}
-
-      {memo.sources.length > 0 && (
-        <Section title={`Sources (${memo.sources.length})`}>
-          <Sources sources={memo.sources} />
-        </Section>
-      )}
-
-      <Section>
-        <ModelInput memo={memo} />
-      </Section>
-
-      <Disclaimer text={memo.disclaimer} />
     </Page>
   );
 }
