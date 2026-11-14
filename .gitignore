@@ -1,0 +1,26 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Scratch work, model weights and caches (large or reproducible)
+lab/
+runs/
+*.safetensors
+*.bin
+.cache/
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
+
+# Frontend
+node_modules/
+.next/
