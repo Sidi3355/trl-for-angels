@@ -106,9 +106,10 @@ def kev_server(kev_dir: Path, run: str = KEV_BASE, port: int = 8009, device: str
             try:
                 with urllib.request.urlopen(f"{url}/v1/models", timeout=5):
                     break
-            except OSError:
+            except OSError as err:
                 if time.time() - t0 > timeout:
-                    raise TimeoutError(f"kev.serve not up after {timeout:.0f}s; see {log}")
+                    raise TimeoutError(
+                        f"kev.serve not up after {timeout:.0f}s; see {log}") from err
                 time.sleep(3)
         yield url
     finally:
