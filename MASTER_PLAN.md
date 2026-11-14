@@ -267,6 +267,33 @@ Public information only; nothing stored after the session; "screening aid, not i
 - **Keys** (environment variables, never committed): TypeSafe (Jev), OpenAI or Anthropic (RRF generator), Anthropic (agent), Modal.
 - **Demo fallback:** cache Jev answers and agent results for the demo founders.
 
+## 8b. Voice features (ElevenLabs)
+
+Three voice features on top of the section 8 pipeline. None of them changes the template or the model input format.
+
+### Voice notes (speech-to-text)
+
+The investor records a note in the app, for example after a meeting. ElevenLabs transcribes it, then one LLM call splits the transcript into:
+
+- **template-field values**, which go to the investor form with provenance `investor (voice)`
+- **everything else**, which goes to the memo notes
+
+The founding-date cutoff still applies: post-founding facts (traction, revenue, later funding) go to notes only and never to the model input.
+
+### Spoken memo briefing (text-to-speech)
+
+A "listen" button reads a short spoken summary generated from the memo JSON: the verdict, the probability at the chosen target and timeline, the top 3 drivers, and the key conflicts and unknowns. Keep it under about 30 seconds.
+
+### Voice agent (stretch)
+
+A voice agent answers the investor's spoken questions about a screened founder, using only the memo, the sources and what-if calls. It never gives investment advice and always ends with the disclaimer.
+
+### Rules
+
+- **Keys:** `ELEVENLABS_API_KEY`, from environment variables only.
+- **Storage:** audio isn't stored after the session.
+- **Cut-line order:** the voice agent first, then the spoken briefing. Voice notes (speech-to-text) are the last voice feature to cut.
+
 ## 9. Repo layout, timeline and cut lines
 
 ```
@@ -454,6 +481,21 @@ Do the steps in this order. Each step lists what it needs, what it produces, and
 **E4. Batch mode and demo cache.**
 - Do: CSV upload and triage. Cache Jev answers and agent output for the demo founders.
 
+**E5. Voice notes (speech-to-text; section 8b).**
+- Needs: E2.
+- Do: record a note in the app, transcribe it with ElevenLabs, and split the transcript with one LLM call into template-field values (to the investor form, provenance `investor (voice)`) and everything else (to memo notes).
+- Done when: a recorded note fills the right form fields with `investor (voice)` provenance, post-founding facts land only in the notes and never in the model input, and no audio is kept after the session.
+
+**E6. Spoken memo briefing (text-to-speech; section 8b).**
+- Needs: E2.
+- Do: a "listen" button that reads a summary generated from the memo JSON with ElevenLabs: verdict, probability at the chosen target and timeline, top 3 drivers, key conflicts and unknowns.
+- Done when: the briefing plays on a phone, matches the memo on screen, and lasts under about 30 seconds.
+
+**E7. Voice agent (stretch; section 8b).**
+- Needs: E5 and E6.
+- Do: a voice agent that answers the investor's spoken questions about a screened founder, using only the memo, its sources and what-if calls.
+- Done when: its answers come only from the memo, the sources and what-if calls, it never gives investment advice, and it always ends with the disclaimer.
+
 ### Stage F: interp (Day 2 afternoon; only once Stage E works end to end)
 
 **F1. Answer flips.** `research/interp_flips.py`: single and pair flips for C3 and C2, compared against C1's coefficients and XGBoost's importances. Produces the importance plot.
@@ -533,6 +575,9 @@ Give Claude Code one step at a time, using the short cue below as your prompt (a
 | E2 | "Build the mobile-first frontend with the investor form, memo and sliders." | The screen the investor uses: type what you know, watch the agent research, read the memo, move the sliders. | A |
 | E3 | "Add the share sheet and the push notification." | Lets an investor share a founder's LinkedIn from any app to start screening, and get pinged when it's done. | A |
 | E4 | "Add batch mode and cache the demo founders." | Triage a whole list at once, and make sure the live demo can't break if an API is slow. | A |
+| E5 | "Add voice notes: record, transcribe with ElevenLabs, and split the transcript into form fields and memo notes." | After a meeting, the investor just talks. The app writes it down, fills in the founder details it recognises, and keeps the rest as notes. Anything from after the founding date stays out of the model. | A |
+| E6 | "Add the spoken memo briefing with ElevenLabs text-to-speech." | A "listen" button reads out the verdict, the odds and the main reasons in under 30 seconds, so the investor can hear the result on the move. | A |
+| E7 | "Build the voice agent that answers spoken questions about a screened founder (stretch)." | The investor can ask out loud, e.g. "why escalate?" or "what if they had a co-founder?", and hear an answer drawn only from the memo, its sources and what-if checks. It never gives investment advice. | A |
 
 ### Stage F: interp (only once the app works)
 
