@@ -30,6 +30,32 @@ case "$TASK" in
     && "$PY" "$REPO/research/answers.py" --splits "$REPO/data/splits" --out-root "$OUT" \
       --cache-dir "$WORK/trl_cache" --kev-dir "$WORK/kev"
     ;;
+  c_kev)
+    # B5 files, then C3 (GPU 0) and C4 (GPU 1) fine-tuned at the same time, each choosing
+    # its checkpoint and temperature on val; then EXTRA, C4 and C3 scored through TRL.
+    # Needs data/splits, data/answers and data/models from the b1b2 run in the repo.
+    KPY="$WORK/kev/.venv/bin/python"
+    "$PY" "$REPO/research/serialise.py" --splits "$REPO/data/splits" \
+      --answers "$REPO/data/answers" --out "$WORK/kev_data" || exit 1
+    mkdir -p "$OUT/kev"
+    for spec in c3:0 c4:1; do
+      cond=${spec%%:*}; gpu=${spec##*:}
+      (cd "$WORK/kev" && CUDA_VISIBLE_DEVICES=$gpu "$KPY" "$REPO/research/train_kev.py" \
+        --condition "$cond" --kev-dir "$WORK/kev" --data "$WORK/kev_data" \
+        --out "$WORK/runs/$cond" > "$OUT/kev/train_$cond.log" 2>&1) &
+    done
+    wait
+    for cond in c3 c4; do
+      cp "$WORK/runs/$cond/report.json" "$OUT/kev/${cond}_report.json" 2>/dev/null
+      cp "$WORK/runs/$cond/"ep*.log "$OUT/kev/" 2>/dev/null
+      [ -d "$WORK/runs/$cond/chosen" ] || { echo "no chosen $cond checkpoint" >&2; exit 1; }
+    done
+    for cond in extra c4 c3; do
+      run=""; [ "$cond" != extra ] && run="--run $WORK/runs/$cond/chosen"
+      "$PY" "$REPO/research/kev_predict.py" --condition "$cond" $run --kev-dir "$WORK/kev" \
+        --splits "$REPO/data/splits" --models "$REPO/data/models" --out-root "$OUT" || exit 1
+    done
+    ;;
   *)
     echo "unknown TASK $TASK" >&2
     exit 2
