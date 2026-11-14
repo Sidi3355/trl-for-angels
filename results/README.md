@@ -39,6 +39,7 @@ reliability diagrams. Every test score has a 95% confidence interval.
 |---|---|
 | [FINDINGS.md](FINDINGS.md) | plain-English findings, one short section each, with the key number and plot |
 | [GLOSSARY.md](GLOSSARY.md) | every technical term in one or two plain sentences |
+| [METHODS.md](METHODS.md) | the full method in one place (data, TRL settings, conditions, fine-tuning, scoring, limits), written for a paper |
 | [DECISIONS.md](DECISIONS.md) | decision log: date, decision, reason, evidence |
 | `run_info.json` | TRL commit and version, model IDs, seeds, split sizes, measurements |
 | [data/](data/README.md) | what the dataset is, how it was made, its limits, and per-split stats |
