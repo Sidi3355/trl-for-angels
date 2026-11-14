@@ -1,0 +1,119 @@
+{
+  "grid": {
+    "max_depth": [
+      2,
+      3,
+      4
+    ],
+    "learning_rate": [
+      0.03,
+      0.1
+    ],
+    "min_child_weight": [
+      1,
+      5
+    ]
+  },
+  "fixed": {
+    "n_estimators": 2000,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "eval_metric": "logloss",
+    "early_stopping_rounds": 50,
+    "random_state": 42,
+    "n_jobs": 4,
+    "tree_method": "hist"
+  },
+  "chosen": {
+    "max_depth": 2,
+    "learning_rate": 0.1,
+    "min_child_weight": 5
+  },
+  "candidates": [
+    {
+      "max_depth": 2,
+      "learning_rate": 0.03,
+      "min_child_weight": 1,
+      "best_iteration": 277,
+      "val_logloss": 0.44543030858039856
+    },
+    {
+      "max_depth": 2,
+      "learning_rate": 0.03,
+      "min_child_weight": 5,
+      "best_iteration": 277,
+      "val_logloss": 0.4433383047580719
+    },
+    {
+      "max_depth": 2,
+      "learning_rate": 0.1,
+      "min_child_weight": 1,
+      "best_iteration": 123,
+      "val_logloss": 0.44751906394958496
+    },
+    {
+      "max_depth": 2,
+      "learning_rate": 0.1,
+      "min_child_weight": 5,
+      "best_iteration": 135,
+      "val_logloss": 0.4432753622531891
+    },
+    {
+      "max_depth": 3,
+      "learning_rate": 0.03,
+      "min_child_weight": 1,
+      "best_iteration": 212,
+      "val_logloss": 0.4474761486053467
+    },
+    {
+      "max_depth": 3,
+      "learning_rate": 0.03,
+      "min_child_weight": 5,
+      "best_iteration": 159,
+      "val_logloss": 0.4469369649887085
+    },
+    {
+      "max_depth": 3,
+      "learning_rate": 0.1,
+      "min_child_weight": 1,
+      "best_iteration": 85,
+      "val_logloss": 0.4478747546672821
+    },
+    {
+      "max_depth": 3,
+      "learning_rate": 0.1,
+      "min_child_weight": 5,
+      "best_iteration": 134,
+      "val_logloss": 0.447959303855896
+    },
+    {
+      "max_depth": 4,
+      "learning_rate": 0.03,
+      "min_child_weight": 1,
+      "best_iteration": 148,
+      "val_logloss": 0.4502728283405304
+    },
+    {
+      "max_depth": 4,
+      "learning_rate": 0.03,
+      "min_child_weight": 5,
+      "best_iteration": 158,
+      "val_logloss": 0.44706934690475464
+    },
+    {
+      "max_depth": 4,
+      "learning_rate": 0.1,
+      "min_child_weight": 1,
+      "best_iteration": 32,
+      "val_logloss": 0.45235690474510193
+    },
+    {
+      "max_depth": 4,
+      "learning_rate": 0.1,
+      "min_child_weight": 5,
+      "best_iteration": 66,
+      "val_logloss": 0.44573307037353516
+    }
+  ],
+  "selected_by": "lowest val log-loss"
+}

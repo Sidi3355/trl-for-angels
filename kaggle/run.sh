@@ -7,8 +7,8 @@
 # OUT (folder pushed to GitHub). Secrets arrive as env vars: ANTHROPIC_API_KEY (if attached).
 set -uo pipefail
 
-# b1b2 needs data/splits in the repo (A6). About 1 hour on the T4; under $1 of Claude credits.
-TASK="b1b2"
+# c_kev needs data/splits, data/answers and data/models (B1/B2) in the repo. About 2.5-3 hours.
+TASK="c_kev"
 
 echo "$TASK" > "$OUT/task.txt"
 git -C "$REPO" rev-parse --short HEAD > "$OUT/repo_commit.txt"

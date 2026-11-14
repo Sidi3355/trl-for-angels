@@ -1,0 +1,41 @@
+rule,gain
+"Is the startup's industry in enterprise/B2B infrastructure (e.g., cybersecurity, cloud infrastructure, logistics, banking technology, energy storage, drug discovery)?",9.49081
+Did the founder spend 5+ years at a single employer in the same industry as the current startup?,6.48368
+Does the text list at least one prior startup founded by the founder that was acquired?,10.8596
+Does the profile list a prior startup that the founder founded which was acquired or went public?,5.21181
+Does the profile list a prior startup founded by the founder that was acquired?,3.52721
+"Does the founder's job history include a title of Manager, Director, Vice President, or C-level (e.g., CSO, CTO, General Manager)?",4.04122
+"Does the founder hold a master's degree (MSc) or PhD, as opposed to only a bachelor's or MBA?",6.63156
+"Does the text state the founder's prior experience in the startup's industry is ""deep""?",8.03137
+"Does the founder hold a PhD, MSc, or other graduate science/engineering degree (not counting an MBA)?",7.31395
+Did the founder's most recent listed job last 5+ years?,4.44417
+Does the profile describe the founder's background as 'domain specialist' or 'mixed'?,5.80154
+Does the founder background field describe the founder as 'technical' or 'domain specialist'?,6.96915
+"Does the founder's job history include a title of Vice President, Chief (C-level), Head of, or Director?",5.3554
+"Has the founder held a title of General Manager, Head of Product, Chief Technology Officer, or Manager at a technology or software company?",5.13085
+Did the founder's most recent listed job last 5 or more years?,5.64122
+"Is the founder's background labeled as ""domain specialist""?",2.98126
+Is the founder's background described as 'domain specialist'?,6.63065
+"Did the founder work at least 5+ years at a single company with 5,000+ employees?",5.22242
+Does the text state the founder has deep prior experience in the startup's industry?,5.60018
+"Is the founder described as a ""domain specialist"" with ""deep prior experience"" in the startup's industry?",6.50097
+Did the founder's most recent job listed fall in the same industry as the startup?,5.10416
+"Is the startup in an enterprise/B2B technology sector such as SaaS, developer tools, data or cloud infrastructure, cybersecurity, or semiconductors?",6.32017
+Does the text state a prior startup founded by this founder was acquired?,5.81286
+Does the profile state the founder has 'deep' prior experience in the startup's industry?,5.33627
+Does the text state the founder has founded at least one prior startup?,4.43546
+Is the founder's total work experience listed as 15+ years?,4.78871
+Does the text state the founder has 'deep' prior experience in the startup's industry?,3.15278
+Does the profile state the founder has 15+ years of work experience?,8.75255
+"Does the text list at least one prior startup founded by the founder (prior startups not ""none"")?",6.61836
+"Does the founder's job history include a role whose title contains 'Scientist', 'Engineer', or 'Researcher'?",6.70641
+"Has the founder held a job title containing ""Engineer,"" ""Developer,"" ""Data Scientist,"" or ""Architect""?",3.59491
+"Is the startup's industry described as B2B SaaS, developer tools, or cloud infrastructure?",5.97637
+"Does the founder's background category say ""technical"" or ""mixed"" (rather than ""business"" or ""domain specialist"")?",4.11805
+"Did the founder hold any job with a title of Vice President, Director, Head, C-level (e.g., CEO, COO, CTO), or Partner?",6.4389
+Is the founder's background described as 'technical'?,4.93541
+Has the founder previously founded at least one startup that was acquired?,4.89666
+"Is the startup founded with 2 or more co-founders (i.e., 3+ total founders)?",5.67801
+"Did the founder hold a job at a company with 5,000+ employees for 5+ years?",4.67948
+"Does the founder have a degree in a natural science, engineering, or computer science field?",4.92601
+"Does the founder hold an MD, JD, or PhD degree?",9.5417

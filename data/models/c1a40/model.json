@@ -1,0 +1,1858 @@
+{
+  "format": 1,
+  "library": "0.3.0",
+  "class": "RRF",
+  "params": {
+    "answerer": {
+      "__trl__": "data",
+      "class": "think_reason_learn.llm._spec:LLM",
+      "fields": {
+        "model": "kev-0.6b",
+        "temperature": null,
+        "reasoning_effort": null,
+        "max_output_tokens": null,
+        "service_tier": null,
+        "questions_per_call": 1,
+        "base_url": "http://127.0.0.1:8009/v1/systemone",
+        "kind": "decision",
+        "price": null
+      }
+    },
+    "beta": 0.5,
+    "combiner": "elasticnet",
+    "combiner_model": null,
+    "combiner_question": null,
+    "cv": 3,
+    "drop_below_base_rate": true,
+    "example_class_ratio": "balanced",
+    "expert_questions": {
+      "__trl__": "tuple",
+      "items": []
+    },
+    "generation_size": null,
+    "generator": {
+      "__trl__": "data",
+      "class": "think_reason_learn.llm._spec:LLM",
+      "fields": {
+        "model": "anthropic:claude-opus-5-5",
+        "temperature": null,
+        "reasoning_effort": null,
+        "max_output_tokens": 16000,
+        "service_tier": null,
+        "questions_per_call": 1,
+        "base_url": null,
+        "kind": null,
+        "price": null
+      }
+    },
+    "hamming_threshold": 0.15,
+    "instructions": null,
+    "max_rules": 40,
+    "n_examples": 30,
+    "n_prompts": 10,
+    "pos_label": null,
+    "questions_per_prompt": 10,
+    "random_state": 42,
+    "screened_questions": 20,
+    "screening_size": null,
+    "task": "Predict whether this startup founder's company will succeed (exit, IPO or funding over $500M).",
+    "verbose": 0
+  },
+  "fitted": {
+    "classes_": {
+      "__trl__": "array",
+      "dtype": "<U10",
+      "items": [
+        "failed",
+        "successful"
+      ]
+    },
+    "usage_": {
+      "__trl__": "usage",
+      "fields": [
+        "time",
+        "role",
+        "model",
+        "cost_usd",
+        "cost_source",
+        "served_model",
+        "input_tokens",
+        "output_tokens",
+        "cache_read_tokens",
+        "cache_write_tokens",
+        "reasoning_tokens",
+        "latency_s",
+        "calls",
+        "cached",
+        "error"
+      ],
+      "rows": [
+        [
+          1794675462.8259275,
+          "generator",
+          "anthropic:claude-opus-5-5",
+          0.0,
+          "cache",
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0,
+          1,
+          true,
+          null
+        ],
+        [
+          1794675462.8278124,
+          "generator",
+          "anthropic:claude-opus-5-5",
+          0.0,
+          "cache",
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0,
+          1,
+          true,
+          null
+        ],
+        [
+          1794675462.8284602,
+          "generator",
+          "anthropic:claude-opus-5-5",
+          0.0,
+          "cache",
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0,
+          1,
+          true,
+          null
+        ],
+        [
+          1794675462.8291085,
+          "generator",
+          "anthropic:claude-opus-5-5",
+          0.0,
+          "cache",
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0,
+          1,
+          true,
+          null
+        ],
+        [
+          1794675462.829764,
+          "generator",
+          "anthropic:claude-opus-5-5",
+          0.0,
+          "cache",
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0,
+          1,
+          true,
+          null
+        ],
+        [
+          1794675462.83042,
+          "generator",
+          "anthropic:claude-opus-5-5",
+          0.0,
+          "cache",
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0,
+          1,
+          true,
+          null
+        ],
+        [
+          1794675462.8310623,
+          "generator",
+          "anthropic:claude-opus-5-5",
+          0.0,
+          "cache",
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0,
+          1,
+          true,
+          null
+        ],
+        [
+          1794675462.8317082,
+          "generator",
+          "anthropic:claude-opus-5-5",
+          0.0,
+          "cache",
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0,
+          1,
+          true,
+          null
+        ],
+        [
+          1794675462.8323011,
+          "generator",
+          "anthropic:claude-opus-5-5",
+          0.0,
+          "cache",
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0,
+          1,
+          true,
+          null
+        ],
+        [
+          1794675462.8330026,
+          "generator",
+          "anthropic:claude-opus-5-5",
+          0.0,
+          "cache",
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0,
+          1,
+          true,
+          null
+        ],
+        [
+          1794675462.8336437,
+          "generator",
+          "anthropic:claude-opus-5-5",
+          0.0,
+          "cache",
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0,
+          1,
+          true,
+          null
+        ],
+        [
+          1794675468.0951962,
+          "answerer",
+          "kev-0.6b",
+          0.0,
+          "cache",
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.0,
+          186000,
+          true,
+          null
+        ]
+      ]
+    },
+    "n_features_in_": 1,
+    "instructions_": "**Instructions for writing YES/NO questions about startup founder profiles**\n\n**Goal**\nEach sample is a text description of a startup founder and/or their company. The task is to predict whether the company will succeed. Success means an exit (acquisition), an IPO, or total funding above $500M. Failure means none of these. Write YES/NO questions whose answers, weighed together, help separate likely successes from likely failures.\n\n**What each question must be**\n- **Answerable from the text alone.** A reader with only the sample must be able to answer it. Do not rely on outside knowledge, such as looking up the company, recalling news, or knowing what happened to it later.\n- **Objective and specific.** Two careful readers should give the same answer. Avoid vague words like \"impressive,\" \"strong,\" or \"promising\" unless you define them concretely. For example:\n  - Vague: \"Does the founder have a strong background?\"\n  - Specific: \"Does the text state the founder previously held a director-level or higher role?\"\n- **About one thing.** Do not combine conditions with \"and/or\" unless they form one natural concept.\n- **Useful in both directions.** A YES or a NO should carry information. Avoid questions that nearly every profile would answer the same way.\n- **Clear about missing information.** When information may simply be absent, phrase the question so that \"not mentioned\" maps cleanly to NO. Example: \"Does the text mention\u2026\"\n\n**Signals likely to matter**\nDraw on these areas, but only ask about things a profile could plausibly state.\n\n- **Prior founding experience**\n  - Has the founder started a company before?\n  - Did a previous company get acquired, go public, or raise significant funding?\n  - Has the founder founded more than one company?\n- **Career history**\n  - Worked at a well-known large technology company, top consulting firm, or investment bank?\n  - Held senior or executive titles (VP, C-level, director)?\n  - Has many years of industry experience?\n  - Has experience in the same industry as the startup?\n- **Education**\n  - Attended a highly selective university?\n  - Holds an advanced degree (MBA, PhD, MD, JD)?\n  - Has a technical degree (CS, engineering, sciences)?\n- **Technical vs. business profile**\n  - Does the founder appear to be a technical builder (engineer, researcher)?\n  - Or a business/operations leader?\n  - Or both?\n- **Domain expertise**\n  - Does the founder have research, patents, publications, or recognized expertise relevant to the company's field?\n- **Network and validation signals**\n  - Participation in a notable accelerator?\n  - Backing from named investors?\n  - Awards, recognitions, or press mentions?\n  - Prior angel investing or advisory roles?\n- **Leadership scope**\n  - Has the founder managed large teams or budgets?\n  - Has the founder led a product or business line?\n- **Company/context details (if present)**\n  - Industry or sector (e.g., enterprise software, consumer, biotech, fintech, hardware).\n  - Whether the business model is B2B or B2C.\n  - Location in a major startup hub.\n  - Presence of co-founders.\n- **Career pattern**\n  - Frequent short job tenures vs. long tenures.\n  - Career pivots.\n  - Gaps.\n  - Whether the founder left a stable senior role to start the company.\n\n**What to avoid**\n- **Questions that restate or leak the label.** Do not ask whether the company was acquired, went public, raised over $500M, became a unicorn, \"succeeded,\" or shut down. Do not ask about any outcome that defines the class.\n  - Asking about a founder's *previous* companies' exits is fine.\n  - Asking about the *current* company's outcome is not.\n- **Questions requiring knowledge outside the text,** such as the company's real-world fate or a person's reputation not described in the sample.\n- **Subjective judgments** like whether the idea is good or the founder seems capable.\n- **Questions about protected or irrelevant personal attributes** like gender, ethnicity, age, or nationality. Do not use them as proxies for success.\n- **Near-duplicate questions.** Cover a range of distinct signals.\n\n**Output**\nProduce a list of clear, standalone YES/NO questions, each concrete enough to be answered quickly and consistently from a single profile.",
+    "questions_": {
+      "__trl__": "frame",
+      "index": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92
+      ],
+      "columns": [
+        "question",
+        "precision",
+        "recall",
+        "f0.5",
+        "used"
+      ],
+      "data": [
+        [
+          "Does the profile state the startup was founded with exactly 1 co-founder (i.e., two founders total)?",
+          0.22939560439560439,
+          0.4175,
+          0.2521135265700483,
+          false
+        ],
+        [
+          "Does the profile state the founder is a solo founder (no co-founders)?",
+          0.17602427921092564,
+          0.58,
+          0.20451339915373765,
+          false
+        ],
+        [
+          "Does the founder hold a C-level title (e.g., CEO, COO, CTO, CRO, Chief Data Officer) or a Vice President title at any company listed in their job history other than their own startup?",
+          0.36507936507936506,
+          0.0575,
+          0.17638036809815952,
+          false
+        ],
+        [
+          "Does the profile state the founder has 15+ years of work experience?",
+          0.24477244772447723,
+          0.4975,
+          0.27245345016429356,
+          true
+        ],
+        [
+          "Does the founder hold a PhD?",
+          0.32941176470588235,
+          0.14,
+          0.25925925925925924,
+          false
+        ],
+        [
+          "Did the founder work at least 5+ years at a single company with 5,000+ employees?",
+          0.24699453551912567,
+          0.565,
+          0.27832512315270935,
+          true
+        ],
+        [
+          "Does the profile describe the founder's background as 'domain specialist' or 'mixed'?",
+          0.24740124740124741,
+          0.595,
+          0.2801318267419962,
+          true
+        ],
+        [
+          "Does the profile list a prior startup founded by the founder that was acquired?",
+          0.28507795100222716,
+          0.32,
+          0.29143897996357016,
+          true
+        ],
+        [
+          "Is the startup in a hardware, robotics, drones, indoor farming, or other physical-engineering industry?",
+          0.10980392156862745,
+          0.07,
+          0.09859154929577464,
+          false
+        ],
+        [
+          "Does any listed job have a tenure of less than 1 year?",
+          0.15570934256055363,
+          0.225,
+          0.16592920353982302,
+          false
+        ],
+        [
+          "Is the startup in a life sciences or healthcare field such as biotech, drug discovery, diagnostics, or medical devices?",
+          0.30939226519337015,
+          0.14,
+          0.2491103202846975,
+          false
+        ],
+        [
+          "Does the founder's job history include a title of Manager, Director, Vice President, or C-level (e.g., CSO, CTO, General Manager)?",
+          0.26181353767560667,
+          0.5125,
+          0.29020385050962627,
+          true
+        ],
+        [
+          "Does the profile state the founder has 'deep' prior experience in the startup's industry?",
+          0.24164278892072588,
+          0.6325,
+          0.2757192676547515,
+          true
+        ],
+        [
+          "Does the founder have 10 or more years of work experience?",
+          0.22372662798194712,
+          0.8675,
+          0.26271956390066625,
+          false
+        ],
+        [
+          "Is the startup founded with 2 or more co-founders (i.e., 3+ total founders)?",
+          0.22746478873239437,
+          0.8075,
+          0.265625,
+          true
+        ],
+        [
+          "Has the founder previously founded at least one startup that was acquired?",
+          0.3352272727272727,
+          0.1475,
+          0.26721014492753625,
+          true
+        ],
+        [
+          "Is the startup in a staffing, HR, esports, legal tech, construction tech, or online marketplace industry?",
+          0.2107409925220938,
+          0.775,
+          0.24665817950350097,
+          false
+        ],
+        [
+          "Did the founder's most recent job listed fall in the same industry as the startup?",
+          0.24285714285714285,
+          0.6375,
+          0.27717391304347827,
+          true
+        ],
+        [
+          "Does the founder have a degree in a natural science, engineering, or computer science field from a university ranked QS top 100?",
+          0.22730989370400653,
+          0.695,
+          0.26266061980347694,
+          false
+        ],
+        [
+          "Does the text state the founder previously founded a company that was acquired for $50M or more?",
+          0.34615384615384615,
+          0.045,
+          0.14802631578947367,
+          false
+        ],
+        [
+          "Is the founder's background labeled as \"domain specialist\"?",
+          0.2436738519212746,
+          0.65,
+          0.27849185946872324,
+          false
+        ],
+        [
+          "Does the founder's job history include 5 or more listed positions?",
+          0.22295081967213115,
+          0.85,
+          0.26153846153846155,
+          false
+        ],
+        [
+          "Does the profile list exactly 1 co-founder?",
+          0.1985172981878089,
+          0.6025,
+          0.22926179604261795,
+          false
+        ],
+        [
+          "Does the text state the founder's prior experience in the startup's industry is \"deep\"?",
+          0.2539325842696629,
+          0.565,
+          0.28535353535353536,
+          true
+        ],
+        [
+          "Does the founder hold an MD, JD, or PhD degree?",
+          0.38524590163934425,
+          0.1175,
+          0.26463963963963966,
+          true
+        ],
+        [
+          "Is the founder's total work experience listed as 15+ years?",
+          0.24806201550387597,
+          0.48,
+          0.2745995423340961,
+          true
+        ],
+        [
+          "Does the startup's industry involve hardware or robotics (e.g., robotics, semiconductors, autonomous vehicles, consumer electronics, indoor farming)?",
+          0.13357400722021662,
+          0.0925,
+          0.1226790450928382,
+          false
+        ],
+        [
+          "Does the founder's most recent listed job last less than 2 years?",
+          0.1556420233463035,
+          0.3,
+          0.17221584385763491,
+          false
+        ],
+        [
+          "Does the founder's job history include a role whose title contains \"Founder\" or \"Co-founder\"?",
+          0.20738786279683377,
+          0.9825,
+          0.2462406015037594,
+          false
+        ],
+        [
+          "Is the startup's industry described as B2B SaaS, developer tools, or cloud infrastructure?",
+          0.23917748917748918,
+          0.5525,
+          0.269775390625,
+          true
+        ],
+        [
+          "Does the founder hold at least one degree from a university ranked QS top 100 (top 50 or 51-100)?",
+          0.20336943441636582,
+          0.845,
+          0.23978433598183882,
+          false
+        ],
+        [
+          "Is the startup described as founded solo (no co-founders)?",
+          0.1723338485316847,
+          0.5575,
+          0.1999641319942611,
+          false
+        ],
+        [
+          "Does the text state a prior startup founded by this founder was acquired?",
+          0.3053435114503817,
+          0.2,
+          0.27624309392265195,
+          true
+        ],
+        [
+          "Does the text state a prior startup founded by this founder was shut down?",
+          0.25,
+          0.1725,
+          0.2293882978723404,
+          false
+        ],
+        [
+          "Is any of the founder's degrees in computer science, software engineering, or computer engineering?",
+          0.21329365079365079,
+          0.5375,
+          0.24255415162454874,
+          false
+        ],
+        [
+          "Is the startup in agriculture/agtech, energy, space, or another hardware-heavy industry?",
+          0.1415525114155251,
+          0.0775,
+          0.12147335423197492,
+          false
+        ],
+        [
+          "Did the founder hold any job with a title of Vice President, Director, Head, C-level (e.g., CEO, COO, CTO), or Partner?",
+          0.328042328042328,
+          0.155,
+          0.2681660899653979,
+          true
+        ],
+        [
+          "Is the founder's highest education level a bachelor's degree or no degree (no master's, MBA, PhD, or JD)?",
+          0.1991223258365332,
+          0.9075,
+          0.2359594383775351,
+          false
+        ],
+        [
+          "Does the founder hold at least one degree from a university ranked QS top 50?",
+          0.20430701270016566,
+          0.925,
+          0.24201988487702775,
+          false
+        ],
+        [
+          "Does the founder hold an MBA, JD, MD, PharmD, or PhD?",
+          0.46153846153846156,
+          0.015,
+          0.06637168141592921,
+          false
+        ],
+        [
+          "Does the profile list a prior startup that the founder founded which was acquired or went public?",
+          0.28635346756152125,
+          0.32,
+          0.29250457038391225,
+          true
+        ],
+        [
+          "Is the founder's background described as 'domain specialist'?",
+          0.2422907488986784,
+          0.6875,
+          0.2783400809716599,
+          true
+        ],
+        [
+          "Does the founder's job history include a Vice President, Chief (C-level), or Head-of-Engineering role at a company with 1,001+ employees?",
+          0.26455026455026454,
+          0.125,
+          0.21626297577854672,
+          false
+        ],
+        [
+          "Was the startup founded with 3 or more co-founders?",
+          0.22975206611570248,
+          0.3475,
+          0.24645390070921985,
+          false
+        ],
+        [
+          "Does the founder's most recent listed job have a tenure of 5+ years?",
+          0.22347480106100795,
+          0.8425,
+          0.26197139303482586,
+          false
+        ],
+        [
+          "Does the founder's job history include a role at a management consulting or strategy consultancy firm?",
+          0.12307692307692308,
+          0.04,
+          0.08695652173913043,
+          false
+        ],
+        [
+          "Does the profile list six or more prior jobs?",
+          0.2236024844720497,
+          0.18,
+          0.2132701421800948,
+          false
+        ],
+        [
+          "Is the founder's background described as 'technical'?",
+          0.23182552504038773,
+          0.7175,
+          0.2681240657698057,
+          false
+        ],
+        [
+          "Does the founder background field describe the founder as 'technical' or 'domain specialist'?",
+          0.2427265170407315,
+          0.73,
+          0.28012279355333847,
+          true
+        ],
+        [
+          "Does the text state the founder has 'deep' prior experience in the startup's industry?",
+          0.24019138755980862,
+          0.6275,
+          0.2740174672489083,
+          true
+        ],
+        [
+          "Does the founder hold a PhD, MSc, or other graduate science/engineering degree (not counting an MBA)?",
+          0.296969696969697,
+          0.245,
+          0.28488372093023256,
+          true
+        ],
+        [
+          "Is the startup in a life sciences or biotech-related industry such as drug discovery, biotech, or medical devices?",
+          0.34459459459459457,
+          0.1275,
+          0.25705645161290325,
+          false
+        ],
+        [
+          "Did the founder's most recent listed job last 5 or more years?",
+          0.2414075286415712,
+          0.7375,
+          0.2789334341906203,
+          true
+        ],
+        [
+          "Does the founder have a degree in a natural science, engineering, or computer science field?",
+          0.22948073701842547,
+          0.685,
+          0.2646831530139104,
+          true
+        ],
+        [
+          "Was the startup founded with 2 or more co-founders (not solo or with only 1 co-founder)?",
+          0.21721311475409835,
+          0.9275,
+          0.2564988938053097,
+          false
+        ],
+        [
+          "Does the founder's job history include a role in at least three different industries?",
+          0.2648648648648649,
+          0.245,
+          0.26063829787234044,
+          false
+        ],
+        [
+          "Does the founder's job history include a role whose title contains 'Scientist', 'Engineer', or 'Researcher'?",
+          0.23569598633646455,
+          0.69,
+          0.27143981117230526,
+          true
+        ],
+        [
+          "Is the startup in a consumer-facing sector such as consumer goods, beauty products, esports, or online marketplaces?",
+          0.15989159891598917,
+          0.295,
+          0.1760143198090692,
+          false
+        ],
+        [
+          "Does the founder have 10 or more years of work experience according to the text?",
+          0.22381262199089136,
+          0.86,
+          0.2626756261453879,
+          false
+        ],
+        [
+          "Does the text state the founder has founded at least one prior startup?",
+          0.2366691015339664,
+          0.81,
+          0.2756977535738598,
+          true
+        ],
+        [
+          "Does the founder hold an MBA?",
+          0.21336206896551724,
+          0.2475,
+          0.21941489361702127,
+          false
+        ],
+        [
+          "Does any listed job title include 'Engineer', 'Developer', 'Data Scientist', or 'Quantitative' in the founder's career?",
+          0.22361546499477533,
+          0.535,
+          0.25307473982970674,
+          false
+        ],
+        [
+          "Did the founder hold a job at a company with 5,000+ employees for 5+ years?",
+          0.23377960865087538,
+          0.5675,
+          0.2649393090569561,
+          true
+        ],
+        [
+          "Does the founder list four or more jobs in their work history?",
+          0.23076923076923078,
+          0.3075,
+          0.24289099526066352,
+          false
+        ],
+        [
+          "Does the founder have a degree from a university ranked QS top 50?",
+          0.20449308755760368,
+          0.8875,
+          0.24169389978213507,
+          false
+        ],
+        [
+          "Is the founder's startup founded with no co-founders (solo)?",
+          0.09665427509293681,
+          0.065,
+          0.08807588075880758,
+          false
+        ],
+        [
+          "Does the founder have fewer than 5 years of work experience according to the text?",
+          0.14838709677419354,
+          0.4025,
+          0.169831223628692,
+          false
+        ],
+        [
+          "Does the text state the startup was founded solo (no co-founders)?",
+          0.15723270440251572,
+          0.3125,
+          0.17458100558659218,
+          false
+        ],
+        [
+          "Does the text state the startup has 2 or more co-founders besides the founder?",
+          0.22644163150492264,
+          0.805,
+          0.2644546649145861,
+          false
+        ],
+        [
+          "Does the text list at least one prior startup founded by the founder that was acquired?",
+          0.28893905191873587,
+          0.32,
+          0.2946593001841621,
+          true
+        ],
+        [
+          "Is the founder's background described as 'mixed'?",
+          0.1971326164874552,
+          0.9625,
+          0.2344130540672187,
+          false
+        ],
+        [
+          "Did the founder's most recent listed job last 5+ years?",
+          0.2480916030534351,
+          0.65,
+          0.28310104529616725,
+          true
+        ],
+        [
+          "Is the startup's industry in enterprise/B2B infrastructure (e.g., cybersecurity, cloud infrastructure, logistics, banking technology, energy storage, drug discovery)?",
+          0.29081632653061223,
+          0.4275,
+          0.31068313953488375,
+          true
+        ],
+        [
+          "Does the text state the founder has deep prior experience in the startup's industry?",
+          0.24306839186691312,
+          0.6575,
+          0.27813028764805414,
+          true
+        ],
+        [
+          "Does the text list a prior startup of the founder that was acquired for $50M-$500M?",
+          0.3482142857142857,
+          0.0975,
+          0.22995283018867924,
+          false
+        ],
+        [
+          "Does the founder hold a master's degree (MSc) or PhD, as opposed to only a bachelor's or MBA?",
+          0.26371951219512196,
+          0.4325,
+          0.28604497354497355,
+          true
+        ],
+        [
+          "Does the founder's job history include a title of Vice President, Chief (C-level), Head of, or Director?",
+          0.2661596958174905,
+          0.35,
+          0.2795527156549521,
+          true
+        ],
+        [
+          "Is the startup in an enterprise/B2B technology sector such as SaaS, developer tools, data or cloud infrastructure, cybersecurity, or semiconductors?",
+          0.24565217391304348,
+          0.565,
+          0.2769607843137255,
+          true
+        ],
+        [
+          "Is the startup in a consumer-facing sector such as e-commerce, food delivery, online education, or food and beverage?",
+          0.1601123595505618,
+          0.285,
+          0.17549261083743842,
+          false
+        ],
+        [
+          "Does the text describe the founder's background as 'mixed'?",
+          0.17842741935483872,
+          0.4425,
+          0.2026098901098901,
+          false
+        ],
+        [
+          "Did the founder spend 5+ years at a single employer in the same industry as the current startup?",
+          0.26993865030674846,
+          0.55,
+          0.3005464480874317,
+          true
+        ],
+        [
+          "Does the founder have at least one degree from a university ranked QS top 50?",
+          0.2038073908174692,
+          0.91,
+          0.24125132555673381,
+          false
+        ],
+        [
+          "Does the founder's job history include any role held for less than 1 year?",
+          0.16842105263157894,
+          0.52,
+          0.1947565543071161,
+          false
+        ],
+        [
+          "Does the text state the founder previously founded a startup that was acquired for $50M or more?",
+          0.36,
+          0.045,
+          0.15,
+          false
+        ],
+        [
+          "Does the founder's background category say \"technical\" or \"mixed\" (rather than \"business\" or \"domain specialist\")?",
+          0.23601895734597156,
+          0.6225,
+          0.2694805194805195,
+          true
+        ],
+        [
+          "Does the founder hold a degree in computer science, engineering, mathematics, or physics?",
+          0.22129436325678498,
+          0.53,
+          0.2504725897920605,
+          false
+        ],
+        [
+          "Is the startup in a software, data, cloud, cybersecurity, fintech, or other technology-platform industry (as opposed to consumer goods, food, beauty, fitness, media, or education)?",
+          0.20162297128589263,
+          0.8075,
+          0.23722091656874267,
+          false
+        ],
+        [
+          "Does the text list at least one prior startup founded by the founder (prior startups not \"none\")?",
+          0.23224043715846995,
+          0.85,
+          0.2717391304347826,
+          true
+        ],
+        [
+          "Has the founder held a job title containing \"Engineer,\" \"Developer,\" \"Data Scientist,\" or \"Architect\"?",
+          0.23407775020678245,
+          0.7075,
+          0.270244461420932,
+          true
+        ],
+        [
+          "Did the founder attend at least one university ranked QS top 50?",
+          0.2059966685174903,
+          0.9275,
+          0.24395055234087323,
+          false
+        ],
+        [
+          "Has the founder held a title of General Manager, Head of Product, Chief Technology Officer, or Manager at a technology or software company?",
+          0.26883910386965376,
+          0.33,
+          0.27918781725888325,
+          true
+        ],
+        [
+          "Is the founder described as a \"domain specialist\" with \"deep prior experience\" in the startup's industry?",
+          0.24311490978157646,
+          0.64,
+          0.2775368603642671,
+          true
+        ],
+        [
+          "Has the founder worked at a company in the SaaS, Enterprise Software, Software, E-commerce, or Cloud Computing industries?",
+          0.23745410036719705,
+          0.485,
+          0.2644492911668484,
+          false
+        ]
+      ]
+    },
+    "combiner_": {
+      "__trl__": "data",
+      "class": "think_reason_learn.core._combine:LinearCombiner",
+      "fields": {
+        "coef": {
+          "__trl__": "array",
+          "dtype": "<f8",
+          "items": [
+            0.9707760883243415,
+            1.4952056406908363,
+            0.031837194158275836,
+            -0.1741390690882869,
+            -0.13358428199465522,
+            0.3557977649179109,
+            0.7129274316822759,
+            0.6164733204700622,
+            -0.5631084685914519,
+            0.29176745103982293,
+            -0.009102875114333211,
+            0.4156786471774843,
+            -0.40010536033898736,
+            -0.5557700271561672,
+            -0.5265219296252321,
+            0.2957503627551233,
+            0.35345233016208877,
+            0.10704955621113417,
+            -0.5499880989325829,
+            -0.618144697805801,
+            0.3218426820102222,
+            0.7075378435092158,
+            -0.28990919313811336,
+            0.08079968399340871,
+            -0.05216595036704281,
+            -0.35248606758802115,
+            0.018186826703497874,
+            0.6062945067676228,
+            0.47516091092291335,
+            -0.3363468317740455,
+            0.4181437577040372,
+            0.3421131396348937,
+            0.3460628488823779,
+            -0.6017776979358045,
+            0.8666043235785673,
+            -0.11026557961980829,
+            -0.4366678440281211,
+            1.1404904205910378
+          ]
+        },
+        "intercept": -3.7331666719786516,
+        "threshold": 0.2977343177120727
+      }
+    },
+    "min_votes_": 0,
+    "decision_question_": null,
+    "threshold_": 0.2977343177120727,
+    "rules_": {
+      "__trl__": "tuple",
+      "items": [
+        "Is the startup's industry in enterprise/B2B infrastructure (e.g., cybersecurity, cloud infrastructure, logistics, banking technology, energy storage, drug discovery)?",
+        "Did the founder spend 5+ years at a single employer in the same industry as the current startup?",
+        "Does the text list at least one prior startup founded by the founder that was acquired?",
+        "Does the profile list a prior startup that the founder founded which was acquired or went public?",
+        "Does the profile list a prior startup founded by the founder that was acquired?",
+        "Does the founder's job history include a title of Manager, Director, Vice President, or C-level (e.g., CSO, CTO, General Manager)?",
+        "Does the founder hold a master's degree (MSc) or PhD, as opposed to only a bachelor's or MBA?",
+        "Does the text state the founder's prior experience in the startup's industry is \"deep\"?",
+        "Does the founder hold a PhD, MSc, or other graduate science/engineering degree (not counting an MBA)?",
+        "Did the founder's most recent listed job last 5+ years?",
+        "Does the profile describe the founder's background as 'domain specialist' or 'mixed'?",
+        "Does the founder background field describe the founder as 'technical' or 'domain specialist'?",
+        "Does the founder's job history include a title of Vice President, Chief (C-level), Head of, or Director?",
+        "Has the founder held a title of General Manager, Head of Product, Chief Technology Officer, or Manager at a technology or software company?",
+        "Did the founder's most recent listed job last 5 or more years?",
+        "Is the founder's background described as 'domain specialist'?",
+        "Did the founder work at least 5+ years at a single company with 5,000+ employees?",
+        "Does the text state the founder has deep prior experience in the startup's industry?",
+        "Is the founder described as a \"domain specialist\" with \"deep prior experience\" in the startup's industry?",
+        "Did the founder's most recent job listed fall in the same industry as the startup?",
+        "Is the startup in an enterprise/B2B technology sector such as SaaS, developer tools, data or cloud infrastructure, cybersecurity, or semiconductors?",
+        "Does the text state a prior startup founded by this founder was acquired?",
+        "Does the profile state the founder has 'deep' prior experience in the startup's industry?",
+        "Does the text state the founder has founded at least one prior startup?",
+        "Is the founder's total work experience listed as 15+ years?",
+        "Does the text state the founder has 'deep' prior experience in the startup's industry?",
+        "Does the profile state the founder has 15+ years of work experience?",
+        "Does the text list at least one prior startup founded by the founder (prior startups not \"none\")?",
+        "Does the founder's job history include a role whose title contains 'Scientist', 'Engineer', or 'Researcher'?",
+        "Has the founder held a job title containing \"Engineer,\" \"Developer,\" \"Data Scientist,\" or \"Architect\"?",
+        "Is the startup's industry described as B2B SaaS, developer tools, or cloud infrastructure?",
+        "Does the founder's background category say \"technical\" or \"mixed\" (rather than \"business\" or \"domain specialist\")?",
+        "Did the founder hold any job with a title of Vice President, Director, Head, C-level (e.g., CEO, COO, CTO), or Partner?",
+        "Has the founder previously founded at least one startup that was acquired?",
+        "Is the startup founded with 2 or more co-founders (i.e., 3+ total founders)?",
+        "Did the founder hold a job at a company with 5,000+ employees for 5+ years?",
+        "Does the founder have a degree in a natural science, engineering, or computer science field?",
+        "Does the founder hold an MD, JD, or PhD degree?"
+      ]
+    }
+  },
+  "summary": {
+    "classes": [
+      "failed",
+      "successful"
+    ],
+    "instructions": "**Instructions for writing YES/NO questions about startup founder profiles**\n\n**Goal**\nEach sample is a text description of a startup founder and/or their company. The task is to predict whether the company will succeed. Success means an exit (acquisition), an IPO, or total funding above $500M. Failure means none of these. Write YES/NO questions whose answers, weighed together, help separate likely successes from likely failures.\n\n**What each question must be**\n- **Answerable from the text alone.** A reader with only the sample must be able to answer it. Do not rely on outside knowledge, such as looking up the company, recalling news, or knowing what happened to it later.\n- **Objective and specific.** Two careful readers should give the same answer. Avoid vague words like \"impressive,\" \"strong,\" or \"promising\" unless you define them concretely. For example:\n  - Vague: \"Does the founder have a strong background?\"\n  - Specific: \"Does the text state the founder previously held a director-level or higher role?\"\n- **About one thing.** Do not combine conditions with \"and/or\" unless they form one natural concept.\n- **Useful in both directions.** A YES or a NO should carry information. Avoid questions that nearly every profile would answer the same way.\n- **Clear about missing information.** When information may simply be absent, phrase the question so that \"not mentioned\" maps cleanly to NO. Example: \"Does the text mention\u2026\"\n\n**Signals likely to matter**\nDraw on these areas, but only ask about things a profile could plausibly state.\n\n- **Prior founding experience**\n  - Has the founder started a company before?\n  - Did a previous company get acquired, go public, or raise significant funding?\n  - Has the founder founded more than one company?\n- **Career history**\n  - Worked at a well-known large technology company, top consulting firm, or investment bank?\n  - Held senior or executive titles (VP, C-level, director)?\n  - Has many years of industry experience?\n  - Has experience in the same industry as the startup?\n- **Education**\n  - Attended a highly selective university?\n  - Holds an advanced degree (MBA, PhD, MD, JD)?\n  - Has a technical degree (CS, engineering, sciences)?\n- **Technical vs. business profile**\n  - Does the founder appear to be a technical builder (engineer, researcher)?\n  - Or a business/operations leader?\n  - Or both?\n- **Domain expertise**\n  - Does the founder have research, patents, publications, or recognized expertise relevant to the company's field?\n- **Network and validation signals**\n  - Participation in a notable accelerator?\n  - Backing from named investors?\n  - Awards, recognitions, or press mentions?\n  - Prior angel investing or advisory roles?\n- **Leadership scope**\n  - Has the founder managed large teams or budgets?\n  - Has the founder led a product or business line?\n- **Company/context details (if present)**\n  - Industry or sector (e.g., enterprise software, consumer, biotech, fintech, hardware).\n  - Whether the business model is B2B or B2C.\n  - Location in a major startup hub.\n  - Presence of co-founders.\n- **Career pattern**\n  - Frequent short job tenures vs. long tenures.\n  - Career pivots.\n  - Gaps.\n  - Whether the founder left a stable senior role to start the company.\n\n**What to avoid**\n- **Questions that restate or leak the label.** Do not ask whether the company was acquired, went public, raised over $500M, became a unicorn, \"succeeded,\" or shut down. Do not ask about any outcome that defines the class.\n  - Asking about a founder's *previous* companies' exits is fine.\n  - Asking about the *current* company's outcome is not.\n- **Questions requiring knowledge outside the text,** such as the company's real-world fate or a person's reputation not described in the sample.\n- **Subjective judgments** like whether the idea is good or the founder seems capable.\n- **Questions about protected or irrelevant personal attributes** like gender, ethnicity, age, or nationality. Do not use them as proxies for success.\n- **Near-duplicate questions.** Cover a range of distinct signals.\n\n**Output**\nProduce a list of clear, standalone YES/NO questions, each concrete enough to be answered quickly and consistently from a single profile.",
+    "rules": [
+      "Is the startup's industry in enterprise/B2B infrastructure (e.g., cybersecurity, cloud infrastructure, logistics, banking technology, energy storage, drug discovery)?",
+      "Did the founder spend 5+ years at a single employer in the same industry as the current startup?",
+      "Does the text list at least one prior startup founded by the founder that was acquired?",
+      "Does the profile list a prior startup that the founder founded which was acquired or went public?",
+      "Does the profile list a prior startup founded by the founder that was acquired?",
+      "Does the founder's job history include a title of Manager, Director, Vice President, or C-level (e.g., CSO, CTO, General Manager)?",
+      "Does the founder hold a master's degree (MSc) or PhD, as opposed to only a bachelor's or MBA?",
+      "Does the text state the founder's prior experience in the startup's industry is \"deep\"?",
+      "Does the founder hold a PhD, MSc, or other graduate science/engineering degree (not counting an MBA)?",
+      "Did the founder's most recent listed job last 5+ years?",
+      "Does the profile describe the founder's background as 'domain specialist' or 'mixed'?",
+      "Does the founder background field describe the founder as 'technical' or 'domain specialist'?",
+      "Does the founder's job history include a title of Vice President, Chief (C-level), Head of, or Director?",
+      "Has the founder held a title of General Manager, Head of Product, Chief Technology Officer, or Manager at a technology or software company?",
+      "Did the founder's most recent listed job last 5 or more years?",
+      "Is the founder's background described as 'domain specialist'?",
+      "Did the founder work at least 5+ years at a single company with 5,000+ employees?",
+      "Does the text state the founder has deep prior experience in the startup's industry?",
+      "Is the founder described as a \"domain specialist\" with \"deep prior experience\" in the startup's industry?",
+      "Did the founder's most recent job listed fall in the same industry as the startup?",
+      "Is the startup in an enterprise/B2B technology sector such as SaaS, developer tools, data or cloud infrastructure, cybersecurity, or semiconductors?",
+      "Does the text state a prior startup founded by this founder was acquired?",
+      "Does the profile state the founder has 'deep' prior experience in the startup's industry?",
+      "Does the text state the founder has founded at least one prior startup?",
+      "Is the founder's total work experience listed as 15+ years?",
+      "Does the text state the founder has 'deep' prior experience in the startup's industry?",
+      "Does the profile state the founder has 15+ years of work experience?",
+      "Does the text list at least one prior startup founded by the founder (prior startups not \"none\")?",
+      "Does the founder's job history include a role whose title contains 'Scientist', 'Engineer', or 'Researcher'?",
+      "Has the founder held a job title containing \"Engineer,\" \"Developer,\" \"Data Scientist,\" or \"Architect\"?",
+      "Is the startup's industry described as B2B SaaS, developer tools, or cloud infrastructure?",
+      "Does the founder's background category say \"technical\" or \"mixed\" (rather than \"business\" or \"domain specialist\")?",
+      "Did the founder hold any job with a title of Vice President, Director, Head, C-level (e.g., CEO, COO, CTO), or Partner?",
+      "Has the founder previously founded at least one startup that was acquired?",
+      "Is the startup founded with 2 or more co-founders (i.e., 3+ total founders)?",
+      "Did the founder hold a job at a company with 5,000+ employees for 5+ years?",
+      "Does the founder have a degree in a natural science, engineering, or computer science field?",
+      "Does the founder hold an MD, JD, or PhD degree?"
+    ],
+    "min_votes": 0,
+    "decision_question": null,
+    "threshold": 0.2977343177120727,
+    "questions": [
+      {
+        "question": "Does the profile state the startup was founded with exactly 1 co-founder (i.e., two founders total)?",
+        "precision": 0.22939560439560439,
+        "recall": 0.4175,
+        "f0.5": 0.2521135265700483,
+        "used": false
+      },
+      {
+        "question": "Does the profile state the founder is a solo founder (no co-founders)?",
+        "precision": 0.17602427921092564,
+        "recall": 0.58,
+        "f0.5": 0.20451339915373765,
+        "used": false
+      },
+      {
+        "question": "Does the founder hold a C-level title (e.g., CEO, COO, CTO, CRO, Chief Data Officer) or a Vice President title at any company listed in their job history other than their own startup?",
+        "precision": 0.36507936507936506,
+        "recall": 0.0575,
+        "f0.5": 0.17638036809815952,
+        "used": false
+      },
+      {
+        "question": "Does the profile state the founder has 15+ years of work experience?",
+        "precision": 0.24477244772447723,
+        "recall": 0.4975,
+        "f0.5": 0.27245345016429356,
+        "used": true
+      },
+      {
+        "question": "Does the founder hold a PhD?",
+        "precision": 0.32941176470588235,
+        "recall": 0.14,
+        "f0.5": 0.25925925925925924,
+        "used": false
+      },
+      {
+        "question": "Did the founder work at least 5+ years at a single company with 5,000+ employees?",
+        "precision": 0.24699453551912567,
+        "recall": 0.565,
+        "f0.5": 0.27832512315270935,
+        "used": true
+      },
+      {
+        "question": "Does the profile describe the founder's background as 'domain specialist' or 'mixed'?",
+        "precision": 0.24740124740124741,
+        "recall": 0.595,
+        "f0.5": 0.2801318267419962,
+        "used": true
+      },
+      {
+        "question": "Does the profile list a prior startup founded by the founder that was acquired?",
+        "precision": 0.28507795100222716,
+        "recall": 0.32,
+        "f0.5": 0.29143897996357016,
+        "used": true
+      },
+      {
+        "question": "Is the startup in a hardware, robotics, drones, indoor farming, or other physical-engineering industry?",
+        "precision": 0.10980392156862745,
+        "recall": 0.07,
+        "f0.5": 0.09859154929577464,
+        "used": false
+      },
+      {
+        "question": "Does any listed job have a tenure of less than 1 year?",
+        "precision": 0.15570934256055363,
+        "recall": 0.225,
+        "f0.5": 0.16592920353982302,
+        "used": false
+      },
+      {
+        "question": "Is the startup in a life sciences or healthcare field such as biotech, drug discovery, diagnostics, or medical devices?",
+        "precision": 0.30939226519337015,
+        "recall": 0.14,
+        "f0.5": 0.2491103202846975,
+        "used": false
+      },
+      {
+        "question": "Does the founder's job history include a title of Manager, Director, Vice President, or C-level (e.g., CSO, CTO, General Manager)?",
+        "precision": 0.26181353767560667,
+        "recall": 0.5125,
+        "f0.5": 0.29020385050962627,
+        "used": true
+      },
+      {
+        "question": "Does the profile state the founder has 'deep' prior experience in the startup's industry?",
+        "precision": 0.24164278892072588,
+        "recall": 0.6325,
+        "f0.5": 0.2757192676547515,
+        "used": true
+      },
+      {
+        "question": "Does the founder have 10 or more years of work experience?",
+        "precision": 0.22372662798194712,
+        "recall": 0.8675,
+        "f0.5": 0.26271956390066625,
+        "used": false
+      },
+      {
+        "question": "Is the startup founded with 2 or more co-founders (i.e., 3+ total founders)?",
+        "precision": 0.22746478873239437,
+        "recall": 0.8075,
+        "f0.5": 0.265625,
+        "used": true
+      },
+      {
+        "question": "Has the founder previously founded at least one startup that was acquired?",
+        "precision": 0.3352272727272727,
+        "recall": 0.1475,
+        "f0.5": 0.26721014492753625,
+        "used": true
+      },
+      {
+        "question": "Is the startup in a staffing, HR, esports, legal tech, construction tech, or online marketplace industry?",
+        "precision": 0.2107409925220938,
+        "recall": 0.775,
+        "f0.5": 0.24665817950350097,
+        "used": false
+      },
+      {
+        "question": "Did the founder's most recent job listed fall in the same industry as the startup?",
+        "precision": 0.24285714285714285,
+        "recall": 0.6375,
+        "f0.5": 0.27717391304347827,
+        "used": true
+      },
+      {
+        "question": "Does the founder have a degree in a natural science, engineering, or computer science field from a university ranked QS top 100?",
+        "precision": 0.22730989370400653,
+        "recall": 0.695,
+        "f0.5": 0.26266061980347694,
+        "used": false
+      },
+      {
+        "question": "Does the text state the founder previously founded a company that was acquired for $50M or more?",
+        "precision": 0.34615384615384615,
+        "recall": 0.045,
+        "f0.5": 0.14802631578947367,
+        "used": false
+      },
+      {
+        "question": "Is the founder's background labeled as \"domain specialist\"?",
+        "precision": 0.2436738519212746,
+        "recall": 0.65,
+        "f0.5": 0.27849185946872324,
+        "used": false
+      },
+      {
+        "question": "Does the founder's job history include 5 or more listed positions?",
+        "precision": 0.22295081967213115,
+        "recall": 0.85,
+        "f0.5": 0.26153846153846155,
+        "used": false
+      },
+      {
+        "question": "Does the profile list exactly 1 co-founder?",
+        "precision": 0.1985172981878089,
+        "recall": 0.6025,
+        "f0.5": 0.22926179604261795,
+        "used": false
+      },
+      {
+        "question": "Does the text state the founder's prior experience in the startup's industry is \"deep\"?",
+        "precision": 0.2539325842696629,
+        "recall": 0.565,
+        "f0.5": 0.28535353535353536,
+        "used": true
+      },
+      {
+        "question": "Does the founder hold an MD, JD, or PhD degree?",
+        "precision": 0.38524590163934425,
+        "recall": 0.1175,
+        "f0.5": 0.26463963963963966,
+        "used": true
+      },
+      {
+        "question": "Is the founder's total work experience listed as 15+ years?",
+        "precision": 0.24806201550387597,
+        "recall": 0.48,
+        "f0.5": 0.2745995423340961,
+        "used": true
+      },
+      {
+        "question": "Does the startup's industry involve hardware or robotics (e.g., robotics, semiconductors, autonomous vehicles, consumer electronics, indoor farming)?",
+        "precision": 0.13357400722021662,
+        "recall": 0.0925,
+        "f0.5": 0.1226790450928382,
+        "used": false
+      },
+      {
+        "question": "Does the founder's most recent listed job last less than 2 years?",
+        "precision": 0.1556420233463035,
+        "recall": 0.3,
+        "f0.5": 0.17221584385763491,
+        "used": false
+      },
+      {
+        "question": "Does the founder's job history include a role whose title contains \"Founder\" or \"Co-founder\"?",
+        "precision": 0.20738786279683377,
+        "recall": 0.9825,
+        "f0.5": 0.2462406015037594,
+        "used": false
+      },
+      {
+        "question": "Is the startup's industry described as B2B SaaS, developer tools, or cloud infrastructure?",
+        "precision": 0.23917748917748918,
+        "recall": 0.5525,
+        "f0.5": 0.269775390625,
+        "used": true
+      },
+      {
+        "question": "Does the founder hold at least one degree from a university ranked QS top 100 (top 50 or 51-100)?",
+        "precision": 0.20336943441636582,
+        "recall": 0.845,
+        "f0.5": 0.23978433598183882,
+        "used": false
+      },
+      {
+        "question": "Is the startup described as founded solo (no co-founders)?",
+        "precision": 0.1723338485316847,
+        "recall": 0.5575,
+        "f0.5": 0.1999641319942611,
+        "used": false
+      },
+      {
+        "question": "Does the text state a prior startup founded by this founder was acquired?",
+        "precision": 0.3053435114503817,
+        "recall": 0.2,
+        "f0.5": 0.27624309392265195,
+        "used": true
+      },
+      {
+        "question": "Does the text state a prior startup founded by this founder was shut down?",
+        "precision": 0.25,
+        "recall": 0.1725,
+        "f0.5": 0.2293882978723404,
+        "used": false
+      },
+      {
+        "question": "Is any of the founder's degrees in computer science, software engineering, or computer engineering?",
+        "precision": 0.21329365079365079,
+        "recall": 0.5375,
+        "f0.5": 0.24255415162454874,
+        "used": false
+      },
+      {
+        "question": "Is the startup in agriculture/agtech, energy, space, or another hardware-heavy industry?",
+        "precision": 0.1415525114155251,
+        "recall": 0.0775,
+        "f0.5": 0.12147335423197492,
+        "used": false
+      },
+      {
+        "question": "Did the founder hold any job with a title of Vice President, Director, Head, C-level (e.g., CEO, COO, CTO), or Partner?",
+        "precision": 0.328042328042328,
+        "recall": 0.155,
+        "f0.5": 0.2681660899653979,
+        "used": true
+      },
+      {
+        "question": "Is the founder's highest education level a bachelor's degree or no degree (no master's, MBA, PhD, or JD)?",
+        "precision": 0.1991223258365332,
+        "recall": 0.9075,
+        "f0.5": 0.2359594383775351,
+        "used": false
+      },
+      {
+        "question": "Does the founder hold at least one degree from a university ranked QS top 50?",
+        "precision": 0.20430701270016566,
+        "recall": 0.925,
+        "f0.5": 0.24201988487702775,
+        "used": false
+      },
+      {
+        "question": "Does the founder hold an MBA, JD, MD, PharmD, or PhD?",
+        "precision": 0.46153846153846156,
+        "recall": 0.015,
+        "f0.5": 0.06637168141592921,
+        "used": false
+      },
+      {
+        "question": "Does the profile list a prior startup that the founder founded which was acquired or went public?",
+        "precision": 0.28635346756152125,
+        "recall": 0.32,
+        "f0.5": 0.29250457038391225,
+        "used": true
+      },
+      {
+        "question": "Is the founder's background described as 'domain specialist'?",
+        "precision": 0.2422907488986784,
+        "recall": 0.6875,
+        "f0.5": 0.2783400809716599,
+        "used": true
+      },
+      {
+        "question": "Does the founder's job history include a Vice President, Chief (C-level), or Head-of-Engineering role at a company with 1,001+ employees?",
+        "precision": 0.26455026455026454,
+        "recall": 0.125,
+        "f0.5": 0.21626297577854672,
+        "used": false
+      },
+      {
+        "question": "Was the startup founded with 3 or more co-founders?",
+        "precision": 0.22975206611570248,
+        "recall": 0.3475,
+        "f0.5": 0.24645390070921985,
+        "used": false
+      },
+      {
+        "question": "Does the founder's most recent listed job have a tenure of 5+ years?",
+        "precision": 0.22347480106100795,
+        "recall": 0.8425,
+        "f0.5": 0.26197139303482586,
+        "used": false
+      },
+      {
+        "question": "Does the founder's job history include a role at a management consulting or strategy consultancy firm?",
+        "precision": 0.12307692307692308,
+        "recall": 0.04,
+        "f0.5": 0.08695652173913043,
+        "used": false
+      },
+      {
+        "question": "Does the profile list six or more prior jobs?",
+        "precision": 0.2236024844720497,
+        "recall": 0.18,
+        "f0.5": 0.2132701421800948,
+        "used": false
+      },
+      {
+        "question": "Is the founder's background described as 'technical'?",
+        "precision": 0.23182552504038773,
+        "recall": 0.7175,
+        "f0.5": 0.2681240657698057,
+        "used": false
+      },
+      {
+        "question": "Does the founder background field describe the founder as 'technical' or 'domain specialist'?",
+        "precision": 0.2427265170407315,
+        "recall": 0.73,
+        "f0.5": 0.28012279355333847,
+        "used": true
+      },
+      {
+        "question": "Does the text state the founder has 'deep' prior experience in the startup's industry?",
+        "precision": 0.24019138755980862,
+        "recall": 0.6275,
+        "f0.5": 0.2740174672489083,
+        "used": true
+      },
+      {
+        "question": "Does the founder hold a PhD, MSc, or other graduate science/engineering degree (not counting an MBA)?",
+        "precision": 0.296969696969697,
+        "recall": 0.245,
+        "f0.5": 0.28488372093023256,
+        "used": true
+      },
+      {
+        "question": "Is the startup in a life sciences or biotech-related industry such as drug discovery, biotech, or medical devices?",
+        "precision": 0.34459459459459457,
+        "recall": 0.1275,
+        "f0.5": 0.25705645161290325,
+        "used": false
+      },
+      {
+        "question": "Did the founder's most recent listed job last 5 or more years?",
+        "precision": 0.2414075286415712,
+        "recall": 0.7375,
+        "f0.5": 0.2789334341906203,
+        "used": true
+      },
+      {
+        "question": "Does the founder have a degree in a natural science, engineering, or computer science field?",
+        "precision": 0.22948073701842547,
+        "recall": 0.685,
+        "f0.5": 0.2646831530139104,
+        "used": true
+      },
+      {
+        "question": "Was the startup founded with 2 or more co-founders (not solo or with only 1 co-founder)?",
+        "precision": 0.21721311475409835,
+        "recall": 0.9275,
+        "f0.5": 0.2564988938053097,
+        "used": false
+      },
+      {
+        "question": "Does the founder's job history include a role in at least three different industries?",
+        "precision": 0.2648648648648649,
+        "recall": 0.245,
+        "f0.5": 0.26063829787234044,
+        "used": false
+      },
+      {
+        "question": "Does the founder's job history include a role whose title contains 'Scientist', 'Engineer', or 'Researcher'?",
+        "precision": 0.23569598633646455,
+        "recall": 0.69,
+        "f0.5": 0.27143981117230526,
+        "used": true
+      },
+      {
+        "question": "Is the startup in a consumer-facing sector such as consumer goods, beauty products, esports, or online marketplaces?",
+        "precision": 0.15989159891598917,
+        "recall": 0.295,
+        "f0.5": 0.1760143198090692,
+        "used": false
+      },
+      {
+        "question": "Does the founder have 10 or more years of work experience according to the text?",
+        "precision": 0.22381262199089136,
+        "recall": 0.86,
+        "f0.5": 0.2626756261453879,
+        "used": false
+      },
+      {
+        "question": "Does the text state the founder has founded at least one prior startup?",
+        "precision": 0.2366691015339664,
+        "recall": 0.81,
+        "f0.5": 0.2756977535738598,
+        "used": true
+      },
+      {
+        "question": "Does the founder hold an MBA?",
+        "precision": 0.21336206896551724,
+        "recall": 0.2475,
+        "f0.5": 0.21941489361702127,
+        "used": false
+      },
+      {
+        "question": "Does any listed job title include 'Engineer', 'Developer', 'Data Scientist', or 'Quantitative' in the founder's career?",
+        "precision": 0.22361546499477533,
+        "recall": 0.535,
+        "f0.5": 0.25307473982970674,
+        "used": false
+      },
+      {
+        "question": "Did the founder hold a job at a company with 5,000+ employees for 5+ years?",
+        "precision": 0.23377960865087538,
+        "recall": 0.5675,
+        "f0.5": 0.2649393090569561,
+        "used": true
+      },
+      {
+        "question": "Does the founder list four or more jobs in their work history?",
+        "precision": 0.23076923076923078,
+        "recall": 0.3075,
+        "f0.5": 0.24289099526066352,
+        "used": false
+      },
+      {
+        "question": "Does the founder have a degree from a university ranked QS top 50?",
+        "precision": 0.20449308755760368,
+        "recall": 0.8875,
+        "f0.5": 0.24169389978213507,
+        "used": false
+      },
+      {
+        "question": "Is the founder's startup founded with no co-founders (solo)?",
+        "precision": 0.09665427509293681,
+        "recall": 0.065,
+        "f0.5": 0.08807588075880758,
+        "used": false
+      },
+      {
+        "question": "Does the founder have fewer than 5 years of work experience according to the text?",
+        "precision": 0.14838709677419354,
+        "recall": 0.4025,
+        "f0.5": 0.169831223628692,
+        "used": false
+      },
+      {
+        "question": "Does the text state the startup was founded solo (no co-founders)?",
+        "precision": 0.15723270440251572,
+        "recall": 0.3125,
+        "f0.5": 0.17458100558659218,
+        "used": false
+      },
+      {
+        "question": "Does the text state the startup has 2 or more co-founders besides the founder?",
+        "precision": 0.22644163150492264,
+        "recall": 0.805,
+        "f0.5": 0.2644546649145861,
+        "used": false
+      },
+      {
+        "question": "Does the text list at least one prior startup founded by the founder that was acquired?",
+        "precision": 0.28893905191873587,
+        "recall": 0.32,
+        "f0.5": 0.2946593001841621,
+        "used": true
+      },
+      {
+        "question": "Is the founder's background described as 'mixed'?",
+        "precision": 0.1971326164874552,
+        "recall": 0.9625,
+        "f0.5": 0.2344130540672187,
+        "used": false
+      },
+      {
+        "question": "Did the founder's most recent listed job last 5+ years?",
+        "precision": 0.2480916030534351,
+        "recall": 0.65,
+        "f0.5": 0.28310104529616725,
+        "used": true
+      },
+      {
+        "question": "Is the startup's industry in enterprise/B2B infrastructure (e.g., cybersecurity, cloud infrastructure, logistics, banking technology, energy storage, drug discovery)?",
+        "precision": 0.29081632653061223,
+        "recall": 0.4275,
+        "f0.5": 0.31068313953488375,
+        "used": true
+      },
+      {
+        "question": "Does the text state the founder has deep prior experience in the startup's industry?",
+        "precision": 0.24306839186691312,
+        "recall": 0.6575,
+        "f0.5": 0.27813028764805414,
+        "used": true
+      },
+      {
+        "question": "Does the text list a prior startup of the founder that was acquired for $50M-$500M?",
+        "precision": 0.3482142857142857,
+        "recall": 0.0975,
+        "f0.5": 0.22995283018867924,
+        "used": false
+      },
+      {
+        "question": "Does the founder hold a master's degree (MSc) or PhD, as opposed to only a bachelor's or MBA?",
+        "precision": 0.26371951219512196,
+        "recall": 0.4325,
+        "f0.5": 0.28604497354497355,
+        "used": true
+      },
+      {
+        "question": "Does the founder's job history include a title of Vice President, Chief (C-level), Head of, or Director?",
+        "precision": 0.2661596958174905,
+        "recall": 0.35,
+        "f0.5": 0.2795527156549521,
+        "used": true
+      },
+      {
+        "question": "Is the startup in an enterprise/B2B technology sector such as SaaS, developer tools, data or cloud infrastructure, cybersecurity, or semiconductors?",
+        "precision": 0.24565217391304348,
+        "recall": 0.565,
+        "f0.5": 0.2769607843137255,
+        "used": true
+      },
+      {
+        "question": "Is the startup in a consumer-facing sector such as e-commerce, food delivery, online education, or food and beverage?",
+        "precision": 0.1601123595505618,
+        "recall": 0.285,
+        "f0.5": 0.17549261083743842,
+        "used": false
+      },
+      {
+        "question": "Does the text describe the founder's background as 'mixed'?",
+        "precision": 0.17842741935483872,
+        "recall": 0.4425,
+        "f0.5": 0.2026098901098901,
+        "used": false
+      },
+      {
+        "question": "Did the founder spend 5+ years at a single employer in the same industry as the current startup?",
+        "precision": 0.26993865030674846,
+        "recall": 0.55,
+        "f0.5": 0.3005464480874317,
+        "used": true
+      },
+      {
+        "question": "Does the founder have at least one degree from a university ranked QS top 50?",
+        "precision": 0.2038073908174692,
+        "recall": 0.91,
+        "f0.5": 0.24125132555673381,
+        "used": false
+      },
+      {
+        "question": "Does the founder's job history include any role held for less than 1 year?",
+        "precision": 0.16842105263157894,
+        "recall": 0.52,
+        "f0.5": 0.1947565543071161,
+        "used": false
+      },
+      {
+        "question": "Does the text state the founder previously founded a startup that was acquired for $50M or more?",
+        "precision": 0.36,
+        "recall": 0.045,
+        "f0.5": 0.15,
+        "used": false
+      },
+      {
+        "question": "Does the founder's background category say \"technical\" or \"mixed\" (rather than \"business\" or \"domain specialist\")?",
+        "precision": 0.23601895734597156,
+        "recall": 0.6225,
+        "f0.5": 0.2694805194805195,
+        "used": true
+      },
+      {
+        "question": "Does the founder hold a degree in computer science, engineering, mathematics, or physics?",
+        "precision": 0.22129436325678498,
+        "recall": 0.53,
+        "f0.5": 0.2504725897920605,
+        "used": false
+      },
+      {
+        "question": "Is the startup in a software, data, cloud, cybersecurity, fintech, or other technology-platform industry (as opposed to consumer goods, food, beauty, fitness, media, or education)?",
+        "precision": 0.20162297128589263,
+        "recall": 0.8075,
+        "f0.5": 0.23722091656874267,
+        "used": false
+      },
+      {
+        "question": "Does the text list at least one prior startup founded by the founder (prior startups not \"none\")?",
+        "precision": 0.23224043715846995,
+        "recall": 0.85,
+        "f0.5": 0.2717391304347826,
+        "used": true
+      },
+      {
+        "question": "Has the founder held a job title containing \"Engineer,\" \"Developer,\" \"Data Scientist,\" or \"Architect\"?",
+        "precision": 0.23407775020678245,
+        "recall": 0.7075,
+        "f0.5": 0.270244461420932,
+        "used": true
+      },
+      {
+        "question": "Did the founder attend at least one university ranked QS top 50?",
+        "precision": 0.2059966685174903,
+        "recall": 0.9275,
+        "f0.5": 0.24395055234087323,
+        "used": false
+      },
+      {
+        "question": "Has the founder held a title of General Manager, Head of Product, Chief Technology Officer, or Manager at a technology or software company?",
+        "precision": 0.26883910386965376,
+        "recall": 0.33,
+        "f0.5": 0.27918781725888325,
+        "used": true
+      },
+      {
+        "question": "Is the founder described as a \"domain specialist\" with \"deep prior experience\" in the startup's industry?",
+        "precision": 0.24311490978157646,
+        "recall": 0.64,
+        "f0.5": 0.2775368603642671,
+        "used": true
+      },
+      {
+        "question": "Has the founder worked at a company in the SaaS, Enterprise Software, Software, E-commerce, or Cloud Computing industries?",
+        "precision": 0.23745410036719705,
+        "recall": 0.485,
+        "f0.5": 0.2644492911668484,
+        "used": false
+      }
+    ]
+  }
+}
