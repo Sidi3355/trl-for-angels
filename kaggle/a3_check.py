@@ -327,10 +327,14 @@ def main() -> int:
                     help="kev.train --max_state; Kev's default 384 drops C3-length states")
     ap.add_argument("--skip-train", action="store_true")
     ap.add_argument("--out", type=Path, default=Path("a3_report.json"))
+    ap.add_argument("--work", type=Path, default=None,
+                    help="where logs and test runs go (default: a temp folder)")
     args = ap.parse_args()
 
     kev_py = str(args.kev_dir / ".venv" / "bin" / "python")
-    work = Path(tempfile.mkdtemp(prefix="a3_"))
+    if args.work:
+        args.work.mkdir(parents=True, exist_ok=True)
+    work = args.work or Path(tempfile.mkdtemp(prefix="a3_"))
     report: dict = {"started": time.strftime("%Y-%m-%d %H:%M:%S"), "args": {
         k: str(v) for k, v in vars(args).items()}, "kev_commit": sh(
         ["git", "-C", str(args.kev_dir), "rev-parse", "--short", "HEAD"])}

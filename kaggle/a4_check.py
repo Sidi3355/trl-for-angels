@@ -23,14 +23,30 @@ import sys
 import time
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE), str(HERE.parent / "research")]  # repo layout or one flat folder
 
 from a3_check import environment, start_server  # noqa: E402
-from validate import STRONG, parse_record  # noqa: E402
+from validate import STRONG, load as load_rows, parse_record  # noqa: E402
 
 TASK = ("Predict whether this startup founder's company will succeed (exit, IPO or funding "
         "over $500M).")
 B1_ROWS = 2000
+
+
+def pick_rows(path: Path, n: int = 20, n_strong: int = 6, seed: int = 42) -> list[dict]:
+    """n sample rows (n_strong successful, the rest not), chosen reproducibly."""
+    import random
+
+    parsed = [(row, parse_record(row, i)) for i, row in enumerate(load_rows(path), 1)]
+    good = [(row, rec) for row, rec in parsed if rec.outcome is not None]
+    strong = [row for row, rec in good if rec.outcome in STRONG]
+    other = [row for row, rec in good if rec.outcome not in STRONG]
+    rng = random.Random(seed)
+    picked = rng.sample(strong, min(n_strong, len(strong)))
+    picked += rng.sample(other, min(n - len(picked), len(other)))
+    rng.shuffle(picked)
+    return picked
 
 
 def load(path: Path) -> tuple[list[str], list[str]]:
@@ -56,7 +72,10 @@ def main() -> int:
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--dtype", default="fp32")
     ap.add_argument("--port", type=int, default=8009)
-    ap.add_argument("--data", type=Path, required=True)
+    src = ap.add_mutually_exclusive_group(required=True)
+    src.add_argument("--data", type=Path, help="exactly the rows to fit on (JSONL)")
+    src.add_argument("--sample", type=Path,
+                     help="a sample file to pick 20 rows from (6 successful, seed 42)")
     ap.add_argument("--generator", default="anthropic:claude-opus-5-5")
     ap.add_argument("--max-output-tokens", type=int, default=16000,
                     help="Claude thinks before writing; TRL's default 4096 can cut it off")
@@ -87,8 +106,12 @@ def main() -> int:
         print(report["error"])
         return 1
 
+    if args.sample:
+        args.data = args.out / "a4_rows.jsonl"
+        args.data.write_text("".join(json.dumps(r) + "\n" for r in pick_rows(args.sample)))
     X, y = load(args.data)
-    report["data"] = {"rows": len(X), "successful": y.count("successful")}
+    report["data"] = {"rows": len(X), "successful": y.count("successful"),
+                      "file": str(args.data)}
     fake = contextlib.nullcontext()
     if args.fake_generator:  # offline test of this script: scripted writer, real Kev
         from think_reason_learn.testing import FakeLLM, fake_llms
