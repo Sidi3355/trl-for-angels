@@ -231,3 +231,22 @@ while doing the work: date, decision, reason, evidence. Newest last.
   earlier startup was still running at founding has "1 still operating".
 - **Validation:** `research/validate.py --profile sample50` passes with no errors or warnings
   (`results/data/validation_sample50.md`).
+
+## 2026-11-14 · A2 · Sample re-checked by the research session
+
+- **Re-validation:** the current validator (with the exact all-pairs near-duplicate check added
+  after the sample's first validation) also passes it: no errors, no warnings, no near
+  duplicates (`results/data/validation_sample50_recheck.md`). Counts match exactly; 20% are
+  successful; 47 industries; 8 rows with unknown fields; no single field gives the outcome away
+  (the highest out-of-fold AUC is background, 0.68, on 50 rows).
+- **Read by eye:** realistic careers, sourced outcomes. Two notes for the 3,000-row run
+  (made-up profiles modelled on these 50):
+  - Industries are very specific (47 distinct in 50 rows, e.g. "enterprise email software",
+    "electric aviation"), so each has one or two founders. That gives models almost nothing
+    to learn from industry, and with verbatim job titles ("Chief Technology Officer for Hosted
+    Applications") it can point back to a real company, against the "no unique phrases"
+    rule. Use broad industries (the plan's list) and generic titles in the full run.
+  - Several sampled companies are well known (PillPack, Quip, Canoo, Heptio) though the
+    prompt prefers lesser-known ones. That's fine for a quality check, and moot for made-up
+    profiles.
+- **A2 is done:** the validator passes, and the user approved the conventions.
