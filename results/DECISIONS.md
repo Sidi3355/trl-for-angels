@@ -250,3 +250,32 @@ while doing the work: date, decision, reason, evidence. Newest last.
     prompt prefers lesser-known ones. That's fine for a quality check, and moot for made-up
     profiles.
 - **A2 is done:** the validator passes, and the user approved the conventions.
+
+## 2026-11-14 · A4 · TRL smoke test passed (Claude writes the questions, Kev answers)
+
+- **Run:** `kaggle-results: runs/20261114-153153-a4` (repo commit `df5a5aa`), Kaggle T4, fp32.
+  RRF fitted on 20 rows of `data/raw/sample50.jsonl` (6 successful, seed 42) with
+  `generator="anthropic:claude-opus-5-5"`, Kev-0.6B as the answerer, `beta=0.5`,
+  `random_state=42`, and a small run (`n_prompts=2`, 5 questions per prompt). Verdict: PASS.
+- **Generator confirmed:** Claude Opus 5.5 through TRL, with the user's key from Kaggle Secrets.
+  10 questions generated, 9 kept as `rules_`.
+- **Answers:** `rrf.answers()` returned a 20 × 9 matrix with no missing values, and
+  `predict_proba` returned 20 × 2 (`failed`, `successful`). Kev's answers look sensible by eye
+  (e.g. 0.99 for "deep prior experience" on a profile that says so).
+- **Cost:**
+  - **This fit:** $0.11 actual, all of it the generator (TRL's estimate beforehand was $0.17;
+    the estimate counts the full output-token allowance, so it's an upper bound). Kev costs
+    nothing (free Kaggle GPU).
+  - **B1 (2,000 rows, library defaults):** TRL estimates at most **$0.71** for question
+    generation. Answering is free. So the whole TRL phase costs well under $1 in Claude credits.
+- **Time:** the fit took 31 s, about 1.6 s per founder including generation. Kev's answering
+  speed is as measured at A3 (about 104 answers per second), so B1 plus B2 (about 100
+  rules × 3,000 founders) is about 50 minutes on the GPU.
+- **Noted, not changed (TRL fidelity):** TRL kept two near-identical questions ("Does the
+  profile state [that] the founder has deep prior experience…") and two overlapping
+  B2B-sector questions. RRF doesn't remove near-duplicates semantically; that's library
+  behaviour, so it stays. The elastic net copes with correlated columns, and in C2/C3 the
+  answer appears twice in the serialised text.
+- **Harmless log noise:** "Error in sitecustomize … No module named 'wrapt'" still appears in
+  some subprocesses on Kaggle; it doesn't stop them (exit 0).
+- **A4 is done.**

@@ -30,7 +30,7 @@
     }
   },
   "models": {
-    "generator": "anthropic:claude-opus-5-5 (proposed, not yet confirmed or run)",
+    "generator": "anthropic:claude-opus-5-5 (confirmed at A4 through TRL, max_output_tokens 16000)",
     "answerer": "jaredpalmer/kev-0.6b (base, fp32; replaced Jev on 2026-11-14)",
     "compute": "Kaggle notebooks, free T4 GPU, fp32",
     "kev_checkpoint": "jaredpalmer/kev-0.6b",
@@ -58,7 +58,14 @@
     },
     "actual": null
   },
-  "costs_usd": {},
+  "costs_usd": {
+    "a4_smoke_fit_20_rows": {
+      "actual": 0.1077,
+      "trl_estimate_before": 0.1749,
+      "role": "generator only; Kev is free"
+    },
+    "b1_fit_2000_rows_trl_estimate_upper_bound": 0.7125
+  },
   "measurements": {
     "a3_kaggle_t4": {
       "run": "kaggle-results: runs/20261114-124358-a3",
@@ -83,6 +90,25 @@
         "projected_hours_2000x2epochs": 3.41,
         "note": "batch 8 without checkpointing ran out of memory"
       }
+    },
+    "a4_kaggle_t4": {
+      "run": "kaggle-results: runs/20261114-153153-a4",
+      "repo_commit": "df5a5aa",
+      "rows": 20,
+      "successful": 6,
+      "n_prompts": 2,
+      "questions_per_prompt": 5,
+      "questions_generated": 10,
+      "rules": 9,
+      "answers_shape": [
+        20,
+        9
+      ],
+      "answers_missing": 0,
+      "fit_seconds": 31.4,
+      "seconds_per_founder_incl_generation": 1.57,
+      "kev_load_seconds": 30.1,
+      "verdict": "PASS"
     }
   }
 }
