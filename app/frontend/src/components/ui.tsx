@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { IconAlert, IconArrowUpRight, IconChevronLeft, IconMinus, IconX } from "@/components/icons";
+import { MARK_PATH, MARK_SIZE } from "@/lib/mark";
 import type { Decision } from "@/lib/types";
 
 export function cx(...parts: (string | false | null | undefined)[]): string {
@@ -212,11 +213,11 @@ export function VerdictBadge({ decision, size = "md" }: { decision: Decision; si
   );
 }
 
-/** A small square of the slab colour with the verdict's icon: the verdict at a glance in lists. */
+/** The verdict struck as a hallmark: a cut-corner punch of the slab colour with the verdict's icon. */
 export function VerdictTile({ decision, size = 44 }: { decision: Decision | null; size?: number }) {
-  if (!decision) return <span className="skeleton shrink-0 rounded-[12px]" style={{ width: size, height: size }} />;
+  if (!decision) return <span className="skeleton punch shrink-0" style={{ width: size, height: size }} />;
   return (
-    <span aria-hidden className={cx("inline-flex shrink-0 items-center justify-center rounded-[12px]", SLAB[decision])} style={{ width: size, height: size }}>
+    <span aria-hidden className={cx("punch inline-flex shrink-0 items-center justify-center", SLAB[decision])} style={{ width: size, height: size }}>
       <VerdictIcon decision={decision} size={Math.round(size * 0.45)} />
     </span>
   );
@@ -366,22 +367,27 @@ export function Disclaimer({ text, className }: { text?: string; className?: str
   );
 }
 
-/** The mark: a founder (the dot) clearing a bar. */
-export function Logo({ size = 32 }: { size?: number }) {
+/**
+ * The mark: a hallmark punch (the cut-corner stamp an assay office strikes into gold) with a halo
+ * struck into it. One shape, so it takes whatever colour it's given: stamp-pad blue by default.
+ */
+export function Logo({ size = 32, className }: { size?: number; className?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden>
-      <rect width="32" height="32" rx="8" fill="var(--ink)" />
-      <rect x="7" y="18.5" width="18" height="3.6" rx="1.8" fill="var(--bg)" />
-      <circle cx="20.5" cy="11.5" r="3.6" fill="var(--slab-advance)" />
+    <svg width={size} height={size} viewBox={`0 0 ${MARK_SIZE} ${MARK_SIZE}`} className={cx("text-brand", className)} aria-hidden>
+      <path d={MARK_PATH} fill="currentColor" fillRule="evenodd" />
     </svg>
   );
 }
 
-export function Wordmark({ size = 28 }: { size?: number }) {
+/** The name with the mark as its O. `size` is the type size in pixels. */
+export function Wordmark({ size = 17 }: { size?: number }) {
   return (
-    <span className="flex items-center gap-2.5">
-      <Logo size={size} />
-      <span className="wide text-[17px] font-extrabold tracking-[-0.03em]">Screener</span>
+    <span role="img" aria-label="Halomark" className="wordmark" style={{ fontSize: size }}>
+      <span aria-hidden>HAL</span>
+      <svg viewBox={`0 0 ${MARK_SIZE} ${MARK_SIZE}`} className="text-brand" aria-hidden>
+        <path d={MARK_PATH} fill="currentColor" fillRule="evenodd" />
+      </svg>
+      <span aria-hidden>MARK</span>
     </span>
   );
 }

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useApp } from "@/components/AppState";
 import { BarSummary } from "@/components/BarSheet";
 import { IconLock } from "@/components/icons";
-import { Button, Disclaimer, Page, PageHeader, SectionTitle, VerdictTile, cx } from "@/components/ui";
+import { Button, Disclaimer, Logo, Page, PageHeader, SectionTitle, VerdictTile, cx } from "@/components/ui";
 import { API_URL, getPasscode, setPasscode } from "@/lib/api";
 import { DECISION_LABELS } from "@/lib/format";
 import { clearDeals } from "@/lib/session";
@@ -28,7 +28,7 @@ export default function AboutPage() {
 
   return (
     <Page>
-      <PageHeader title="How it works" subtitle="Angels screen alone. Screener does the first pass for you: research, a calibrated score, and the reasons behind it." />
+      <PageHeader title="How it works" subtitle="Angels screen alone. Halomark does the first pass for you: research, a calibrated score, and the reasons behind it." />
 
       <ol className="grid gap-x-10 sm:grid-cols-2">
         {STEPS.map(({ title, body }, i) => (
@@ -65,6 +65,17 @@ export default function AboutPage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="mt-12" aria-labelledby="the-name">
+        <SectionTitle id="the-name">The name</SectionTitle>
+        <div className="flex items-start gap-4">
+          <Logo size={44} className="mt-0.5 shrink-0" />
+          <p className="max-w-[62ch] text-[15px] leading-relaxed text-ink-2">
+            A hallmark is the small stamp an assay office strikes into gold once it has tested the metal. Halomark does that for an angel. It tests a founder against your bar and stamps the
+            verdict: meet, look closer or pass. The halo struck into the stamp stands for you, the angel.
+          </p>
+        </div>
       </section>
 
       <section className="mt-12">
@@ -136,7 +147,7 @@ export default function AboutPage() {
   );
 }
 
-/** How to send a LinkedIn profile or website from another app straight into Screener. */
+/** How to send a LinkedIn profile or website from another app straight into Halomark. */
 function ShareSetup() {
   const [origin, setOrigin] = useState("");
   const [copied, setCopied] = useState(false);
@@ -178,7 +189,7 @@ function ShareSetup() {
         </div>
         <div>
           <p className="font-bold text-ink">Android</p>
-          <p className="mt-1">Add Screener to your home screen (Chrome menu, then Install app). Screener then appears in the share menu of any app.</p>
+          <p className="mt-1">Add Halomark to your home screen (Chrome menu, then Install app). Halomark then appears in the share menu of any app.</p>
         </div>
       </div>
     </section>

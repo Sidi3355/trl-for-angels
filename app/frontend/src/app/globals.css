@@ -1,11 +1,13 @@
 @import "tailwindcss";
 
 /*
-  Screener design tokens.
+  Halomark design tokens.
   Direction: a printed odds slip. Neutral paper, black ink, one typeface (Archivo) used at three
   widths: extra-condensed for the big figures, normal for reading, wide capitals for small labels.
   Colour is saved for the verdict: a full-colour slab (green, amber or ink) carries the decision,
   everything around it stays black on paper. Buttons and selections are ink, not a brand hue.
+  The brand is the stamp on the slip: stamp-pad blue (--brand) appears only in the mark, never on
+  controls or verdicts, and the hallmark's cut-corner punch (.punch) is the shape a verdict is struck in.
   Verdicts always come with an icon and a label; charts keep the validated ramps (dataviz skill).
 */
 :root {
@@ -23,6 +25,8 @@
   --accent-hover: #2c2e2c;
   --accent-ink: #ffffff;
   --accent-soft: #e3e3de;
+  /* stamp-pad blue: the mark only (6.9:1 on paper) */
+  --brand: #1f3bd0;
 
   --advance: #0a6a3a;
   --advance-fill: #1fb96b;
@@ -85,6 +89,7 @@
     --accent-hover: #ffffff;
     --accent-ink: #0e0f0e;
     --accent-soft: #2a2c2b;
+    --brand: #8fa0ff; /* 8:1 on the dark page */
 
     --advance: #4fe396;
     --advance-fill: #2cc777;
@@ -139,6 +144,7 @@
   --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
+  --color-brand: var(--brand);
   --color-advance: var(--advance);
   --color-advance-fill: var(--advance-fill);
   --color-advance-soft: var(--advance-soft);
@@ -225,6 +231,28 @@ textarea {
     letter-spacing: 0.09em;
     line-height: 1.2;
     text-transform: uppercase;
+  }
+  /* The wordmark: Archivo at its widest, in capitals, with the mark standing in for the O. */
+  .wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    font-stretch: 125%;
+    font-variation-settings: "wdth" 125;
+    font-weight: 800;
+    letter-spacing: 0.012em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .wordmark svg {
+    /* Archivo's capital height, so the punch sits on the baseline and stops at the cap line */
+    width: 0.697em;
+    height: 0.697em;
+    margin: 0 0.05em 0 0.055em;
+    flex: none;
+  }
+  /* A hallmark punch: a square with its corners cut. Verdict tiles are struck in this shape. */
+  .punch {
+    clip-path: polygon(18.75% 0, 81.25% 0, 100% 18.75%, 100% 81.25%, 81.25% 100%, 18.75% 100%, 0 81.25%, 0 18.75%);
   }
   .tabular {
     font-variant-numeric: tabular-nums;

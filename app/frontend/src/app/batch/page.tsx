@@ -84,7 +84,7 @@ function Upload() {
       </label>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-[13.5px]">
-        <a href={templateHref} download="screener-founders.csv" className={linkClass}>
+        <a href={templateHref} download="halomark-founders.csv" className={linkClass}>
           Download the template
         </a>
         <button type="button" onClick={() => setPaste((v) => !v)} className={linkClass}>

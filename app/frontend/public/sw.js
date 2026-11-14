@@ -1,4 +1,4 @@
-// Screener service worker. Its only job: show the "screening finished" notification the backend pushes,
+// Halomark service worker. Its only job: show the "screening finished" notification the backend pushes,
 // and open the memo (or the batch) when it's tapped. No offline caching, so nothing is stored.
 
 self.addEventListener("install", () => self.skipWaiting());
@@ -12,7 +12,7 @@ self.addEventListener("push", (event) => {
     data = { body: event.data ? event.data.text() : "" };
   }
   event.waitUntil(
-    self.registration.showNotification(data.title || "Screener", {
+    self.registration.showNotification(data.title || "Halomark", {
       body: data.body || "",
       icon: "/icons/icon-192.png",
       badge: "/icons/icon-192.png",

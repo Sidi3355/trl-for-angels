@@ -33,7 +33,7 @@ export function PasscodeGate() {
           window.location.reload();
         }}
       >
-        <span className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-ink text-bg">
+        <span className="punch flex h-12 w-12 items-center justify-center bg-ink text-bg">
           <IconLock size={22} />
         </span>
         <h2 id="passcode-title" className="mt-5 text-[30px] font-extrabold leading-[1] tracking-[-0.035em]">

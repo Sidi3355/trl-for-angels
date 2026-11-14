@@ -21,7 +21,7 @@ export function NotifyButton({ kind, id, className }: { kind: "screening" | "bat
     return (
       <p className={cx("text-[13.5px] leading-snug text-muted", className)}>
         <IconBell size={15} className="mr-1 inline-block align-[-2px]" />
-        To be notified when it&apos;s ready, add Screener to your Home Screen: Share, then Add to Home Screen.
+        To be notified when it&apos;s ready, add Halomark to your Home Screen: Share, then Add to Home Screen.
       </p>
     );
 
@@ -52,7 +52,7 @@ export function NotifyButton({ kind, id, className }: { kind: "screening" | "bat
         {state === "working" ? <Spinner size={16} /> : <IconBell size={18} />}
         Notify me when it&apos;s ready
       </button>
-      {state === "denied" && <p className="mt-2 text-[13px] text-muted">Notifications are blocked for Screener. Turn them on in your phone&apos;s Settings, then try again.</p>}
+      {state === "denied" && <p className="mt-2 text-[13px] text-muted">Notifications are blocked for Halomark. Turn them on in your phone&apos;s Settings, then try again.</p>}
       {state === "error" && <p className="mt-2 text-[13px] text-danger">Couldn&apos;t turn on notifications. Try again in a moment.</p>}
     </div>
   );

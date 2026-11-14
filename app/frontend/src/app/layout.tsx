@@ -11,14 +11,22 @@ import "./globals.css";
 // One variable family; its width axis gives the condensed figures and the wide labels.
 const archivo = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-archivo", display: "swap" });
 
+// Where the app is served, so the link-preview image gets an absolute address. Vercel sets the second one itself.
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000");
+
 export const metadata: Metadata = {
-  title: { default: "Screener", template: "%s · Screener" },
+  metadataBase: new URL(siteUrl),
+  title: { default: "Halomark", template: "%s · Halomark" },
   description: "Screen a founder in a minute: public research, a calibrated meet, look closer or pass, and the reasons behind it. A screening aid, not investment advice.",
-  applicationName: "Screener",
-  appleWebApp: { capable: true, title: "Screener", statusBarStyle: "default" },
+  applicationName: "Halomark",
+  appleWebApp: { capable: true, title: "Halomark", statusBarStyle: "default" },
   formatDetection: { telephone: false },
   icons: {
-    icon: [{ url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }],
+    icon: [
+      { url: "/icons/icon.svg", type: "image/svg+xml" },
+      { url: "/icons/favicon-64.png", sizes: "64x64", type: "image/png" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
     apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
   },
 };

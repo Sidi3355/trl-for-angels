@@ -94,16 +94,17 @@ Steps 2–4: notifications, sharing into the app, screening a list, and the scro
 - `overview-share-notify-list.png`
 - **Sent:** `overview-share-notify-list.png`, `batch-desktop.png`
 
-## 07-walkthrough-video (15:37–16:16)
+## 07-walkthrough-video (15:37–16:40)
 
 A 40-second phone walk-through: screening a founder, the what-if factors, changing your bar, and
-screening a list. Example data, under the name Screener.
+screening a list. Example data. v1–v3 carry the old name, Screener; v4 is Halomark.
 
 | Version | Status | What's wrong or right |
 |---|---|---|
 | `v1-rejected-padded/` | Rejected, **sent** | Playwright's recorder filmed the page at half the video's size and filled the rest with grey. The phone height was also the in-browser view (402×681). Owner: "not the full size of the video". |
 | `v2-superseded-low-res/` | Superseded | Full frame at full screen height (402×874), but only 1× resolution, so soft on a phone. Never sent. |
-| `v3-final/` | Current, **sent** | Full frame, full screen and 2× sharp (804×1748), 42s. |
+| `v3-full-frame-2x/` | Superseded, **sent** | Full frame, full screen and 2× sharp (804×1748), 42s. Replaced only because of the rename. |
+| `v4-halomark/` | Current, **sent** | The same walk-through, re-recorded the same way after the Halomark rebrand. |
 
 Contents of each version folder:
 - `v1-rejected-padded/`:
@@ -112,17 +113,41 @@ Contents of each version folder:
   - stills at 3, 12, 30 and 39 seconds
   - the raw frame at 12s that shows the grey padding
 - `v2-superseded-low-res/`: the video and a strip of stills
-- `v3-final/`:
+- `v3-full-frame-2x/`:
   - the video and a strip of stills
   - one full-size frame at 9s
   - `capture-test-2x.jpg`, the test frame that showed the 2× capture works
+- `v4-halomark/`: the video, a strip of stills and one full-size frame at 1s
+
+## 08-halomark-brand (16:30–16:40) · Current
+
+The product was renamed **Halomark**: a halo for angels, and close to *hallmark*, the stamp that certifies tested gold.
+A Claude Fable 5.2 design agent made the identity.
+- **The mark:** a cut-corner hallmark punch with a halo struck into it, which also stands in for the O in HAL◯MARK.
+- **Colour:** stamp-pad blue, used for the mark and app icon only.
+
+- `brand-board.png`: the whole identity on one page
+  - the mark
+  - the name in light and dark
+  - the icon from 180px down to 16px
+  - the icon on a mock Home Screen
+  - colours and type
+- `directions.png`: the three rejected directions and the chosen one
+  - an HM maker's mark: reads as a clothing brand, mush at 16px
+  - a halo as the H's crossbar: the obvious idea, looks like a planet
+  - a halo alone: elegant, but says nothing about stamping
+- `sketches/`: the agent's working renders of each direction, plus a crop of the About page
+- `phone-<screen>-<theme>.png`: home (with a screening, and empty), memo, about, new, batch and share, in light and dark
+  - `phone-about-name-*.png` shows the new "The name" section. Its wording was tightened afterwards, so the live text differs slightly.
+- `desktop-home-light.png`, `desktop-home-dark.png`
+- **Sent:** `brand-board.png`, `directions.png`, `phone-home-light.png`, `phone-memo-dark.png`, `phone-about-name-light.png`
 
 ## tools
 
-- `record-walkthrough.cjs`: the script that recorded v3, with the ffmpeg command in its header, so the video can be re-shot after design changes
+- `record-walkthrough.cjs`: the script that recorded v3 and v4, with the ffmpeg command in its header, so the video can be re-shot after design changes
 - `walkthrough-batch.csv`: the three example founders it pastes into "Screen a list"
 
 ## Not included
 
-- **Raw video frames.** The screen recorder saves one image per screen change, about 2,000 JPEGs for v2 and v3. Each one is already inside its video.
+- **Raw video frames.** The screen recorder saves one image per screen change, about 3,000 JPEGs for v2, v3 and v4. Each one is already inside its video.
 - **Anything before 13:00.** Tasks 1–3 (the API contract, the backend and the research agent) produced no images.

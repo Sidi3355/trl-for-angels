@@ -44,7 +44,7 @@ function Sidebar() {
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-[280px] flex-col border-r border-line px-5 pb-5 pt-7 lg:flex">
       <Link href="/" className="px-1">
-        <Wordmark size={30} />
+        <Wordmark size={21} />
       </Link>
       <Link href="/new" className="mt-7 flex h-12 items-center justify-center gap-2 rounded-full bg-accent text-[15px] font-semibold text-accent-ink transition-[background,transform] hover:bg-accent-hover active:scale-[0.98]">
         <IconPlus size={18} strokeWidth={2.4} /> Screen a founder
@@ -102,8 +102,8 @@ function Sidebar() {
 function TopBar() {
   return (
     <div className="flex items-center justify-between pl-[max(20px,env(safe-area-inset-left))] pr-[max(20px,env(safe-area-inset-right))] pt-[env(safe-area-inset-top)] sm:px-8 lg:hidden" style={{ height: "calc(48px + env(safe-area-inset-top))" }}>
-      <Link href="/" aria-label="Screener home">
-        <Wordmark size={24} />
+      <Link href="/" aria-label="Halomark home">
+        <Wordmark size={17} />
       </Link>
       <StatusPill />
     </div>

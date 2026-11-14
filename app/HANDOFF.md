@@ -79,6 +79,13 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   Archivo at three widths, floating dock on phones. Reviewed here: logic untouched, tests and build pass,
   every verdict colour, not-found, passcode and overflow at 390px checked; the gauge marker was changed to a
   solid needle (the hollow ring read as a zero).
+- **Name: Halomark (owner, 2026-11-14)**, replacing "Screener": a halo for angels, and a near-homophone of
+  hallmark, the stamp that certifies tested gold. Identity by a Claude Fable 5.2 design pass: a cut-corner
+  hallmark punch with a halo struck into it, used as the O of HAL◯MARK; stamp-pad blue for the mark only.
+  Rejected directions (an HM maker's mark, a halo as the H's crossbar, a halo alone) are in
+  `app/media/08-halomark-brand/directions.png`. The blue is the main judgement call: an ink-only mark is the
+  fallback (`--brand` in globals.css and the colours in `src/lib/mark.ts`, then rerun the icon script).
+  User-visible names only: `screener` stays as the backend package, env var and storage-key prefix.
 - **Verdict labels for angels (owner, 2026-11-14): "Meet / Look closer / Pass"** on screen, replacing "Advance /
   Escalate / Pass" (fund language: a solo angel has nobody to escalate to). Display only: the contract,
   backend, policy and research keep `advance` / `escalate` / `pass` as the internal values. MASTER_PLAN still

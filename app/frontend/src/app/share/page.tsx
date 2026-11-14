@@ -1,6 +1,6 @@
 "use client";
 
-// Shared into Screener: from Android's share menu (the manifest's share_target) or an iPhone Shortcut
+// Shared into Halomark: from Android's share menu (the manifest's share_target) or an iPhone Shortcut
 // that opens /share?url=… . Shows what came in and screens it with one tap, so a stray share costs nothing.
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -44,7 +44,7 @@ function SharePage() {
   if (!link && !initial.name) {
     return (
       <Page>
-        <PageHeader eyebrow="Shared to Screener" title="Nothing to screen" subtitle="What was shared didn't include a link or a name. Type the founder instead." />
+        <PageHeader eyebrow="Shared to Halomark" title="Nothing to screen" subtitle="What was shared didn't include a link or a name. Type the founder instead." />
         <Link href="/new" className={linkClass}>
           Screen a founder
         </Link>
@@ -54,7 +54,7 @@ function SharePage() {
 
   return (
     <Page>
-      <PageHeader eyebrow="Shared to Screener" title="Screen this founder?" subtitle="The agent reads only what was public before they started the company." />
+      <PageHeader eyebrow="Shared to Halomark" title="Screen this founder?" subtitle="The agent reads only what was public before they started the company." />
       <Card className="divide-y divide-line overflow-hidden">
         {url && (
           <div className="flex items-center gap-3 px-4 py-4">

@@ -1,4 +1,4 @@
-// Records the phone walk-through used for app/media/07-walkthrough-video/v3-final: full-frame and 2x sharp.
+// Records the phone walk-through used for app/media/07-walkthrough-video/v3-full-frame-2x: full-frame and 2x sharp.
 // Chrome's screencast in a real 2x window (Playwright's recordVideo films at 1x and pads the frame with grey).
 // Usage (frontend on :3000, backend on :8000): node record-walkthrough.cjs <outDir> <batch.csv>
 // then: ffmpeg -f concat -safe 0 -i <outDir>/list.txt -vf "fps=30,format=yuv420p" -c:v libx264 -crf 20 -movflags +faststart walkthrough.mp4

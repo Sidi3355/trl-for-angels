@@ -1,4 +1,4 @@
-# App: deal-screening agent for angel investors
+# App: Halomark, a deal-screening agent for angel investors
 
 The product half of the project (`MASTER_PLAN.md` sections 8 and 8b). An investor enters what they know
 about a founder, or shares a LinkedIn or website link. A research agent fills in the rest from public,
@@ -60,7 +60,7 @@ on phones, a sidebar on desktop, light and dark themes):
   notification per watched job, stating the verdict at the investor's bar, then forgets the subscription. Keys
   are generated at startup unless `VAPID_PRIVATE_KEY` is set. iPhones allow web push only once the app is on the
   Home Screen, so there the button becomes that instruction.
-- **Share into Screener** (task 5): `/share?url=…` shows what came in and screens it with one tap. Android gets it
+- **Share into Halomark** (task 5): `/share?url=…` shows what came in and screens it with one tap. Android gets it
   through the manifest's `share_target`; iPhones through a Shortcut, with steps and a copyable link on How it works.
 - **Screen a list** (task 7, `/batch`): upload or paste a CSV (template download included, up to 200 founders), then
   watch them sort into Meet / Look closer / Pass at your bar; each finished founder joins the Founders list.
@@ -73,6 +73,14 @@ on phones, a sidebar on desktop, light and dark themes):
   selections are ink, not a brand colour. A floating dock on phones, a sidebar on desktop. Tokens in
   `src/app/globals.css`, building blocks in `src/components/ui.tsx`. Chart colours were checked with the dataviz
   skill's palette validator against both themes' surfaces.
+- **Brand: Halomark** (renamed from Screener on 2026-11-14; identity by a Claude Fable 5.2 design pass). The mark is a
+  hallmark punch (the cut-corner stamp an assay office strikes into tested gold) with an angel's halo struck into
+  it, and it stands in for the O in the wordmark, HAL◯MARK (Archivo at its widest width, weight 800, capitals).
+  Stamp-pad blue (`--brand`, `#1f3bd0`; `#8fa0ff` on dark) appears only in the mark and the app icon, never on
+  controls or verdicts; verdict tiles are struck in the same cut-corner shape (`.punch`). The geometry lives
+  once in `src/lib/mark.ts`; `node scripts/make-brand-assets.cjs` (after `next build`) regenerates every icon,
+  the SVG favicon and the link-preview image from it. Internal names stay `screener` (the backend package,
+  `SCREENER_ANTHROPIC_API_KEY`, storage keys), so nothing on the hosts changes.
 - **Logic:** `src/lib/policy.ts` ports `backend/screener/policy.py` (tested against the mock verdicts);
   `src/lib/bar.ts` applies the bar to the Deals list; `src/lib/api.ts` talks to the backend.
 - **Passcode:** if the backend has `ACCESS_TOKEN` set, the app asks for it on the first refused request and
