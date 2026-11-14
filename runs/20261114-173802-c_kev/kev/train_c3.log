@@ -1,0 +1,25 @@
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Fetching 13 files:  31%|███       | 4/13 [00:00<00:00, 32.76it/s]Fetching 13 files:  85%|████████▍ | 11/13 [00:00<00:00, 21.67it/s]Fetching 13 files: 100%|██████████| 13/13 [00:00<00:00, 15.50it/s]
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Fetching 13 files: 100%|██████████| 13/13 [00:00<00:00, 1577.95it/s]
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:   0%|          | 1/310 [00:00<01:39,  3.12it/s]Loading weights:  61%|██████▏   | 190/310 [00:00<00:00, 581.10it/s]Loading weights:  97%|█████████▋| 300/310 [00:00<00:00, 576.64it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 500.00it/s]
+Traceback (most recent call last):
+  File "/tmp/work/repo/research/train_kev.py", line 202, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/tmp/work/repo/research/train_kev.py", line 147, in main
+    rep, _ = score(run, val, args.out / "val_scores" / name, args.device)
+             ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/work/repo/research/train_kev.py", line 90, in score
+    return evaluate_records(records, predictor, out, temperature)
+  File "/tmp/work/kev/kev/benchmark.py", line 137, in evaluate_records
+    pred = next(preds)()
+  File "/tmp/work/kev/.venv/lib/python3.13/site-packages/torch/utils/_contextlib.py", line 120, in decorate_context
+    return func(*args, **kwargs)
+  File "/tmp/work/kev/kev/predictors.py", line 128, in __call__
+    enc = self.model.encode(self.tok, materialize(record), max_state=self.context["max_state"], max_branch=self.context["max_branch"], strict=True)
+  File "/tmp/work/kev/kev/model.py", line 296, in encode
+    return encode(tok, rec, option_isolation=self.option_isolation, **kw)
+  File "/tmp/work/kev/kev/model.py", line 103, in encode
+    raise ContextOverflow(f"state exceeds {max_state} tokens: {len(state_tokens) + 1}", state_tokens=len(state_tokens) + 1, max_state=max_state)
+kev.model.ContextOverflow: state exceeds 384 tokens: 873

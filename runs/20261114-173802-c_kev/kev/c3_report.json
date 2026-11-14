@@ -1,0 +1,35 @@
+{
+  "condition": "c3",
+  "base": "jaredpalmer/kev-0.6b",
+  "recipe": {
+    "base": "Qwen/Qwen3-0.6B-Base",
+    "base_revision": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd",
+    "lora": 16,
+    "head_dim": 256,
+    "lora_targets": "all",
+    "option_isolation": 0,
+    "special_embeddings": 0,
+    "weights_dtype": "fp32",
+    "p_none_pair": 0.25
+  },
+  "lr": 2e-05,
+  "max_state": 4096,
+  "batch": 8,
+  "accum": 1,
+  "checkpointing": 1,
+  "dtype": "fp32",
+  "runs": {
+    "ep1": {
+      "seconds": 2880.4,
+      "steps": 250,
+      "records_seen": 2000,
+      "peak_device_mib": 4402
+    },
+    "ep2": {
+      "seconds": 2926.1,
+      "steps": 250,
+      "records_seen": 2000,
+      "peak_device_mib": 4402
+    }
+  }
+}

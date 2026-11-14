@@ -1,0 +1,37 @@
+repo commit: e44ead9
+== setup
+name, memory.total [MiB], driver_version
+Tesla T4, 15360 MiB, 580.178.04
+Tesla T4, 15360 MiB, 580.178.04
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+TRL 0.3.0
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+torch 2.8.0+cu128 CUDA available: True
+== run.sh
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+c3: train 2000, val 400, test 600
+c4: train 2000, val 400, test 600
+
+First c3 train record, to check by eye:
+{
+  "state": "Is the startup's industry in enterprise/B2B infrastructure (e.g., cybersecurity, cloud infrastructure, logistics, banking technology, energy storage, drug discovery)? no\nDid the founder spend 5+ years at a single employer in the same industry as the current startup? no\nDoes the text list at least one prior startup founded by the founder that was acquired? yes\nDoes the profile list a prior startup that the founder founded which was acquired or went public? yes\nDoes the profile list a prior startup founded by the founder that was acquired? yes\nDoes the founder's job history include a title of Manager, Director, Vice President, or C-level (e.g., CSO, CTO, General Manager)? no\nDoes the founder hold a master's degree (MSc) or PhD, as opposed to only a bachelor's or MBA? no\nDoes the text state the founder's prior experience in the startup's industry is \"deep\"? no\nDoes the founder hold a PhD, MSc, or other graduate science/engineering degree (not counting an MBA)? no\nDid the founder's most recent listed job last 5+ years? no\nDoes the profile describe the founder's background as 'domain specialist' or 'mixed'? no\nDoes the founder background field describe the founder as 'technical' or 'domain specialist'? no\nDoes the founder's job history include a title of Vice President, Chief (C-level), Head of, or Director? no\nHas the founder held a title of General Manager, Head of Product, Chief Technology Officer, or Manager at a technology or software company? no\nDid the founder's most recent listed job last 5 or more years? no\nIs the founder's background labeled as \"domain specialist\"? no\nIs the founder's background described as 'domain specialist'? no\nDid the founder work at least 5+ years at a single company with 5,000+ employees? no\nDoes the text state the founder has deep prior experience in the startup's industry? no\nIs the founder described as a \"domain specialist\" with \"deep prior experience\" in the startup's industry? no\nDid the fou
+
+First c4 train record, to check by eye:
+{
+  "state": "This founder leads a startup in the social messaging industry, founded with 1 co-founder(s).\nFounder background: mixed, 5-10 years of work experience, none prior experience in this startup's industry.\nEducation:\n- no degree in Computer Science, university ranked QS top 50\nJobs (oldest first):\n- Founder and Chief Executive, a recruiting software startup, 1-10 employees, Recruiting Software, 3-5 years\n- Head of Product, an online tech job board company, 201-1,000 employees, Online Recruiting, 2-3 years\nPrior startups: 1 founded before, 1 acquired under $50M.\nPrior exits: 1 acquisition as co-founder, under $50M.",
+  "questions": {
+    "success": {
+      "type": "noul",
+      "instructions": "Will this founder's company succeed (exit, IPO or funding over $500M)?",
+      "label": false
+    }
+  },
+  "_meta": {
+    "row_id": "r00001"
+  }
+}
+no chosen c3 checkpoint
+run.sh exit: 1
