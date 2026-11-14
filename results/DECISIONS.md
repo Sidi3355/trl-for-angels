@@ -27,6 +27,48 @@ while doing the work: date, decision, reason, evidence. Newest last.
   `[anthropic]` covers both possible generator providers. The `rl` extra (PyTorch) isn't needed
   in the project environment. The fork's own Poetry venv installs all extras for its tests.
 
+## 2026-11-14 · Kev replaces Jev as the answerer (user decision)
+
+- **Decision:** every answer-based condition uses a self-hosted base Kev as the answerer, held
+  constant, instead of TypeSafe's Jev. Recorded as amendment 0 in `MASTER_PLAN.md`.
+- **Reason:** TypeSafe publishes no free tier or trial credits, and its direct API is reported to be
+  in early access behind a waitlist. The plan already allowed base Kev as the fallback answerer.
+- **Evidence:** third-party pricing pages (Sept 2026) quote about $0.04 per million input tokens,
+  output free, with no free tier. TypeSafe's own pricing page couldn't be confirmed.
+- **Consequence:** Kev now plays two roles: the answerer for all conditions, and the learn stage
+  in C2–C4. They are separate roles, but the write-up should say so. No TypeSafe key is needed.
+- **Open:** which Kev checkpoint answers (see the probe below).
+
+## 2026-11-14 · A3 prep · Kev-0.6B as an answerer: first probe
+
+- **What:** served `jaredpalmer/kev-0.6b` (Hub snapshot `dece6dba`) on CPU and asked 8 factual
+  yes/no questions about the plan's example profile.
+- **Result:** 3 of 8 confidently wrong: "founded a startup before?" 0.95 (profile says none),
+  "top-50 university?" 0.77 (QS 101-300), "solo founder?" 0.91 (1 co-founder). Right on prior
+  exit (0.09), technical (0.01), business (1.00), 5,000+ employer (0.10), first startup (0.77).
+  The server ran at temperature 1.0 (uncalibrated).
+- **Reading:** one profile and 8 questions, so not a measurement, but a warning: a weak answerer
+  makes every answer-based condition weaker. Kev's own README reports Kev-0.6B at 0.62 accuracy
+  on new sources against 0.82 for Kev-4B.
+
+## 2026-11-14 · A3 prep · Kev checkpoint still valid
+
+- **Note:** Kev 1.0 now leads with Kev-0.8B, 4B, 9B (Qwen3.5) and 27B (Qwen3.8).
+  `jaredpalmer/kev-0.6b` is kept as the "previous generation" small model and is exactly what the
+  plan describes: a rank-16 LoRA and pointer head on `Qwen/Qwen3-0.6B-Base`. The plan's choice of
+  0.6B for the learn stage (attention-only Qwen3 base, for interp) stands.
+
+## 2026-11-14 · A3 prep · TRL spec for a Kev endpoint, and a TRL bug
+
+- **Verified spec:** `LLM("kev-0.6b", base_url="http://<host>:8009/v1/systemone",
+  kind="decision", api_key="local")`. One call through TRL's `LLMSession` returned
+  probabilities (`research/checks/kev_endpoint.py`).
+- **Plan's spec was wrong:** `"systemone:kev-0.6b"` resolves as a custom OpenAI-protocol
+  reasoning model, because `systemone` is a wire protocol in TRL, not a provider.
+- **TRL bug for the PR (G4):** with no `api_key`, TRL's System One adapter sends
+  `Authorization: Bearer ` (empty), which the HTTP client rejects as an illegal header. A custom
+  decision endpoint should omit the header when there is no key.
+
 ## 2026-11-14 · A1 · Open item: TRL's cache location
 
 - **Note:** TRL's disk cache defaults to `~/.cache/think_reason_learn/llm-cache-v2.sqlite`, which

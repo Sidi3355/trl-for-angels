@@ -29,10 +29,16 @@
     }
   },
   "models": {
-    "generator": null,
-    "answerer": "jev",
+    "generator": "anthropic:claude-opus-5-5 (proposed, not yet confirmed or run)",
+    "answerer": "base Kev (checkpoint to be confirmed; replaced Jev on 2026-11-14)",
     "kev_checkpoint": "jaredpalmer/kev-0.6b",
+    "kev_checkpoint_hub_snapshot": "dece6dba8d43f0f7ded45e9f5b9df12474d90843",
     "kev_base": "Qwen/Qwen3-0.6B-Base"
+  },
+  "kev_code": {
+    "repo": "https://github.com/jaredpalmer/kev",
+    "commit": "2074cc4",
+    "local_clone": "../kev"
   },
   "rrf_settings": {
     "beta": 0.5,
