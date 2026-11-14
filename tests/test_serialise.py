@@ -91,3 +91,26 @@ def test_kev_reads_the_records(tmp_path: Path) -> None:
                           str(tmp_path / "kev/c3/train.jsonl")],
                          capture_output=True, text=True, cwd=kev, check=True)
     assert out.stdout.split() == ["2", "r00001"]
+
+
+@pytest.mark.parametrize("input_kind", ["c3", "c4"])
+def test_production_files_ask_both_choice_questions(tmp_path: Path, input_kind: str) -> None:
+    splits, ans = setup_dirs(tmp_path)
+    for split in s.SPLITS:  # production labels need each founder's outcome and years
+        path = splits / f"{split}.jsonl"
+        rows = [json.loads(x) for x in path.read_text().splitlines()]
+        rows[0].update(outcome="shut down", years="under 5")
+        rows[1].update(outcome="over $1B", years="5-8")
+        path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    counts = s.production(splits, ans, tmp_path / "kev", input_kind)
+    assert counts == {k: 2 for k in s.SPLITS}
+    recs = [json.loads(x) for x in (tmp_path / "kev/prod/train.jsonl").read_text().splitlines()]
+    q = recs[1]["questions"]
+    assert list(q) == ["outcome", "years"]
+    assert q["outcome"]["type"] == q["years"]["type"] == "choice"
+    assert (q["outcome"]["label"], q["years"]["label"]) == ("over $1B", "5-8")
+    assert list(q["outcome"]["criteria"]) == ["shut down", "under $50M", "$50M-$500M",
+                                              "$500M-$1B", "over $1B"]
+    expected = (answers_text(RULES, [0.9, math.nan]) if input_kind == "c3"
+                else "Founder two.\nPrior exits: 1.")
+    assert recs[1]["state"] == expected

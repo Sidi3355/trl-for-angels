@@ -56,6 +56,25 @@ case "$TASK" in
         --splits "$REPO/data/splits" --models "$REPO/data/models" --out-root "$OUT" || exit 1
     done
     ;;
+  d_prod)
+    # D3: the production model on the input chosen on val at D2 (PROD_INPUT: c3 or c4),
+    # with the outcome and years choice questions and a temperature per question; then its
+    # calibrated distributions on val for the D4 threshold table.
+    PROD_INPUT="c3"  # set from D2's decision before running
+    KPY="$WORK/kev/.venv/bin/python"
+    "$PY" "$REPO/research/serialise.py" --splits "$REPO/data/splits" \
+      --answers "$REPO/data/answers" --out "$WORK/kev_data" --production "$PROD_INPUT" || exit 1
+    long=""; [ "$PROD_INPUT" = c3 ] && long="--long-states"
+    mkdir -p "$OUT/kev"
+    (cd "$WORK/kev" && CUDA_VISIBLE_DEVICES=0 "$KPY" "$REPO/research/train_kev.py" \
+      --condition prod $long --kev-dir "$WORK/kev" --data "$WORK/kev_data" \
+      --out "$WORK/runs/prod" > "$OUT/kev/train_prod.log" 2>&1) || exit 1
+    cp "$WORK/runs/prod/report.json" "$OUT/kev/prod_report.json"
+    cp "$WORK/runs/prod/chosen/temperatures.json" "$OUT/kev/prod_temperatures.json"
+    "$PY" "$REPO/research/kev_predict.py" --condition prod --run "$WORK/runs/prod/chosen" \
+      --kev-dir "$WORK/kev" --prod-data "$WORK/kev_data/prod" --out-root "$OUT" \
+      --gpus 0,0 --predict-splits val || exit 1
+    ;;
   *)
     echo "unknown TASK $TASK" >&2
     exit 2

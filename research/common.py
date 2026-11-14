@@ -23,6 +23,36 @@ TASK = ("Predict whether this startup founder's company will succeed (exit, IPO 
 QUESTION = "Will this founder's company succeed (exit, IPO or funding over $500M)?"
 POSITIVE, NEGATIVE = "successful", "failed"
 
+# The production model's two choice questions (MASTER_PLAN section 7). The app must ask them
+# with exactly these texts and options, in this order.
+OUTCOME_BANDS = {
+    "shut down": "the company closed",
+    "under $50M": "exited, listed or raised, at a value under $50M",
+    "$50M-$500M": "exit, IPO or funding value between $50M and $500M",
+    "$500M-$1B": "exit, IPO or funding value between $500M and $1B",
+    "over $1B": "exit, IPO or funding value over $1B",
+}
+YEARS_BANDS = {
+    "under 5": "fewer than 5 years from founding",
+    "5-8": "5 to 8 years from founding",
+    "over 8": "more than 8 years from founding",
+}
+PROD_QUESTIONS = {
+    "outcome": ("What final outcome will this founder's company reach?", OUTCOME_BANDS),
+    "years": ("How long after founding will the company reach that outcome?", YEARS_BANDS),
+}
+
+
+def apply_temperature(probabilities: dict[str, float], temperature: float) -> dict[str, float]:
+    """Raw choice probabilities at ``temperature``: p^(1/T), renormalised.
+
+    The same as dividing the logits by T before the softmax, which is how Kev calibrates.
+    """
+    scaled = {k: max(p, 1e-12) ** (1.0 / temperature) for k, p in probabilities.items()}
+    total = sum(scaled.values())
+    return {k: v / total for k, v in scaled.items()}
+
+
 GENERATOR = "anthropic:claude-opus-5-5"
 GENERATOR_MAX_OUTPUT_TOKENS = 16000  # Claude thinks first; TRL's default 4096 can cut it off
 KEV_BASE = "jaredpalmer/kev-0.6b"
@@ -85,9 +115,15 @@ def fake_writer(enabled: bool) -> Iterator[None]:
 @contextmanager
 def kev_server(kev_dir: Path, run: str = KEV_BASE, port: int = 8009, device: str = "cuda",
                dtype: str = "fp32", gpu: str | None = None, log: Path | None = None,
-               timeout: float = 1800) -> Iterator[str]:
-    """Serve a Kev checkpoint for the block; yields its root URL. fp32 on a T4 (no bf16)."""
+               timeout: float = 1800, raw: bool = False) -> Iterator[str]:
+    """Serve a Kev checkpoint for the block; yields its root URL. fp32 on a T4 (no bf16).
+
+    ``raw`` serves uncalibrated probabilities (KEV_TEMPERATURE=1.0), for per-question
+    temperatures applied afterwards.
+    """
     env = {**os.environ, "KEV_DTYPE": dtype}
+    if raw:
+        env["KEV_TEMPERATURE"] = "1.0"
     env.pop("PYTHONPATH", None)
     if gpu is not None:
         env["CUDA_VISIBLE_DEVICES"] = gpu

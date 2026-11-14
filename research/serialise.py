@@ -30,7 +30,7 @@ from think_reason_learn.core._data import to_texts
 from think_reason_learn.rrf import answers_text
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import POSITIVE, QUESTION, ROOT, SPLITS  # noqa: E402
+from common import POSITIVE, PROD_QUESTIONS, QUESTION, ROOT, SPLITS  # noqa: E402
 
 QUESTION_ID = "success"
 
@@ -102,12 +102,53 @@ def serialise(splits_dir: Path, answers_dir: Path | None, out_dir: Path,
     return counts
 
 
+def production(splits_dir: Path, answers_dir: Path, out_dir: Path, input_kind: str,
+               splits: tuple[str, ...] = SPLITS) -> dict[str, int]:
+    """D3's files: the winning input (c3: TRL's answers; c4: the founder text) with the
+    production model's two choice questions, labelled with each founder's outcome and years.
+    Writes out_dir/prod/{split}.jsonl."""
+    if input_kind not in ("c3", "c4"):
+        raise ValueError("input_kind is c3 (TRL's answers) or c4 (the founder text)")
+    rules = None
+    if input_kind == "c3":
+        rules = json.loads((answers_dir / "rules.json").read_text(encoding="utf-8"))
+    counts = {}
+    for split in splits:
+        founders = read_jsonl(splits_dir / f"{split}.jsonl")
+        if rules is None:
+            states, _ = to_texts([f["input"] for f in founders])
+        else:
+            answers = read_answers(answers_dir / f"{split}.csv", rules)
+            states = [answers_text(rules, answers[f["id"]]) for f in founders]
+        records = []
+        for f, state in zip(founders, states):
+            labels = {"outcome": f["outcome"], "years": f["years"]}
+            questions = {}
+            for qid, (text, options) in PROD_QUESTIONS.items():
+                if labels[qid] not in options:
+                    raise ValueError(f"{f['id']}: {qid} {labels[qid]!r} isn't an option")
+                questions[qid] = {"type": "choice", "instructions": text,
+                                  "criteria": dict(options), "label": labels[qid]}
+            records.append({"state": state, "questions": questions,
+                            "_meta": {"row_id": f["id"], "input": input_kind}})
+        write_jsonl(out_dir / "prod" / f"{split}.jsonl", records)
+        counts[split] = len(records)
+    return counts
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--splits", type=Path, default=ROOT / "data" / "splits")
     ap.add_argument("--answers", type=Path, default=ROOT / "data" / "answers")
     ap.add_argument("--out", type=Path, default=ROOT / "data" / "kev")
+    ap.add_argument("--production", choices=("c3", "c4"), default=None,
+                    help="write only the production model's files, with this input (D3)")
     args = ap.parse_args(argv)
+    if args.production:
+        counts = production(args.splits, args.answers, args.out, args.production)
+        print("prod (" + args.production + "): "
+              + ", ".join(f"{k} {v}" for k, v in counts.items()))
+        return 0
     counts = serialise(args.splits, args.answers, args.out)
     for cond, per_split in counts.items():
         if per_split:

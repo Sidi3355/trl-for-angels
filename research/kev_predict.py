@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import sys
 import time
 from contextlib import ExitStack
@@ -26,7 +27,17 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import KEV_BASE, POSITIVE, QUESTION, ROOT, kev_llm, kev_server, load_split  # noqa: E402
+from common import (  # noqa: E402
+    KEV_BASE,
+    POSITIVE,
+    PROD_QUESTIONS,
+    QUESTION,
+    ROOT,
+    apply_temperature,
+    kev_llm,
+    kev_server,
+    load_split,
+)
 
 
 def direct_scores(url: str, name: str, texts: list[str]) -> list[float]:
@@ -48,6 +59,45 @@ def direct_scores(url: str, name: str, texts: list[str]) -> list[float]:
             for r in replies]
 
 
+def prod_distributions(url: str, states: list[str], temperatures: dict[str, float]
+                       ) -> list[dict[str, dict[str, float]]]:
+    """The production model's outcome and years distributions, through LLMSession, each
+    calibrated with its own temperature."""
+    from think_reason_learn.llm import ChoiceQuestion, LLMSession
+    from think_reason_learn.llm._loop import run_sync
+    from think_reason_learn.llm._spec import resolve
+
+    endpoint = resolve(kev_llm(url, "kev-prod"))
+    questions = {qid: ChoiceQuestion(text, tuple(options))
+                 for qid, (text, options) in PROD_QUESTIONS.items()}
+
+    async def ask():
+        return await LLMSession().answer([endpoint], states, questions, role="decider")
+
+    out = []
+    for row in run_sync(ask()):
+        dist = {}
+        for qid in PROD_QUESTIONS:
+            raw = dict(row[qid].probabilities) if row[qid] is not None else {}
+            dist[qid] = apply_temperature(raw, temperatures.get(qid, 1.0)) if raw else {}
+        out.append(dist)
+    return out
+
+
+def write_prod(path: Path, split: str, records: list[dict], dists: list[dict]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    cols = [f"p_{qid}_{opt}" for qid, (_, opts) in PROD_QUESTIONS.items() for opt in opts]
+    with path.open("w", newline="", encoding="utf-8") as fh:
+        w = csv.writer(fh)
+        w.writerow(["id", "split", "outcome", "years", *cols])
+        for rec, dist in zip(records, dists):
+            q = rec["questions"]
+            values = [dist[qid].get(opt, float("nan"))
+                      for qid, (_, opts) in PROD_QUESTIONS.items() for opt in opts]
+            w.writerow([rec["_meta"]["row_id"], split, q["outcome"]["label"],
+                        q["years"]["label"], *(f"{v:.6g}" for v in values)])
+
+
 def write(path: Path, split: str, condition: str, ids, labels, scores) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as fh:
@@ -59,7 +109,9 @@ def write(path: Path, split: str, condition: str, ids, labels, scores) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--condition", choices=("extra", "c3", "c4"), required=True)
+    ap.add_argument("--condition", choices=("extra", "c3", "c4", "prod"), required=True)
+    ap.add_argument("--prod-data", type=Path, default=ROOT / "data" / "kev" / "prod",
+                    help="prod: the states, from serialise.py --production")
     ap.add_argument("--run", default=None, help="checkpoint to score (c3, c4)")
     ap.add_argument("--kev-dir", type=Path, default=ROOT.parent / "kev")
     ap.add_argument("--splits", type=Path, default=ROOT / "data" / "splits")
@@ -71,7 +123,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--port", type=int, default=8010, help="port for the scored checkpoint")
     ap.add_argument("--predict-splits", default="val,test")
     args = ap.parse_args(argv)
-    if args.condition in ("c3", "c4") and not args.run:
+    if args.condition in ("c3", "c4", "prod") and not args.run:
         ap.error(f"--run is needed for {args.condition}")
 
     from think_reason_learn.llm import set_config
@@ -88,7 +140,18 @@ def main(argv: list[str] | None = None) -> int:
     with ExitStack() as stack:
         url = stack.enter_context(kev_server(args.kev_dir, run=run, port=args.port,
                                              device=args.device, gpu=gpu_scored,
-                                             log=logs / f"kev_{args.condition}.log"))
+                                             log=logs / f"kev_{args.condition}.log",
+                                             raw=args.condition == "prod"))
+        if args.condition == "prod":
+            temps = json.loads((Path(run) / "temperatures.json").read_text())["per_question"]
+            for split in args.predict_splits.split(","):
+                path = args.prod_data / f"{split}.jsonl"
+                records = [json.loads(x) for x in path.read_text().splitlines() if x.strip()]
+                dists = prod_distributions(url, [r["state"] for r in records], temps)
+                write_prod(args.out_root / "data" / "predictions" / f"prod_{split}.csv",
+                           split, records, dists)
+                print(f"prod {split}: {len(records)} founders", flush=True)
+            return 0
         model = None
         if args.condition == "c3":
             model = RRF.load((args.models or args.out_root / "data" / "models") / "c2")

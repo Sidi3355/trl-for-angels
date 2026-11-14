@@ -97,7 +97,10 @@ def score(run: str, records: list, out: Path, device: str, temperature: float = 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--condition", choices=("c3", "c4"), required=True)
+    ap.add_argument("--condition", choices=("c3", "c4", "prod"), required=True,
+                    help="prod: the production model (D3), two choice questions")
+    ap.add_argument("--long-states", action="store_true",
+                    help="prod with C3's input: turn on gradient checkpointing")
     ap.add_argument("--kev-dir", type=Path, required=True)
     ap.add_argument("--data", type=Path, default=ROOT / "data" / "kev")
     ap.add_argument("--out", type=Path, required=True)
@@ -116,7 +119,7 @@ def main(argv: list[str] | None = None) -> int:
     from kev.metrics import fit_temperature
 
     checkpointing = args.checkpointing if args.checkpointing is not None else int(
-        args.condition == "c3")
+        args.condition == "c3" or args.long_states)
     data = args.data / args.condition
     args.out.mkdir(parents=True, exist_ok=True)
     val = load_records(data / "val.jsonl", source=args.condition)
@@ -154,6 +157,13 @@ def main(argv: list[str] | None = None) -> int:
                     args.device)
     temperature = fit_temperature(rows, aggregation="micro")
     report["temperature"] = temperature
+    # One temperature per question too (MASTER_PLAN section 7). Kev's checkpoint holds one,
+    # so these go to temperatures.json; serve raw and apply them (common.apply_temperature).
+    per_question = {}
+    for qid in sorted({r["question"] for r in rows}):
+        q_rows = [r for r in rows if r["question"] == qid]
+        per_question[qid] = fit_temperature(q_rows, aggregation="micro")
+    report["temperatures_per_question"] = per_question
     rep_cal, _ = score(candidates[chosen], val, args.out / "val_scores" / f"{chosen}_at_T",
                        args.device, temperature)
     # Kev's report keeps raw metrics under "clean" and calibrated ones under
@@ -170,6 +180,11 @@ def main(argv: list[str] | None = None) -> int:
         shutil.copytree(candidates[chosen], dest, dirs_exist_ok=True)
     meta = read_meta(str(dest))
     meta.temperature = temperature
+    (dest / "temperatures.json").write_text(json.dumps(
+        {"global": temperature, "per_question": per_question,
+         "fitted_on": "val", "method": "min NLL, micro, kev.metrics.fit_temperature",
+         "apply": "serve raw (KEV_TEMPERATURE=1.0), then p^(1/T) renormalised per question"},
+        indent=2))
     meta.extra["temperature_fit"] = {"rows": "val", "n": len(val),
                                      "method": "min NLL, micro, kev.metrics.fit_temperature",
                                      "value": temperature}

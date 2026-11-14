@@ -846,9 +846,9 @@ def dataset_checks(records: list[Record], dropped: list[Record], cfg: dict,
         status = "PASS" if lo <= len(with_unknown) <= hi else "FAIL"
         target, got = str(lo) if lo == hi else f"{lo}-{hi}", str(len(with_unknown))
     bands = Counter(r.outcome for r in with_unknown)
+    fields = dict(Counter(f for r in with_unknown for f in r.profile.unknown_fields))
     checks.append(Check("Records with unknown fields", status,
-                        f"{got}, target {target}; by outcome {dict(bands)}; fields "
-                        f"{dict(Counter(f for r in with_unknown for f in r.profile.unknown_fields))}"))
+                        f"{got}, target {target}; by outcome {dict(bands)}; fields {fields}"))
 
     # Leakage signal: can one field alone predict the research label?
     signal = single_field_signal(parsed)
