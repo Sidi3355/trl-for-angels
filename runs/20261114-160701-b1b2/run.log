@@ -1,0 +1,29 @@
+repo commit: 22f39d4
+== setup
+name, memory.total [MiB], driver_version
+Tesla T4, 15360 MiB, 580.178.04
+Tesla T4, 15360 MiB, 580.178.04
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+TRL 0.3.0
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+torch 2.8.0+cu128 CUDA available: True
+== run.sh
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+Model replies are cached at /tmp/work/trl_cache/llm-cache-v2.sqlite, so a rerun reuses them instead of calling again. set_config(cache=False) turns it off.
+c1a: 63 rules of 93 questions, 2801.9 s, $0.4890
+c1a40: 38 rules of 93 questions, 7.3 s, $0.0000
+c1b: 21 rules of 93 questions, 5.8 s, $0.0000
+c2: 40 rules of 93 questions, 673.5 s, $0.0000
+OK: 40 rules in rules.json; models in /kaggle/working/out/data/models
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+Model replies are cached at /tmp/work/trl_cache/llm-cache-v2.sqlite, so a rerun reuses them instead of calling again. set_config(cache=False) turns it off.
+train: (2000, 40) answers, 0 missing
+val: (400, 40) answers, 0 missing
+test: (600, 40) answers, 0 missing
+predictions: trl_val.csv
+predictions: trl_test.csv
+run.sh exit: 0
