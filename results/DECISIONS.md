@@ -310,3 +310,37 @@ while doing the work: date, decision, reason, evidence. Newest last.
   band mix identical across splits, no duplicate groups, no id in two splits. The 50
   real-grounded rows fell 31 / 6 / 13. Report: `results/data/stats.md`; input hash in
   `results/run_info.json`.
+
+## 2026-11-14 · B1 · Kev reads the best 40 questions; C1a-40 added (user decision)
+
+- **Decision:** C2, C3 and the production model read only the **40 best questions** (TRL's own
+  `max_rules=40`, ranked by F0.5 on train, best first) instead of all ~100 that RRF generates
+  by default. A new matched control, **C1a-40**, is TRL's elastic net with the same
+  `max_rules=40`. C1a (all questions) and C1b (vote) stay as TRL ships them.
+- **Why:** time on the free T4 (no bf16, so Kev trains in fp32). An answer line averages 30
+  tokens (Qwen tokenizer, measured on the A4 questions), so:
+
+  | Questions Kev reads | Tokens per state | C3 fine-tune, 2 epochs |
+  |---|---|---|
+  | ~100 (all) | ~3,070 | ~7 h |
+  | 60 | ~1,870 | ~4.3 h |
+  | **40 (chosen)** | **~1,260** | **~2.9 h** |
+  | 30 | ~960 | ~2.2 h |
+
+  The hours come from A3's measured training speed for long states (about 480 tokens per
+  second, batch 8, gradient checkpointing), plus about half an hour for checkpoint selection
+  and predictions. The production model would cost the same again if C3's input wins at D2.
+  Kev's trainer offers only fp32 or bf16, so fp16 isn't an option without changing Kev.
+- **Why C1a-40:** with the cap, Kev sees less than C1a. C1a-40 reads exactly what Kev reads,
+  so "C3 versus C1a-40" isolates the learn stage, and "C1a versus C1a-40" shows what the cap
+  itself costs. It's free: the same cached questions and answers, refit in seconds.
+- **Checked in code:** `fit_rrf.py` stops if any fit got different questions, or if C1a-40 has
+  a rule outside C2's 40 (both rank with TRL's same `rank`, no Hamming filter, no base-rate
+  drop). Dry run on 30 real train rows with a fake question writer and CPU Kev, cap 2 of 4:
+  every check passes, and the answer matrices hold C2's 2 questions.
+- **Consequences:**
+  - The answer matrices (`data/answers/{split}.csv`) and `rules.json` hold the 40 questions
+    in C2's order. So CTRL (XGBoost) reads the same 40 as C1a-40 and C3.
+  - The app answers 40 questions per founder instead of ~100 (about 2.5× less Kev work).
+  - **A deviation from library defaults** (MASTER_PLAN 4b.3), to be stated in the README, the
+    paper and the TRL pull request.

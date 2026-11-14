@@ -1,16 +1,18 @@
-"""B1: fit RRF on train, three ways, from one set of generated questions.
+"""B1: fit RRF on train, four ways, from one set of generated questions.
 
     python research/fit_rrf.py --kev-dir ../kev --out-root OUT --cache-dir OUT/trl_cache
 
 Serves base Kev-0.6B (the answerer for every condition) and fits, through TRL's real fit():
-  C1a  combiner="elasticnet" (the library default)
-  C1b  combiner="vote" (the paper's)
-  C2   combiner="decision" with base Kev as the decision model (zero-shot)
-The three use the same settings and seed, so TRL's disk cache gives C1b and C2 exactly C1a's
-questions and answers; the script checks that. Writes, under --out-root:
-  data/models/{c1a,c1b,c2}/model.json   RRF.save (no API keys)
-  data/answers/rules.json               C2's rules_: every question, best first; the column
-                                        order of every answer matrix (B2)
+  C1a     combiner="elasticnet" (the library default), every question
+  C1a-40  combiner="elasticnet", max_rules=40: the 40 questions Kev reads (matched control)
+  C1b     combiner="vote" (the paper's)
+  C2      combiner="decision", max_rules=40, base Kev as the decision model (zero-shot)
+All use the same settings and seed, so TRL's disk cache gives every fit exactly C1a's
+questions and answers; the script checks that, and that C1a-40's rules are among C2's (both
+take TRL's top 40 by F0.5). Writes, under --out-root:
+  data/models/{c1a,c1a40,c1b,c2}/model.json   RRF.save (no API keys)
+  data/answers/rules.json               C2's rules_: the 40 questions Kev reads, best F0.5
+                                        first; the column order of every answer matrix (B2)
   data/answers/questions.csv            each question's precision, recall and F0.5 on train
   data/answers/fit_report.json          cost estimate, usage per fit, timings, checks
 Needs ANTHROPIC_API_KEY (Claude writes the questions), unless --fake-generator.
@@ -27,6 +29,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import (  # noqa: E402
     KEV_BASE,
+    DECISION_MAX_RULES,
     QUESTION,
     ROOT,
     RRF_SETTINGS,
@@ -52,6 +55,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--fake-generator", action="store_true", help="offline tests only")
     ap.add_argument("--n-prompts", type=int, default=None, help="tests only; default: TRL's")
     ap.add_argument("--questions-per-prompt", type=int, default=None, help="tests only")
+    ap.add_argument("--max-rules", type=int, default=DECISION_MAX_RULES,
+                    help=f"questions Kev reads (default {DECISION_MAX_RULES}); change for tests only")
     args = ap.parse_args(argv)
 
     from think_reason_learn.llm import set_config
@@ -65,7 +70,9 @@ def main(argv: list[str] | None = None) -> int:
                                    ("questions_per_prompt", args.questions_per_prompt))
                  if v is not None}
     report: dict = {"started": time.strftime("%Y-%m-%d %H:%M:%S"), "kev": KEV_BASE,
-                    "settings": {**RRF_SETTINGS, **overrides}, "fake_generator":
+                    "settings": {**RRF_SETTINGS, **overrides},
+                    "max_rules": {"c1a40": args.max_rules, "c2": args.max_rules},
+                    "fake_generator":
                     args.fake_generator, "fits": {}}
 
     def save_report() -> None:
@@ -81,9 +88,10 @@ def main(argv: list[str] | None = None) -> int:
                 "answerer": kev, **RRF_SETTINGS, **overrides}
         conditions = {
             "c1a": {"combiner": "elasticnet"},
+            "c1a40": {"combiner": "elasticnet", "max_rules": args.max_rules},
             "c1b": {"combiner": "vote"},
             "c2": {"combiner": "decision", "combiner_model": kev,
-                   "combiner_question": QUESTION},
+                   "combiner_question": QUESTION, "max_rules": args.max_rules},
         }
         report["estimate_c1a"] = usage_rows(RRF(**base).estimate_cost(X, y))
         save_report()
@@ -106,17 +114,24 @@ def main(argv: list[str] | None = None) -> int:
                   flush=True)
             save_report()
 
-    # One set of questions for every condition (TRL's cache made C1b and C2 reuse C1a's).
+    # One set of questions for every condition (TRL's cache made the others reuse C1a's).
     questions = {n: list(m.questions_["question"]) for n, m in fitted.items()}
-    same = questions["c1a"] == questions["c1b"] == questions["c2"]
-    report["checks"] = {"same_questions_all_conditions": same}
+    same = all(q == questions["c1a"] for q in questions.values())
     c2 = fitted["c2"]
+    # C1a-40 and C2 rank with the same TRL function, so C1a-40's rules are among C2's 40.
+    matched = set(fitted["c1a40"].rules_) <= set(c2.rules_)
+    report["checks"] = {"same_questions_all_conditions": same,
+                        "c1a40_rules_within_c2_rules": matched,
+                        "c2_rules": len(c2.rules_)}
     (answers_dir / "rules.json").write_text(json.dumps(list(c2.rules_), indent=2))
     c2.questions_.to_csv(answers_dir / "questions.csv", index=False)
     report["finished"] = time.strftime("%Y-%m-%d %H:%M:%S")
     save_report()
     if not same:
         print("CHECK FAILED: the conditions got different questions", flush=True)
+        return 1
+    if not matched:
+        print("CHECK FAILED: C1a-40 has rules outside C2's 40", flush=True)
         return 1
     print(f"OK: {len(c2.rules_)} rules in rules.json; models in {models_dir}", flush=True)
     return 0

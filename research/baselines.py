@@ -3,14 +3,14 @@
     python research/baselines.py
 
 CTRL separates "Kev helps" from "nonlinearity helps" (MASTER_PLAN section 3). It reads the same
-answer matrices every answer-based condition uses (data/answers/{split}.csv, from B2), so its
-only difference from C1a is the learner. A small grid is searched, each candidate trained on
+answer matrices every answer-based condition uses (data/answers/{split}.csv, from B2: the 40
+questions Kev reads), so its only difference from C1a-40 and C3 is the learner. A small grid is searched, each candidate trained on
 train with early stopping on val log-loss; the candidate with the best val log-loss wins (a
 proper scoring rule, so calibration counts too). Writes:
   data/predictions/ctrl_{val,test}.csv    same columns as TRL's predictions
   data/predictions/ctrl_importance.csv    gain importance per rule (for interp, F1)
   data/predictions/ctrl_config.json       the grid, every candidate's val log-loss, the winner
-C1a and C1b need nothing here: their predictions come from TRL's own predict_proba (B2).
+C1a, C1a-40 and C1b need nothing here: their predictions come from TRL's own predict_proba (B2).
 """
 
 from __future__ import annotations

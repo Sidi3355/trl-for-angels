@@ -3,12 +3,12 @@
     python research/evaluate.py --stage b3-provisional            # val only
     python research/evaluate.py --stage d1-final --include-test   # the one test read
 
-Reads every predictions file in data/predictions/ (TRL's trl_{split}.csv for C1a, C1b, C2;
+Reads every predictions file in data/predictions/ (TRL's trl_{split}.csv for C1a, C1a-40, C1b, C2;
 ctrl_{split}.csv; later the Kev conditions), all with the columns
 id, split, condition, label, p_success, trl_decision.
 
 One threshold protocol for every condition (MASTER_PLAN 4b.6): tuned on val for F0.5 with
-TRL's best_threshold, then applied unchanged to test. For C1a and C1b, TRL's own as-shipped
+TRL's best_threshold, then applied unchanged to test. For C1a, C1a-40 and C1b, TRL's own as-shipped
 decisions (predict(), threshold tuned out-of-fold on train) are reported too. Test metrics
 get stratified bootstrap 95% CIs.
 
@@ -35,6 +35,7 @@ from common import POSITIVE, ROOT  # noqa: E402
 # Names used everywhere (section 9c), and the experiment folder each belongs to.
 CONDITIONS = {
     "c1a": ("C1a", "RRF, elastic net (TRL default)", "01_baselines"),
+    "c1a40": ("C1a-40", "RRF, elastic net on the 40 questions Kev reads", "01_baselines"),
     "c1b": ("C1b", "RRF, vote (the paper's)", "01_baselines"),
     "ctrl": ("CTRL", "XGBoost on TRL's answers", "01_baselines"),
     "c2": ("C2", "base Kev on TRL's answers", "02_kev_zero_shot"),
@@ -42,17 +43,17 @@ CONDITIONS = {
     "c3": ("C3", "fine-tuned Kev on TRL's answers", "03_kev_finetuned"),
     "c4": ("C4", "fine-tuned Kev on the founder text", "03_kev_finetuned"),
 }
-NATIVE = ("c1a", "c1b")  # conditions with TRL's own as-shipped decisions
+NATIVE = ("c1a", "c1a40", "c1b")  # conditions with TRL's own as-shipped decisions
 
 # Fixed colour per condition (reference categorical palette, light mode, validated), so a
 # condition looks the same in every plot; marker shapes carry identity without colour.
 STYLE = {
     "c1a": ("#2a78d6", "o"), "c1b": ("#eb6834", "s"), "ctrl": ("#1baf7a", "^"),
     "c2": ("#eda100", "D"), "c3": ("#e87ba4", "v"), "c4": ("#008300", "P"),
-    "extra": ("#6250d6", "X"),
+    "extra": ("#6250d6", "X"), "c1a40": ("#e34948", "h"),
 }
 SURFACE, TEXT, TEXT_2, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df"
-DEFAULT_PLOTS = ("c1a,c1b,ctrl", "c1a,c2,c3,c4", "c3,c1a")
+DEFAULT_PLOTS = ("c1a,c1b,ctrl", "c1a,c2,c3,c4", "c3,c1a", "c1a40,ctrl,c2,c3")
 
 
 def read_predictions(pred_dir: Path) -> dict[tuple[str, str], dict]:

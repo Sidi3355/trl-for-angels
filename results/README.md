@@ -13,16 +13,18 @@ answerer. Real-world accuracy is not claimed; VCBench is the future real-data te
 
 ## What we compared
 
-Every condition uses the same founders, the same questions and the same answers, so only the
-final step differs.
+Every condition uses the same founders and the same questions and answers, so only the final
+step differs. TRL's Claude-written questions number about 100; Kev reads the **best 40** (by
+F0.5 on train), so C1a-40 and CTRL read those same 40, while C1a and C1b are TRL as shipped.
 
 | Name | In plain words | What it reads | Trained on this task? |
 |---|---|---|---|
-| **C1a** | TRL's default: a weighted sum of the answers (elastic net) | the answers | yes (train) |
+| **C1a** | TRL's default: a weighted sum of the answers (elastic net) | all the answers | yes (train) |
+| **C1a-40** | the same weighted sum, on only the 40 questions Kev reads (a fair match for C2 and C3) | the best 40 answers | yes (train) |
 | **C1b** | the RRF paper's method: count the yes answers of the best questions (vote) | the answers | yes (train) |
-| **CTRL** | a standard machine-learning control (XGBoost) | the answers | yes (train; tuned on val) |
-| **C2** | Kev as released, reading the answers as text | the answers, as text | no |
-| **C3** | Kev fine-tuned to read the answers as text | the answers, as text | yes (train) |
+| **CTRL** | a standard machine-learning control (XGBoost) | the best 40 answers | yes (train; tuned on val) |
+| **C2** | Kev as released, reading the answers as text | the best 40 answers, as text | no |
+| **C3** | Kev fine-tuned to read the answers as text | the best 40 answers, as text | yes (train) |
 | **C4** | Kev fine-tuned to read the founder profile directly, with no questions | the profile | yes (train) |
 | **EXTRA** | Kev as released, reading the founder profile directly | the profile | no |
 
@@ -40,7 +42,7 @@ reliability diagrams. Every test score has a 95% confidence interval.
 | [DECISIONS.md](DECISIONS.md) | decision log: date, decision, reason, evidence |
 | `run_info.json` | TRL commit and version, model IDs, seeds, split sizes, measurements |
 | [data/](data/README.md) | what the dataset is, how it was made, its limits, and per-split stats |
-| [experiments/01_baselines/](experiments/01_baselines/README.md) | C1a, C1b and CTRL |
+| [experiments/01_baselines/](experiments/01_baselines/README.md) | C1a, C1a-40, C1b and CTRL |
 | [experiments/02_kev_zero_shot/](experiments/02_kev_zero_shot/README.md) | C2 and EXTRA |
 | [experiments/03_kev_finetuned/](experiments/03_kev_finetuned/README.md) | C3 and C4 |
 | [experiments/04_production_model/](experiments/04_production_model/README.md) | the app's model and its risk-threshold table |

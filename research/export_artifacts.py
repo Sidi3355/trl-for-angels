@@ -26,7 +26,14 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import thresholds as th  # noqa: E402
-from common import GENERATOR, PROD_QUESTIONS, ROOT, RRF_SETTINGS, TASK  # noqa: E402
+from common import (  # noqa: E402
+    DECISION_MAX_RULES,
+    GENERATOR,
+    PROD_QUESTIONS,
+    ROOT,
+    RRF_SETTINGS,
+    TASK,
+)
 
 SCHEMA_VERSION = "0.1.0"
 GRID = [round(x, 2) for x in np.arange(0.0, 0.99001, 0.01)]  # the contract's grid
@@ -60,8 +67,10 @@ def rules_doc(answers_dir: Path, models_dir: Path, answerer_url: str, trl_commit
         "schema_version": SCHEMA_VERSION, "mock": False,
         "source": {"trl_version": "0.3.0", "trl_commit": trl_commit, "generator": GENERATOR,
                    "answerer": kev_spec(answerer_url),
-                   "rrf_params": {**RRF_SETTINGS, "combiner": "decision (C2's rules_: every "
-                                  "question, best F0.5 first)"},
+                   "rrf_params": {**RRF_SETTINGS, "combiner": "decision",
+                                  "max_rules": DECISION_MAX_RULES,
+                                  "rules": "C2's rules_: TRL's best 40 questions by F0.5 "
+                                           "on train, best first"},
                    "created_at": now(), "n_train": n_train},
         "task": TASK,
         "rules": [{"id": f"r{i + 1:03d}", "index": i, "question": q,

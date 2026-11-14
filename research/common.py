@@ -57,6 +57,11 @@ GENERATOR = "anthropic:claude-opus-5-5"
 GENERATOR_MAX_OUTPUT_TOKENS = 16000  # Claude thinks first; TRL's default 4096 can cut it off
 KEV_BASE = "jaredpalmer/kev-0.6b"
 RRF_SETTINGS = {"beta": 0.5, "random_state": 42}
+# Questions Kev reads (C2, C3, the production model) and the matched elastic net (C1a-40):
+# TRL's max_rules, the best by F0.5 on train. 40 keeps a serialised state near 1,300 tokens
+# (about 3,000 for all ~100 questions), which cuts C3's fine-tune on the T4 from about 7 hours
+# to about 3 (user decision, 2026-11-14; results/DECISIONS.md).
+DECISION_MAX_RULES = 40
 
 
 def load_split(splits_dir: Path, split: str) -> tuple[list[str], list[str], list[str]]:

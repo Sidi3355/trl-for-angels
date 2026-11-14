@@ -1,12 +1,14 @@
-"""B2: Kev's answer matrices for every split, and TRL's own predictions for C1a, C1b and C2.
+"""B2: Kev's answer matrices for every split, and TRL's own predictions for C1a, C1a-40, C1b, C2.
 
     python research/answers.py --kev-dir ../kev --out-root OUT --cache-dir OUT/trl_cache
 
 Run after fit_rrf.py, with the same cache, so train answers come from the cache. Loads the
 saved models (data/models/*), serves base Kev on the port they were fitted with, and writes:
   data/answers/{split}.csv           an `id` column, then P(yes) per rule in rules.json order
-                                     (C2's rules_: every question). From c2.answers().
-  data/predictions/trl_{split}.csv   per founder and condition (c1a, c1b, c2): the true label,
+                                     (C2's rules_: the 40 questions Kev reads). From
+                                     c2.answers().
+  data/predictions/trl_{split}.csv   per founder and condition (c1a, c1a40, c1b, c2): the
+                                     true label,
                                      P(success) from TRL's predict_proba, and TRL's own
                                      decision from predict() (its threshold tuned on train)
   data/answers/answers_report.json   shapes, missing answers, timings, usage
@@ -28,7 +30,7 @@ from urllib.parse import urlparse
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import POSITIVE, ROOT, SPLITS, kev_server, load_split, usage_rows  # noqa: E402
 
-CONDITIONS = ("c1a", "c1b", "c2")
+CONDITIONS = ("c1a", "c1a40", "c1b", "c2")
 
 
 def main(argv: list[str] | None = None) -> int:
