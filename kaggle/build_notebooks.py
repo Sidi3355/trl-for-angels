@@ -118,10 +118,6 @@ REPO_URL = "https://github.com/Sidi3355/trl-for-angels.git"
 REPO_BRANCH = "claude/determined-albattani-dl2cyy"
 RESULTS_BRANCH = "kaggle-results"
 
-# The token only ever travels in an HTTP header built from the env var; nothing echoes it.
-AUTH = ('AUTH="AUTHORIZATION: basic $(printf \'x-access-token:%s\' "$GITHUB_TOKEN" '
-        '| base64 -w0)"')
-
 RUNNER_SECRETS = """
 # Secrets from Add-ons > Secrets, into this kernel's environment (never printed).
 import os
@@ -130,56 +126,33 @@ from kaggle_secrets import UserSecretsClient
 secrets = UserSecretsClient()
 for name in ("GITHUB_TOKEN", "ANTHROPIC_API_KEY"):
     try:
-        os.environ[name] = secrets.get_secret(name)
+        os.environ[name] = secrets.get_secret(name).strip()  # a pasted newline breaks a token
         print(f"{name}: attached")
     except Exception:
-        print(f"{name}: not attached")
+        print(f"{name}: NOT attached to this notebook")
 assert os.environ.get("GITHUB_TOKEN"), "Attach the GITHUB_TOKEN secret (Add-ons > Secrets)"
 """
 
-RUNNER_CLONE = f"""
+# The token only travels in HTTP headers built from the env var; nothing echoes it.
+RUNNER_START = f"""
 %%bash
-# This project's repo, at the branch Claude works on.
+# Checks the GitHub token, clones the project, and hands over to kaggle/runner_main.sh.
 set -euo pipefail
-{AUTH}
+export REPO_URL={REPO_URL} RESULTS_BRANCH={RESULTS_BRANCH} GIT_TERMINAL_PROMPT=0
+export AUTH="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)"
+code=$(curl -s -o /dev/null -w '%{{http_code}}' -H "Authorization: Bearer $GITHUB_TOKEN" \\
+  https://api.github.com/repos/Sidi3355/trl-for-angels)
+case "$code" in
+  200) echo "GitHub token: OK, it can see the repo" ;;
+  401) echo "GitHub token REJECTED (401): wrong, expired or pasted with extra characters." \\
+         "Make a new one and update the GITHUB_TOKEN secret."; exit 1 ;;
+  403|404) echo "GitHub token can't see Sidi3355/trl-for-angels ($code): edit the token so" \\
+         "its repository access includes that repo, with Contents: Read and write."; exit 1 ;;
+  *) echo "GitHub API check returned $code; trying the clone anyway" ;;
+esac
 mkdir -p /tmp/work && cd /tmp/work && rm -rf repo
-git -c http.extraHeader="$AUTH" clone -q --depth 1 -b {REPO_BRANCH} {REPO_URL} repo
-git -C repo log --oneline -1
-"""
-
-RUNNER_RUN = """
-%%bash
-# Runs whatever kaggle/run.sh says. Never fails the cell, so the results still get pushed.
-unset PYTHONPATH
-export REPO=/tmp/work/repo WORK=/tmp/work OUT=/kaggle/working/out
-rm -rf "$OUT" && mkdir -p "$OUT"
-bash "$REPO/kaggle/run.sh" 2>&1 | tee "$OUT/run.log"
-echo "run.sh exit: ${PIPESTATUS[0]}" | tee -a "$OUT/run.log"
-"""
-
-RUNNER_PUSH = f"""
-%%bash
-# Pushes this run's small files (no model weights) to the {RESULTS_BRANCH} branch.
-set -euo pipefail
-{AUTH}
-OUT=/kaggle/working/out
-STAMP=$(date -u +%Y%m%d-%H%M%S)
-TASK=$(cat "$OUT/task.txt" 2>/dev/null || echo unknown)
-cd /tmp/work && rm -rf results
-if ! git -c http.extraHeader="$AUTH" clone -q --depth 1 -b {RESULTS_BRANCH} {REPO_URL} results 2>/dev/null; then
-  git -c http.extraHeader="$AUTH" clone -q --depth 1 {REPO_URL} results
-  (cd results && git checkout -q --orphan {RESULTS_BRANCH} && git rm -rqf --ignore-unmatch .)
-fi
-DEST="/tmp/work/results/runs/$STAMP-$TASK"
-mkdir -p "$DEST"
-(cd "$OUT" && find . -type f -size -5M ! -name '*.safetensors' ! -name '*.pt' ! -name '*.bin' \\
-   -exec cp --parents {{}} "$DEST/" \\;)
-cd results
-git config user.name "kaggle-runner"
-git config user.email "kaggle-runner@users.noreply.github.com"
-git add -A && git commit -q -m "Kaggle run $STAMP ($TASK)"
-git -c http.extraHeader="$AUTH" push -q origin {RESULTS_BRANCH}
-echo "Pushed runs/$STAMP-$TASK to the {RESULTS_BRANCH} branch."
+git -c http.extraHeader="$AUTH" clone -q --depth 1 -b {REPO_BRANCH} "$REPO_URL" repo
+bash repo/kaggle/runner_main.sh
 """
 
 
@@ -203,10 +176,7 @@ where Claude reads them. You don't need to watch it.
 on Kaggle; close the tab if you like. Then tell Claude it's started.
 """),
         code(RUNNER_SECRETS),
-        code(RUNNER_CLONE),
-        code(SETUP),
-        code(RUNNER_RUN),
-        code(RUNNER_PUSH),
+        code(RUNNER_START),
     ])
 
 
