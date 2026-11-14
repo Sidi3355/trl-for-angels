@@ -1,0 +1,18 @@
+# Build-context ignore for app/backend/Dockerfile (BuildKit reads <Dockerfile>.dockerignore next to the Dockerfile).
+# The image copies only app/backend/requirements.txt, app/backend/screener, app/contract and shared/, so leave out
+# the big folders it never uses (app/media alone is ~100 MB of screenshots and videos). A deny-list on purpose:
+# nothing the Dockerfile copies can be excluded by mistake.
+.git
+app/media
+app/frontend
+app/backend/.venv
+app/backend/.research_runs
+app/backend/.env
+app/backend/tests
+data
+results
+research
+kaggle
+tests
+**/__pycache__
+**/node_modules

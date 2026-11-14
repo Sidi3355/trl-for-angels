@@ -27,7 +27,9 @@ vars, never committed. Keep everything swappable. Keep `app/README.md` up to dat
 MASTER_PLAN.md that looks inconsistent instead of silently working around it.
 **Every image and video goes into `app/media/`** (owner, 2026-11-14), including rejected and superseded ones:
 numbered folders in the order the work happened, and an entry in `app/media/README.md` for each (what it shows,
-status, whether the owner was sent it). Screen recordings: `app/media/tools/record-walkthrough.cjs`.
+status, whether the owner was sent it). Screen recordings: `app/media/tools/record-walkthrough.cjs`. To keep the
+repo light, take phone screenshots at 2× (`deviceScaleFactor: 2`, about half the size of 3×) and keep only the
+video versions that matter. `app/backend/Dockerfile.dockerignore` keeps `app/media` out of the backend's build.
 
 ## Tasks and status
 
@@ -95,6 +97,9 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   uses the old words; the owner may update it.
 - **No passcode (owner, 2026-11-14):** `ACCESS_TOKEN` stays unset. Vercel's login wall stays on, so only the
   owner's Vercel team can open the app. Revisit before switching on real research (`AGENT=claude`), which spends credits.
+- **app-track merged into main (owner, 2026-11-14 evening):** clean merge, only `app/` changed. Adds ~100 MB of
+  `app/media` to main; the Kaggle runner shallow-clones the research branch, so only a later merge of main there
+  would make its clones bigger (seconds, not breakage).
 - **Vercel free plan:** about 100 deployments a day. On 2026-11-14 the limit was hit (many were failed builds of
   the research branch, now skipped by the Ignored Build Step). Batch pushes to `app-track`.
 - **Voice (8b): speech-to-text only (owner, 2026-11-14).** No spoken memo briefing (E6) and no voice agent (E7):
