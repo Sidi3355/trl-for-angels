@@ -117,6 +117,32 @@ while doing the work: date, decision, reason, evidence. Newest last.
 - **To decide at C1-train:** for C3, use both T4s, train 1 epoch, or a shorter serialisation;
   choose once the real state lengths are known. Every option fits one Kaggle session.
 
+## 2026-11-14 · B5b · TRL decision combiner: design choices
+
+- **Where:** fork branch `feature/decision-combiner`, commit `ddf3518`. It's the preferred
+  route from MASTER_PLAN 4b.4, a new RRF combiner (`combiner="decision"`, `combiner_model=...`,
+  `combiner_question=...`), not the fallback wrapper.
+- **Which questions the decision model reads:** every question RRF scored, best by F-beta first
+  (the best `max_rules` if set): the same ranked set the elastic net starts from, before its
+  L1 penalty drops any. So C2 and C3 read all ~100 answers, and `rules_` fixes their order.
+- **Text format:** `rrf.answers_text`, one line per rule: `<question> yes` (P(yes) ≥ 0.5),
+  `no`, or `unknown` (unanswered). This is the plan's yes/no option, with `unknown` added for
+  missing answers. B5 must build C3's training states with this same function.
+- **Question asked:** `combiner_question`. The research passes the plan's Kev instruction,
+  "Will this founder's company succeed (exit, IPO or funding over $500M)?", for C2, C3 and
+  training. The default, when none is given, names the task and the positive class.
+- **Threshold:** TRL's `best_threshold` (F-beta, with the RRF's `beta`) on the scored training
+  samples. For C3 that's optimistic, because Kev is fine-tuned on those samples. The primary
+  comparison tunes every threshold on val anyway (4b.6).
+- **Checks:** 404 TRL tests pass (a `rrf-decision` case joins the contract tests), and ruff,
+  ruff format and strict pyright are clean. A fit with a real Kev-0.6B server as both
+  answerer and decider returned probabilities (exits 0.50–0.52, no exit 0.35–0.42, toy data).
+  Sphinx's `-W` build already fails upstream on 116 scikit-learn docstring warnings; this
+  change adds none.
+- **Also fixed:** a System One server with no key now gets no key header. The empty
+  `Bearer ` header was illegal and stopped every call, including from any saved and reloaded
+  model, since saving drops keys.
+
 ## 2026-11-14 · A1 · Open item: TRL's cache location
 
 - **Note:** TRL's disk cache defaults to `~/.cache/think_reason_learn/llm-cache-v2.sqlite`, which

@@ -13,7 +13,8 @@
       "ruff_check": "all checks passed",
       "ruff_format": "84 files already formatted",
       "pyright": "0 errors, 0 warnings"
-    }
+    },
+    "branch_head": "ddf3518 (decision combiner, B5b)"
   },
   "environment": {
     "python": "3.13.18",
