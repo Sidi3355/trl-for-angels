@@ -1,0 +1,183 @@
+{
+  "started": "2026-11-14 12:38:56",
+  "args": {
+    "kev_dir": "/tmp/work/kev",
+    "model": "jaredpalmer/kev-0.6b",
+    "device": "cuda",
+    "dtype": "fp32",
+    "port": "8009",
+    "speed_samples": "40",
+    "questions": "100",
+    "train_records": "48",
+    "train_batch": "8",
+    "max_state": "4096",
+    "skip_train": "False",
+    "out": "/kaggle/working/out/a3_report.json",
+    "work": "/kaggle/working/out/a3_work"
+  },
+  "kev_commit": "2074cc4",
+  "environment": {
+    "nvidia_smi": "Tesla T4, 15360 MiB, 580.178.04\nTesla T4, 15360 MiB, 580.178.04",
+    "torch": "2.8.0+cu128",
+    "cuda_build": "12.8",
+    "cuda_available": true,
+    "device": "Tesla T4",
+    "capability": "7.5",
+    "arch_list": [
+      "sm_70",
+      "sm_75",
+      "sm_80",
+      "sm_86",
+      "sm_90",
+      "sm_100",
+      "sm_120"
+    ],
+    "bf16_native": false
+  },
+  "environment_seconds": 2.1,
+  "server": {
+    "load_seconds": 36.1,
+    "run": "jaredpalmer/kev-0.6b",
+    "base": "Qwen/Qwen3-0.6B-Base",
+    "lora": 16,
+    "device": "cuda",
+    "backend": "torch",
+    "dtype": "float32",
+    "temperature": 1.0
+  },
+  "endpoint": {
+    "ok": true,
+    "seconds": 0.69,
+    "answers": {
+      "exit": {
+        "YES": 0.0134,
+        "NO": 0.9866
+      },
+      "logistics": {
+        "YES": 0.9955,
+        "NO": 0.0044999999999999485
+      }
+    }
+  },
+  "endpoint_seconds": 1.5,
+  "speed": {
+    "samples": 40,
+    "questions": 100,
+    "answers": 4000,
+    "seconds": 38.4,
+    "answers_per_second": 104.1,
+    "projected_full_run_hours": 0.8,
+    "note": "through TRL's LLMSession, default concurrency, cache off"
+  },
+  "speed_seconds": 38.5,
+  "train_short": {
+    "kind": "short",
+    "records": 48,
+    "max_state": 4096,
+    "state_tokens": {
+      "min": 131,
+      "max": 151,
+      "mean": 141
+    },
+    "recipe": {
+      "base": "Qwen/Qwen3-0.6B-Base",
+      "base_revision": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd",
+      "lora": 16,
+      "head_dim": 256,
+      "lora_targets": "all",
+      "option_isolation": 0,
+      "special_embeddings": 0,
+      "weights_dtype": "fp32",
+      "batch": 8,
+      "accum": 1,
+      "checkpointing": 0,
+      "p_none_pair": 0.25,
+      "lr": 0.0001
+    },
+    "attempts": [
+      {
+        "batch": 8,
+        "accum": 1,
+        "checkpointing": 0,
+        "returncode": 0,
+        "seconds": 22.7,
+        "optimizer_steps": 6,
+        "median_step_seconds": 1.24,
+        "records_seen": 48,
+        "rejected_records": 0,
+        "truncated_records": 0,
+        "peak_device_mib": 8052,
+        "peak_gpu_mib_nvidia_smi": 8555,
+        "oom": false,
+        "log_tail": "ading weights:  68%|\u2588\u2588\u2588\u2588\u2588\u2588\u258a   | 212/310 [00:00<00:00, 609.16it/s]\nLoading weights: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 310/310 [00:00<00:00, 517.24it/s]\n\nFetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]\nFetching 13 files: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 13/13 [00:00<00:00, 1370.27it/s]\nWarning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"
+      }
+    ],
+    "works": true,
+    "projected_hours_2000x2epochs": 0.17
+  },
+  "train_short_seconds": 35.8,
+  "train_long": {
+    "kind": "long",
+    "records": 48,
+    "max_state": 4096,
+    "state_tokens": {
+      "min": 1468,
+      "max": 1468,
+      "mean": 1468
+    },
+    "recipe": {
+      "base": "Qwen/Qwen3-0.6B-Base",
+      "base_revision": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd",
+      "lora": 16,
+      "head_dim": 256,
+      "lora_targets": "all",
+      "option_isolation": 0,
+      "special_embeddings": 0,
+      "weights_dtype": "fp32",
+      "batch": 8,
+      "accum": 1,
+      "checkpointing": 0,
+      "p_none_pair": 0.25,
+      "lr": 0.0001
+    },
+    "attempts": [
+      {
+        "batch": 8,
+        "accum": 1,
+        "checkpointing": 0,
+        "returncode": 1,
+        "seconds": 15.4,
+        "optimizer_steps": null,
+        "median_step_seconds": null,
+        "records_seen": null,
+        "rejected_records": null,
+        "truncated_records": null,
+        "peak_device_mib": null,
+        "peak_gpu_mib_nvidia_smi": 14853,
+        "oom": true,
+        "log_tail": "wargs,\n        ^^^^^^^^^\n    )\n    ^\n  File \"/tmp/work/kev/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1773, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/tmp/work/kev/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1784, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/tmp/work/kev/.venv/lib/python3.13/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 257, in forward\n    query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin)\n                               ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/work/kev/.venv/lib/python3.13/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 168, in apply_rotary_pos_emb\n    q_embed = (q * cos) + (rotate_half(q) * sin)\n                           ~~~~~~~~~~~~~~~^~~~~\ntorch.OutOfMemoryError: CUDA out of memory. Tried to allocate 94.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 60.81 MiB is free. Including non-PyTorch memory, this process has 14.50 GiB memory in use. Of the allocated memory 14.18 GiB is allocated by PyTorch, and 198.42 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n"
+      },
+      {
+        "batch": 8,
+        "accum": 1,
+        "checkpointing": 1,
+        "returncode": 0,
+        "seconds": 159.9,
+        "optimizer_steps": 6,
+        "median_step_seconds": 24.55,
+        "records_seen": 48,
+        "rejected_records": 0,
+        "truncated_records": 0,
+        "peak_device_mib": 5710,
+        "peak_gpu_mib_nvidia_smi": 6281,
+        "oom": false,
+        "log_tail": "ading weights:  96%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258c| 298/310 [00:00<00:00, 629.47it/s]\nLoading weights: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 310/310 [00:00<00:00, 545.49it/s]\n\nFetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]\nFetching 13 files: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 13/13 [00:00<00:00, 1385.35it/s]\nWarning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"
+      }
+    ],
+    "works": true,
+    "projected_hours_2000x2epochs": 3.41
+  },
+  "train_long_seconds": 188.4,
+  "verdict": "PASS",
+  "finished": "2026-11-14 12:43:58"
+}

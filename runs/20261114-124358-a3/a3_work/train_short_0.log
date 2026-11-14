@@ -1,0 +1,15 @@
+delta: warm start from /root/.cache/huggingface/hub/models--jaredpalmer--kev-0.6b/snapshots/dece6dba8d43f0f7ded45e9f5b9df12474d90843: 392 lora tensors and the pointer head loaded
+device=cuda world=1 trainable params=10.6M
+48 training requests (holdout=[]), questions by type {'noul': 48}
+saved /kaggle/working/out/a3_work/run_short_0
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/310 [00:00<01:46,  2.91it/s]
+Loading weights:  68%|██████▊   | 212/310 [00:00<00:00, 609.16it/s]
+Loading weights: 100%|██████████| 310/310 [00:00<00:00, 517.24it/s]
+
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]
+Fetching 13 files: 100%|██████████| 13/13 [00:00<00:00, 1370.27it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
