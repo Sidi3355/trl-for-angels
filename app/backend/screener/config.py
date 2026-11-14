@@ -5,6 +5,8 @@ Every mock-to-real swap is one setting:
     AGENT          mock                ->  claude                (research agent; needs ANTHROPIC_API_KEY)
     ANSWERER       mock                ->  jev                   (needs TYPESAFE_API_KEY)
     DECIDER        mock                ->  kev                   (endpoint from model.json; KEV_API_KEY if needed)
+    TRANSCRIBER    auto: mock          ->  elevenlabs            (voice notes; needs ELEVENLABS_API_KEY)
+    NOTE_SORTER    auto: off           ->  claude                (notes -> form fields; needs ANTHROPIC_API_KEY)
 """
 
 from __future__ import annotations
@@ -12,12 +14,18 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Literal
 
+from dotenv import load_dotenv
 from pydantic import AliasChoices, Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .contract import REPO_ROOT
 
 BACKEND_DIR = REPO_ROOT / "app" / "backend"
+
+# Local dev: also put app/backend/.env into the process environment, where SDKs that read their own key look
+# (ELEVENLABS_API_KEY; the ElevenLabs onboarding sets it up this way). It never overrides a real environment
+# variable, and a host such as Railway has no .env file, so there it does nothing.
+load_dotenv(BACKEND_DIR / ".env")
 
 
 class Settings(BaseSettings):
@@ -53,6 +61,15 @@ class Settings(BaseSettings):
     agent_min_confidence: float = 0.5
     agent_max_cost_per_founder_usd: float = 1.0
     agent_budget_usd: float = 5.0  # total research spend for this process; then research stops
+
+    # Voice notes (MASTER_PLAN 8b): speech-to-text, then sorting notes into form fields the investor checks.
+    # "auto" picks the real service when its key is set: ElevenLabs for speech, Claude for sorting.
+    transcriber: Literal["auto", "mock", "elevenlabs"] = "auto"  # auto without ELEVENLABS_API_KEY: mock
+    transcriber_model: str = "scribe_v3"
+    note_max_audio_mb: float = 8.0
+    note_sorter: Literal["auto", "mock", "claude", "off"] = "auto"  # auto without the Claude key: off
+    note_sorter_model: str = "claude-opus-5-5"
+    note_sorter_effort: Literal["low", "medium", "high", "xhigh", "max"] = "low"
 
     # Service behaviour
     contract_dir: str = "app/contract"

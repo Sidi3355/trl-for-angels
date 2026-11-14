@@ -172,6 +172,13 @@ html {
   -webkit-text-size-adjust: 100%;
   background: var(--bg);
 }
+/* Phones: the floating dock (and the screening form's sticky button) cover the bottom of the screen, so
+   anything scrolled into view, by focus or by code, stops above them. */
+@media (max-width: 1023px) {
+  html {
+    scroll-padding-bottom: calc(var(--dock-clear) + 64px);
+  }
+}
 
 body {
   background: var(--bg);

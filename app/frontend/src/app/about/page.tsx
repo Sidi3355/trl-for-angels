@@ -131,7 +131,8 @@ export default function AboutPage() {
         <ul className="space-y-2.5 text-[15px] leading-relaxed text-ink-2">
           {[
             "Only public information is used.",
-            "Your notes appear in the memo and are never sent to the model.",
+            "Your notes appear in the memo and are never sent to the model. Facts in them can fill the form, and you check every value before screening.",
+            "Voice notes are transcribed by ElevenLabs and the notes sorted by Claude; the recording isn't kept by Halomark.",
             "Nothing is kept after your session: memos are deleted on the server, and the founders list lives only in this app until you close it.",
           ].map((t) => (
             <li key={t} className="flex gap-3">

@@ -157,6 +157,44 @@ HALOMARK is the halo alone, in the same colour as the letters.
 The walk-through video (07, v4) and the brand board (08) still show the earlier boxed O in the header.
 
 
+## 10-halomark-screens (16:53) · Current
+
+A tour of the app as it is now: Halomark, with the halo O, on example data. Each screen is shown in light
+and dark, as `<device>-<theme>-<n>-<screen>.png`.
+- phone:
+  1. a memo
+  2. the factors that move the score
+  3. the Founders list
+  4. the Your bar sheet
+  5. a screened list
+  6. About, at "The name"
+- desktop:
+  1. a memo
+  2. the Founders list
+- **Sent:** `phone-light-1-memo`, `phone-dark-3-founders`, `phone-light-5-list-screened`, `phone-dark-6-about-the-name`, `desktop-light-1-memo`, `desktop-dark-2-founders`
+
+## 11-voice-notes (17:44–17:47) · Current
+
+Voice notes (step E5): record a note, ElevenLabs transcribes it, and the facts fill the form for you to check. Typed
+notes get a "Fill the form from my notes" link. Shot in a real browser with a fake microphone, against the mock
+transcriber and the keyword stand-in sorter, so the words are the example transcript, not real speech.
+
+1. `phone-1-notes-with-record.png`: the notes box with its Record button
+2. `phone-2-recording.png`: recording, with the timer and Stop
+3. `phone-3-voice-filled.png`: the transcript in the notes and what was filled
+   - the example-transcript notice
+   - the post-founding fact kept out ("forty design partners")
+4. `phone-4-voice-fields-tagged.png`: the filled fields, each tagged "From your voice note"
+5. `phone-5-memo-you-voice.png`: the memo's profile after screening, with those fields marked "You (voice)"
+6. `phone-6-typed-filled.png`: typed notes filled through the link, tagged "From your notes"
+7. `phone-7-kept-your-answer.png`: a hand-picked "2 co-founders" kept over the note's "solo founder"
+8. `phone-8-sorting-off-on-server.png`: a server without the Claude key; the transcript still lands in the notes
+- `desktop-dark-voice-filled.png`: the voice result on desktop, dark mode
+- `first-try-notes-covered/`: the first run of the same shots. **Bad:** on phones the sticky Screen button and the dock covered the notes box and its result. Fixed by reserving scroll space for them and bringing the result into view.
+- **Sent:** `phone-3-voice-filled.png`, `phone-4-voice-fields-tagged.png`, `phone-5-memo-you-voice.png`, `phone-6-typed-filled.png`, `phone-7-kept-your-answer.png`
+
+## tools
+
 - `record-walkthrough.cjs`: the script that recorded v3 and v4, with the ffmpeg command in its header, so the video can be re-shot after design changes
 - `walkthrough-batch.csv`: the three example founders it pastes into "Screen a list"
 

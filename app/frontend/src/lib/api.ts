@@ -13,6 +13,9 @@ import type {
   WhatIfResponse,
   PushWatchRequest,
   PushWatchResponse,
+  NoteSortRequest,
+  NoteSortResponse,
+  NoteTranscript,
 } from "./types";
 
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/+$/, "");
@@ -119,6 +122,16 @@ export const api = {
       method: "POST",
       body: JSON.stringify(body),
     }),
+  /** A voice note's words. The body is the recording itself; the server doesn't keep it. */
+  transcribeNote: (audio: Blob) =>
+    request<NoteTranscript>("/v1/notes/transcribe", {
+      method: "POST",
+      body: audio,
+      headers: { "Content-Type": audio.type || "audio/webm" },
+    }),
+  /** Template fields found in free-form notes, for the investor to check before screening. */
+  sortNote: (body: NoteSortRequest) =>
+    request<NoteSortResponse>("/v1/notes/sort", { method: "POST", body: JSON.stringify(body) }),
   /** The val lookup table behind the risk control. Fetched once per page load. */
   thresholds: () => {
     thresholdsPromise ??= request<Thresholds>("/v1/artifacts/thresholds").catch((e) => {

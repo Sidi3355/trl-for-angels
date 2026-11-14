@@ -312,7 +312,7 @@ export interface Thresholds {
 export interface Health {
   status: "ok" | "degraded";
   env: string;
-  components: { agent: string; answerer: string; decider: string };
+  components: { agent: string; answerer: string; decider: string; transcriber?: string; note_sorter?: string };
   mock: boolean;
   errors: Record<string, string>;
 }
@@ -363,4 +363,35 @@ export interface PushWatchResponse {
   schema_version: string;
   job_id: string;
   status: "watching" | "sent" | "failed";
+}
+
+// ---- notes (voice notes and typed notes -> form fields) ----------------------------------
+
+export interface NoteTranscript {
+  schema_version: string;
+  text: string;
+  language_code: string | null;
+  /** True when the server has no speech-to-text and returned a fixed example instead of your words. */
+  example: boolean;
+}
+
+export interface NoteSortRequest {
+  schema_version: string;
+  text: string;
+  founding_date?: string;
+}
+
+export type NoteEvidenceField = "name" | "company_name" | "founding_date" | "industry" | "cofounders" | "background"
+  | "work_experience" | "industry_experience" | "prior_startups" | "prior_exits";
+
+export interface NoteSortResponse {
+  schema_version: string;
+  /** Only what the notes state; education and jobs are left to the research agent. */
+  fields: Partial<FieldValues>;
+  founder: { name?: string; company_name?: string };
+  founding_date: string | null;
+  evidence: { field: NoteEvidenceField; quote: string }[];
+  /** Facts that weren't used, mostly because they happened after founding. */
+  kept_out: string[];
+  sorter: "claude" | "mock";
 }

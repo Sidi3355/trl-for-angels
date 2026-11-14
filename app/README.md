@@ -64,6 +64,18 @@ on phones, a sidebar on desktop, light and dark themes):
   through the manifest's `share_target`; iPhones through a Shortcut, with steps and a copyable link on How it works.
 - **Screen a list** (task 7, `/batch`): upload or paste a CSV (template download included, up to 200 founders), then
   watch them sort into Meet / Look closer / Pass at your bar; each finished founder joins the Founders list.
+- **Voice notes** (task E5, MASTER_PLAN 8b speech-to-text only; the owner dropped the spoken briefing and the
+  voice agent): on Screen a founder, **Record** (up to a minute) sends the audio to `POST /v1/notes/transcribe`
+  (ElevenLabs Scribe `scribe_v3`, batch, filler words removed). The words join **Your notes**, then
+  `POST /v1/notes/sort` (Claude Opus 5.5 at low effort, JSON-schema output) fills the form: each value tagged
+  "From your voice note", sent as `voice_fields` and shown in the memo as "You (voice)". Typed or pasted notes get
+  a **Fill the form from my notes** link for the same step ("From your notes"). Rules, enforced in code
+  (`backend/screener/pipeline/notes.py`): a value must fit the template and quote the note, names never go into
+  fields, education and jobs are left to research (a partial list would replace the agent's fuller one), and
+  facts from after founding are listed as kept out. A value you picked by hand is never overwritten. The notes
+  themselves still never reach the model, and the recording isn't kept. Without the Claude key the transcript
+  still lands in the notes, with a note that form filling is off; without the ElevenLabs key a recording returns
+  a marked example. Recording uses `MediaRecorder` (webm on Chrome and Android, mp4 on iPhone Safari).
 - **Scrolling:** on phones the dock steps aside while you scroll down and returns when you scroll up; the memo's
   what-if bar appears only once the verdict has scrolled out of view.
 - **Design system ("the odds slip", second redesign by a Claude Fable 5.2 design pass):** black ink on neutral
@@ -165,6 +177,8 @@ All settings are environment variables (or `app/backend/.env` locally; see `app/
 | `AGENT` | `mock` | `claude` (needs `SCREENER_ANTHROPIC_API_KEY` or `ANTHROPIC_API_KEY`) | The research agent |
 | `ANSWERER` | `mock` | `jev` (needs `TYPESAFE_API_KEY`) | Answers to the rules (answers mode only) |
 | `DECIDER` | `mock` | `kev` (endpoint from `model.json`) | Outcome and years distributions |
+| `TRANSCRIBER` | `auto`: `elevenlabs` if `ELEVENLABS_API_KEY` is set, else `mock` | `elevenlabs` | Voice notes' speech-to-text (`scribe_v3`) |
+| `NOTE_SORTER` | `auto`: `claude` if the Claude key is set, else `off` | `claude` | Notes -> form fields (`mock`: keyword stand-in) |
 
 Each swap is independent. For example, the real artefacts work while Jev and Kev are still mocked, and
 `model.json`'s `decider_input` switches between answers mode and profile mode with no code change.
@@ -221,6 +235,8 @@ way to point Railway at the Dockerfile. Leave Root Directory empty.
 | `ACCESS_TOKEN` | A passcode of your choice. The app asks for it once per session. |
 | `CORS_ORIGIN_REGEX` | `https://trl-for-angels[a-z0-9-]*\.vercel\.app` (production and preview URLs) |
 | `AGENT`, `SCREENER_ANTHROPIC_API_KEY` | Only for real research: `AGENT=claude` and the key. Leave out to stay on mocks. |
+| `ELEVENLABS_API_KEY` | Voice notes' speech-to-text. Without it a recording returns a marked example transcript. |
+| `ANTHROPIC_API_KEY` | Also turns on filling the form from notes (about 1–2 cents a note on Claude Opus 5.5), even while `AGENT` stays `mock`. |
 
 **Frontend (Vercel).** Project `trl-for-angels`: root directory `app/frontend`, framework Next.js, Node 22,
 and `NEXT_PUBLIC_API_URL` set to the Railway domain (read at build time, so change it and redeploy). Pushes to

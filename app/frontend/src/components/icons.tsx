@@ -168,3 +168,14 @@ export const IconUpload = (p: P) => (
     <path d="M4.5 15.5v4h15v-4" />
   </Svg>
 );
+export const IconMic = (p: P) => (
+  <Svg {...p}>
+    <rect x="9" y="3" width="6" height="11" rx="3" />
+    <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" />
+  </Svg>
+);
+export const IconStop = (p: P) => (
+  <Svg {...p}>
+    <rect x="6.5" y="6.5" width="11" height="11" rx="2" fill="currentColor" stroke="none" />
+  </Svg>
+);

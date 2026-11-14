@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Note transcript",
+  "description": "POST /v1/notes/transcribe (body: the recorded audio, e.g. audio/webm or audio/mp4). The words of a voice note, from speech-to-text. The audio is not kept. Feed the text to POST /v1/notes/sort to fill the form.",
+  "type": "object",
+  "required": ["schema_version", "text", "language_code", "example"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "text": {
+      "description": "The transcript, with filler words and false starts removed. Empty if no speech was heard.",
+      "type": "string",
+      "maxLength": 20000
+    },
+    "language_code": {
+      "description": "The detected language (ISO 639-3, e.g. 'eng'), or null if not reported.",
+      "type": ["string", "null"],
+      "maxLength": 10
+    },
+    "example": {
+      "description": "True when the server has no speech-to-text service and returned a fixed example transcript instead of the recording's words.",
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Note sort request",
+  "description": "POST /v1/notes/sort. Free-form notes about a founder (a voice note's transcript, or typed or pasted text) to sort into template fields the investor can check before screening.",
+  "type": "object",
+  "required": ["schema_version", "text"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "text": { "type": "string", "minLength": 1, "maxLength": 20000 },
+    "founding_date": {
+      "description": "The company's founding date, if the investor knows it. Facts from after it are kept out of the fields.",
+      "$ref": "common.schema.json#/$defs/date_partial"
+    }
+  }
+}

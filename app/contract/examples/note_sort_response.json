@@ -1,0 +1,23 @@
+{
+  "schema_version": "0.1.0",
+  "fields": {
+    "cofounders": "1",
+    "background": "technical",
+    "work_experience": "5-10",
+    "prior_startups": "none",
+    "prior_exits": "none"
+  },
+  "founder": { "name": "Ada Moreno", "company_name": "Tallyframe" },
+  "founding_date": null,
+  "evidence": [
+    { "field": "name", "quote": "Met Ada Moreno today" },
+    { "field": "company_name", "quote": "she's building Tallyframe" },
+    { "field": "cofounders", "quote": "one co-founder" },
+    { "field": "background", "quote": "Technical background" },
+    { "field": "work_experience", "quote": "about four years, and before that two years" },
+    { "field": "prior_startups", "quote": "First-time founder" },
+    { "field": "prior_exits", "quote": "First-time founder" }
+  ],
+  "kept_out": ["has forty design partners (after founding)", "raised a seed round (after founding)"],
+  "sorter": "claude"
+}

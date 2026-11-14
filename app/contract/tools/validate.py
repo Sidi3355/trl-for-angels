@@ -202,7 +202,9 @@ def run(artifacts_dir: Path, examples: bool) -> None:
     for name, schema in [("screening_job.json", "screening_job"), ("what_if_request.json", "what_if_request"),
                          ("what_if_response.json", "what_if_response"), ("batch_request.json", "batch_request"),
                          ("batch_response.json", "batch_response"), ("push_key.json", "push_key"),
-                         ("push_watch_request.json", "push_watch_request"), ("push_watch_response.json", "push_watch_response")]:
+                         ("push_watch_request.json", "push_watch_request"), ("push_watch_response.json", "push_watch_response"),
+                         ("note_transcript.json", "note_transcript"), ("note_sort_request.json", "note_sort_request"),
+                         ("note_sort_response.json", "note_sort_response")]:
         check_schema(name, load(ex / name), SCHEMAS / f"{schema}.schema.json")
     seqs = []
     for n, line in enumerate((ex / "progress_events.jsonl").read_text().splitlines()):

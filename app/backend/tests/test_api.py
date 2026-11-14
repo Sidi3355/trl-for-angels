@@ -10,7 +10,8 @@ DEMO = ["advance", "escalate", "pass"]
 def test_health(client):
     h = client.get("/health").json()
     assert h["status"] == "ok" and h["errors"] == {}
-    assert h["components"] == {"agent": "mock", "answerer": "mock", "decider": "mock"}
+    assert h["components"] == {"agent": "mock", "answerer": "mock", "decider": "mock",
+                               "transcriber": "mock", "note_sorter": "off"}
     assert h["artifacts"]["dir"] == "app/contract/mocks" and h["artifacts"]["rules"]["count"] == 20
     assert h["mock"] is True
     assert set(h["keys"].values()) == {False}  # key status only, never values

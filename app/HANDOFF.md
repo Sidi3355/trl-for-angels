@@ -40,6 +40,7 @@ status, whether the owner was sent it). Screen recordings: `app/media/tools/reco
 | 5 | PWA features: manifest, share target, web push; phone test instructions (iOS and Android differ) | **Done (2026-11-14):** push notifications, `/share` with Android share target and iPhone Shortcut steps. Real push delivery can't be tested from this sandbox (push services unreachable); checked with a simulated subscription |
 | 6 | Hosting: frontend on Vercel, backend on Railway, both on mocks | **Deployed** (2026-11-14). Waiting for the owner's test on the iPhone |
 | 7 | Batch mode UI: CSV upload, triage view | **Done (2026-11-14):** `/batch`, checked end to end on phone and desktop |
+| E5 | Voice notes (speech-to-text; MASTER_PLAN 8b) | **Done (2026-11-14), on example transcripts until the key is on Railway.** Record, transcribe (ElevenLabs), fill the form (Claude); typed notes too. Checked end to end in a browser with a fake microphone and the mock services. No real ElevenLabs call made yet: the onboarding's test waits for the owner's yes |
 
 ## Next step (task 6: the owner tests on the iPhone)
 
@@ -96,9 +97,20 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   owner's Vercel team can open the app. Revisit before switching on real research (`AGENT=claude`), which spends credits.
 - **Vercel free plan:** about 100 deployments a day. On 2026-11-14 the limit was hit (many were failed builds of
   the research branch, now skipped by the Ignored Build Step). Batch pushes to `app-track`.
-- **Voice (8b) is go** (owner asked about ElevenLabs, 2026-11-14). Waiting on: the key in Railway as
-  `ELEVENLABS_API_KEY` (and the secure form for this sandbox), a voice choice, and whether the hackathon
-  has an ElevenLabs prize. Free tier only (zero-budget amendment).
+- **Voice (8b): speech-to-text only (owner, 2026-11-14).** No spoken memo briefing (E6) and no voice agent (E7):
+  the owner dropped both to save credits, so no voice was chosen. MASTER_PLAN 8b still lists them; the owner may
+  update it. ElevenLabs free plan (10,000 credits a month), notes capped at 60 seconds.
+- **Notes fill the form (owner chose option C, 2026-11-14):** a voice note fills the form as soon as it's
+  transcribed; typed notes get a "Fill the form from my notes" link. The investor checks every value; a
+  hand-picked answer is never overwritten. Notes still never reach the model (TRL and Kev read only the rendered
+  template). Education and jobs are never filled from notes (the merge would replace the agent's whole list).
+- **Note sorter: Claude Opus 5.5 at low effort** (the Claude API guidance's default model; cheaper models are
+  the owner's call). About 1–2 cents a note, charged to `AGENT_BUDGET_USD`. `NOTE_SORTER_MODEL=claude-haiku-5-5`
+  would cost roughly a fortieth of that if the owner wants it.
+- **ElevenLabs key:** set up with the ElevenLabs onboarding CLI (`onboard init` and `check` in `app/backend`,
+  which also asked for `load_dotenv` in `screener/config.py`). In this sandbox the key is a network secret on the
+  owner's Default cloud environment for `api.elevenlabs.io` (the proxy adds it; `app/backend/.env` holds only a
+  placeholder, git-ignored). Railway needs its own `ELEVENLABS_API_KEY`, plus `ANTHROPIC_API_KEY` to fill forms.
 
 - **PWA (Next.js), not Expo.** The owner's phone is an **iPhone 17 on the latest iOS**. iOS doesn't support
   the Web Share Target API, so sharing on iPhone uses an iOS Shortcut that opens `/share?url=...`. Web
@@ -153,5 +165,7 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   - agent profiles will have more unknowns than the training data
   - template ambiguities (listed in `app/contract/README.md`)
   - thresholds built on val are optimistic and sparse for 5-year targets
-- **Voice features (8b):** the owner said go on 2026-11-14; see "Decisions made" for what's still needed.
+- **Voice notes on the live app:** the owner adds `ELEVENLABS_API_KEY` (and `ANTHROPIC_API_KEY` for form filling)
+  in Railway's Variables; then the first real test is a note recorded on the iPhone. The onboarding's own
+  test (a short text-to-speech clip, a few credits) waits for the owner's yes.
 - **Later keys:** TypeSafe (Jev) and the Kev endpoint, when the research outputs land.
