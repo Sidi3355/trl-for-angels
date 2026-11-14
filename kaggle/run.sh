@@ -7,7 +7,7 @@
 # OUT (folder pushed to GitHub). Secrets arrive as env vars: ANTHROPIC_API_KEY (if attached).
 set -uo pipefail
 
-TASK="a3"
+TASK="hf_setup"
 
 echo "$TASK" > "$OUT/task.txt"
 git -C "$REPO" rev-parse --short HEAD > "$OUT/repo_commit.txt"
