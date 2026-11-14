@@ -1,0 +1,49 @@
+repo commit: d8b780a
+== setup
+repo/kaggle/runner_main.sh: line 55: nvidia-smi: command not found
+No GPU: fine for hf_setup, which only talks to Hugging Face
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+TRL 0.3.0
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+torch 2.8.0+cu128 CUDA available: False
+== run.sh
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+Traceback (most recent call last):
+  File "/tmp/work/kev/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_http.py", line 836, in hf_raise_for_status
+    response.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/tmp/work/kev/.venv/lib/python3.13/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '402 Payment Required' for url 'https://huggingface.co/api/repos/create'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/402
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tmp/work/repo/research/hf_hub.py", line 85, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/tmp/work/repo/research/hf_hub.py", line 56, in main
+    hf.create_repo(space_id, repo_type="space", space_sdk="docker", exist_ok=True,
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                   private=False)
+                   ^^^^^^^^^^^^^^
+  File "/tmp/work/kev/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_deprecation.py", line 101, in inner_f
+    return f(*args, **kwargs)
+  File "/tmp/work/kev/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_validators.py", line 91, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/tmp/work/kev/.venv/lib/python3.13/site-packages/huggingface_hub/hf_api.py", line 4855, in create_repo
+    raise err
+  File "/tmp/work/kev/.venv/lib/python3.13/site-packages/huggingface_hub/hf_api.py", line 4839, in create_repo
+    hf_raise_for_status(r)
+    ~~~~~~~~~~~~~~~~~~~^^^
+  File "/tmp/work/kev/.venv/lib/python3.13/site-packages/huggingface_hub/utils/_http.py", line 966, in hf_raise_for_status
+    raise _format(HfHubHTTPError, str(e), response) from e
+huggingface_hub.errors.HfHubHTTPError: Client error '402 Payment Required' for url 'https://huggingface.co/api/repos/create' (Request ID: Root=1-6af86f2c-23ef0f4e5e37fc046829440e;0d07c5ed-3619-4d6d-9b2d-671e8163e459)
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/402
+
+Static Spaces are free for everyone, but hosting Gradio and Docker Spaces on free cpu-basic requires a PRO subscription. Subscribe at https://huggingface.co/pro
+run.sh exit: 1
