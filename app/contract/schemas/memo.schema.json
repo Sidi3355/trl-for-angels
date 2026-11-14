@@ -1,0 +1,213 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Screening memo",
+  "description": "The result of screening one founder (GET /v1/memos/{memo_id}). It carries the full distributions so the client can recompute the verdict for any target, timeline, risk or filter without calling the backend.",
+  "$defs": {
+    "field_industry": {
+      "allOf": [{ "$ref": "common.schema.json#/$defs/field_meta" }, { "properties": { "value": { "$ref": "common.schema.json#/$defs/industry" } } }],
+      "unevaluatedProperties": false
+    },
+    "field_cofounders": {
+      "allOf": [{ "$ref": "common.schema.json#/$defs/field_meta" }, { "properties": { "value": { "$ref": "common.schema.json#/$defs/cofounders" } } }],
+      "unevaluatedProperties": false
+    },
+    "field_background": {
+      "allOf": [{ "$ref": "common.schema.json#/$defs/field_meta" }, { "properties": { "value": { "$ref": "common.schema.json#/$defs/background" } } }],
+      "unevaluatedProperties": false
+    },
+    "field_work_experience": {
+      "allOf": [{ "$ref": "common.schema.json#/$defs/field_meta" }, { "properties": { "value": { "$ref": "common.schema.json#/$defs/work_experience" } } }],
+      "unevaluatedProperties": false
+    },
+    "field_industry_experience": {
+      "allOf": [{ "$ref": "common.schema.json#/$defs/field_meta" }, { "properties": { "value": { "$ref": "common.schema.json#/$defs/industry_experience" } } }],
+      "unevaluatedProperties": false
+    },
+    "field_education": {
+      "allOf": [{ "$ref": "common.schema.json#/$defs/field_meta" }, { "properties": { "value": { "$ref": "common.schema.json#/$defs/education" } } }],
+      "unevaluatedProperties": false
+    },
+    "field_jobs": {
+      "allOf": [{ "$ref": "common.schema.json#/$defs/field_meta" }, { "properties": { "value": { "$ref": "common.schema.json#/$defs/jobs" } } }],
+      "unevaluatedProperties": false
+    },
+    "field_prior_startups": {
+      "allOf": [{ "$ref": "common.schema.json#/$defs/field_meta" }, { "properties": { "value": { "$ref": "common.schema.json#/$defs/prior_startups" } } }],
+      "unevaluatedProperties": false
+    },
+    "field_prior_exits": {
+      "allOf": [{ "$ref": "common.schema.json#/$defs/field_meta" }, { "properties": { "value": { "$ref": "common.schema.json#/$defs/prior_exits" } } }],
+      "unevaluatedProperties": false
+    },
+    "conflict": {
+      "description": "An agent finding that contradicts an investor value. The investor value is used; the conflict is shown, never silently resolved.",
+      "type": "object",
+      "required": ["field", "investor_value", "agent_value", "agent_source_ids", "resolution"],
+      "additionalProperties": false,
+      "properties": {
+        "field": { "type": "string", "description": "Field key or path, e.g. 'work_experience'." },
+        "investor_value": true,
+        "agent_value": true,
+        "agent_source_ids": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/id" } },
+        "resolution": { "const": "investor_value_used" },
+        "note": { "type": ["string", "null"], "maxLength": 300 }
+      }
+    },
+    "answer": {
+      "type": "object",
+      "required": ["rule_id", "p_yes", "answer"],
+      "additionalProperties": false,
+      "properties": {
+        "rule_id": { "$ref": "common.schema.json#/$defs/id" },
+        "p_yes": { "$ref": "common.schema.json#/$defs/probability" },
+        "answer": {
+          "description": "The answer as serialised for Kev (per model.json answer_serialisation).",
+          "type": "string"
+        }
+      }
+    },
+    "driver": {
+      "description": "What happens if one input is flipped, with everything else held fixed. Carries the flipped distributions so the client can re-rank drivers for any target and timeline.",
+      "type": "object",
+      "required": ["id", "kind", "label", "current", "flipped", "distributions", "delta"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "description": "Rule ID (answers mode) or field path (profile mode)." },
+        "kind": { "enum": ["answer", "field"] },
+        "label": { "type": "string", "maxLength": 300 },
+        "current": true,
+        "flipped": true,
+        "distributions": { "$ref": "common.schema.json#/$defs/distributions" },
+        "delta": {
+          "description": "Change in the verdict probability (at the memo's policy) if this input were flipped. Negative means the current value helps.",
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        }
+      }
+    },
+    "post_founding_note": {
+      "type": "object",
+      "required": ["text", "source_ids"],
+      "additionalProperties": false,
+      "properties": {
+        "text": { "type": "string", "maxLength": 1000 },
+        "source_ids": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/id" } }
+      }
+    }
+  },
+  "type": "object",
+  "required": [
+    "schema_version", "memo_id", "created_at", "mock", "founder", "verdict", "distributions", "fields",
+    "rendered_profile", "decider", "answers", "drivers", "what_if", "facets", "sources", "conflicts",
+    "unknowns", "notes", "warnings", "disclaimer"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "memo_id": { "$ref": "common.schema.json#/$defs/id" },
+    "job_id": { "oneOf": [{ "$ref": "common.schema.json#/$defs/id" }, { "type": "null" }] },
+    "client_ref": { "type": ["string", "null"], "maxLength": 80 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "mock": { "description": "True when any artefact or model behind this memo is a mock.", "type": "boolean" },
+    "founder": {
+      "type": "object",
+      "required": ["display_name", "company_name", "identifier", "founding_date"],
+      "additionalProperties": false,
+      "properties": {
+        "display_name": { "type": "string", "description": "For the investor's eyes only. Never sent to the model." },
+        "company_name": { "type": ["string", "null"] },
+        "identifier": { "$ref": "common.schema.json#/$defs/founder_identifier" },
+        "founding_date": {
+          "type": "object",
+          "required": ["value", "provenance", "source_ids"],
+          "additionalProperties": false,
+          "properties": {
+            "value": { "$ref": "common.schema.json#/$defs/date_partial" },
+            "provenance": { "enum": ["investor", "investor_voice", "agent", "assumed"] },
+            "source_ids": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/id" } }
+          }
+        }
+      }
+    },
+    "verdict": { "$ref": "common.schema.json#/$defs/verdict" },
+    "distributions": { "$ref": "common.schema.json#/$defs/distributions" },
+    "fields": {
+      "description": "The merged value of every template field, with provenance.",
+      "type": "object",
+      "required": ["industry", "cofounders", "background", "work_experience", "industry_experience", "education", "jobs", "prior_startups", "prior_exits"],
+      "additionalProperties": false,
+      "properties": {
+        "industry": { "$ref": "#/$defs/field_industry" },
+        "cofounders": { "$ref": "#/$defs/field_cofounders" },
+        "background": { "$ref": "#/$defs/field_background" },
+        "work_experience": { "$ref": "#/$defs/field_work_experience" },
+        "industry_experience": { "$ref": "#/$defs/field_industry_experience" },
+        "education": { "$ref": "#/$defs/field_education" },
+        "jobs": { "$ref": "#/$defs/field_jobs" },
+        "prior_startups": { "$ref": "#/$defs/field_prior_startups" },
+        "prior_exits": { "$ref": "#/$defs/field_prior_exits" }
+      }
+    },
+    "rendered_profile": {
+      "description": "The anonymised profile exactly as rendered in the frozen template (shared/profile_template.md). This is what the answerer or Kev reads.",
+      "type": "string"
+    },
+    "decider": {
+      "type": "object",
+      "required": ["input_type", "model_id", "artifacts_dir"],
+      "additionalProperties": false,
+      "properties": {
+        "input_type": { "enum": ["answers", "profile"] },
+        "model_id": { "type": "string" },
+        "artifacts_dir": { "type": "string" }
+      }
+    },
+    "answers": {
+      "description": "The answerer's answers to rules.json, in rule order (answers mode). Null in profile mode.",
+      "oneOf": [{ "type": "array", "items": { "$ref": "#/$defs/answer" } }, { "type": "null" }]
+    },
+    "drivers": {
+      "description": "Every flippable input, sorted by |delta| at the memo's policy. The UI shows the top few.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/driver" }
+    },
+    "what_if": {
+      "description": "Which what-if changes the backend supports for this memo (POST /v1/memos/{memo_id}/what-if).",
+      "type": "object",
+      "required": ["answer_changes", "field_changes"],
+      "additionalProperties": false,
+      "properties": {
+        "answer_changes": { "enum": ["supported", "unsupported"] },
+        "field_changes": {
+          "description": "'needs_answerer' means a field change triggers new answerer calls (answers mode), so it's slower and costs more.",
+          "enum": ["supported", "needs_answerer", "unsupported"]
+        }
+      }
+    },
+    "facets": { "$ref": "common.schema.json#/$defs/facets" },
+    "sources": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/source" } },
+    "conflicts": { "type": "array", "items": { "$ref": "#/$defs/conflict" } },
+    "unknowns": {
+      "description": "Field paths whose value is 'unknown', e.g. 'prior_exits' or 'jobs[2].company_size'.",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "notes": {
+      "description": "Memo-only information. Never sent to the model.",
+      "type": "object",
+      "required": ["investor", "post_founding"],
+      "additionalProperties": false,
+      "properties": {
+        "investor": { "type": ["string", "null"] },
+        "post_founding": {
+          "description": "Facts found by the agent that postdate the founding date (traction, funding, later roles).",
+          "type": "array",
+          "items": { "$ref": "#/$defs/post_founding_note" }
+        }
+      }
+    },
+    "warnings": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/warning" } },
+    "disclaimer": { "$ref": "common.schema.json#/$defs/disclaimer" }
+  }
+}

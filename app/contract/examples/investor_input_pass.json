@@ -1,0 +1,14 @@
+{
+  "schema_version": "0.1.0",
+  "client_ref": "row-3",
+  "founder": {
+    "name": "Jordan Pike",
+    "website_url": "https://example.com/mock/loopcart"
+  },
+  "notes": "Inbound through the website form.",
+  "policy": {
+    "target": "$500M",
+    "timeline_years": null,
+    "risk": "balanced"
+  }
+}

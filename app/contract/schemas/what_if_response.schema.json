@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "What-if response",
+  "description": "The decider's output with the requested changes applied, next to the memo's baseline.",
+  "type": "object",
+  "required": ["schema_version", "memo_id", "changes", "used_answerer", "baseline", "distributions", "verdict", "rendered_profile", "answers_changed", "mock"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "memo_id": { "$ref": "common.schema.json#/$defs/id" },
+    "changes": { "$ref": "what_if_request.schema.json#/properties/changes" },
+    "used_answerer": {
+      "description": "True if the change needed new answerer (Jev) calls.",
+      "type": "boolean"
+    },
+    "baseline": { "$ref": "common.schema.json#/$defs/distributions" },
+    "distributions": { "$ref": "common.schema.json#/$defs/distributions" },
+    "verdict": { "$ref": "common.schema.json#/$defs/verdict" },
+    "rendered_profile": {
+      "description": "The re-rendered profile when fields changed; null when only answers changed.",
+      "type": ["string", "null"]
+    },
+    "answers_changed": {
+      "description": "Rule IDs whose answer differs from the memo (answers mode).",
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/id" }
+    },
+    "mock": { "type": "boolean" }
+  }
+}

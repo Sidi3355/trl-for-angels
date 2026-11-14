@@ -1,0 +1,63 @@
+{
+  "schema_version": "0.1.0",
+  "memo_id": "memo_mock_002",
+  "changes": [
+    {
+      "kind": "answer",
+      "rule_id": "r12",
+      "value": "yes"
+    }
+  ],
+  "used_answerer": false,
+  "baseline": {
+    "outcome": {
+      "shut down": 0.5206,
+      "under $50M": 0.197,
+      "$50M-$500M": 0.1048,
+      "$500M-$1B": 0.085,
+      "over $1B": 0.0926
+    },
+    "years": {
+      "under 5": 0.418,
+      "5-8": 0.3961,
+      "over 8": 0.1859
+    }
+  },
+  "distributions": {
+    "outcome": {
+      "shut down": 0.4813,
+      "under $50M": 0.2033,
+      "$50M-$500M": 0.1136,
+      "$500M-$1B": 0.0951,
+      "over $1B": 0.1067
+    },
+    "years": {
+      "under 5": 0.4005,
+      "5-8": 0.4016,
+      "over 8": 0.1979
+    }
+  },
+  "verdict": {
+    "decision": "advance",
+    "probability": 0.2018,
+    "probability_is_estimate": false,
+    "policy": {
+      "target": "$500M",
+      "timeline_years": null,
+      "risk": "balanced",
+      "filters": {},
+      "advance_threshold": 0.2,
+      "pass_threshold": 0.11
+    },
+    "expected_precision": 0.2201,
+    "expected_recall": 0.5072,
+    "missed_winners_if_pass": 0.0725,
+    "filters_failed": [],
+    "summary": "Advance: 20% chance of reaching $500M or more. At balanced risk, founders advance from 20% and pass below 11%."
+  },
+  "rendered_profile": null,
+  "answers_changed": [
+    "r12"
+  ],
+  "mock": true
+}

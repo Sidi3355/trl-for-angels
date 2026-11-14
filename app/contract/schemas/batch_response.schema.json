@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Batch response",
+  "description": "Returned by POST /v1/batches (202) and GET /v1/batches/{batch_id}. Items fill in as founders finish; full memos are at each item's memo_url.",
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": ["index", "client_ref", "label", "status", "memo_id", "memo_url", "decision", "probability", "facets", "filtered_out", "error"],
+      "additionalProperties": false,
+      "properties": {
+        "index": { "description": "Position in the request's founders array (0-based).", "type": "integer", "minimum": 0 },
+        "client_ref": { "type": ["string", "null"] },
+        "label": { "description": "Founder name or identifier for the triage list.", "type": "string" },
+        "status": { "enum": ["queued", "running", "complete", "failed"] },
+        "memo_id": { "oneOf": [{ "$ref": "common.schema.json#/$defs/id" }, { "type": "null" }] },
+        "memo_url": { "type": ["string", "null"] },
+        "decision": { "oneOf": [{ "$ref": "common.schema.json#/$defs/decision" }, { "type": "null" }] },
+        "probability": { "oneOf": [{ "$ref": "common.schema.json#/$defs/probability" }, { "type": "null" }] },
+        "distributions": { "oneOf": [{ "$ref": "common.schema.json#/$defs/distributions" }, { "type": "null" }] },
+        "facets": { "oneOf": [{ "$ref": "common.schema.json#/$defs/facets" }, { "type": "null" }] },
+        "filtered_out": { "type": "boolean" },
+        "unknown_count": { "type": ["integer", "null"], "minimum": 0 },
+        "conflict_count": { "type": ["integer", "null"], "minimum": 0 },
+        "error": { "oneOf": [{ "$ref": "common.schema.json#/$defs/error" }, { "type": "null" }] }
+      }
+    }
+  },
+  "type": "object",
+  "required": ["schema_version", "batch_id", "status", "created_at", "policy", "progress", "counts", "items", "events_url", "mock", "disclaimer"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "batch_id": { "$ref": "common.schema.json#/$defs/id" },
+    "batch_ref": { "type": ["string", "null"] },
+    "status": { "enum": ["queued", "running", "complete", "partial", "failed"] },
+    "created_at": { "type": "string", "format": "date-time" },
+    "policy": { "$ref": "common.schema.json#/$defs/policy_used" },
+    "progress": {
+      "type": "object",
+      "required": ["total", "queued", "running", "complete", "failed"],
+      "additionalProperties": false,
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "queued": { "type": "integer", "minimum": 0 },
+        "running": { "type": "integer", "minimum": 0 },
+        "complete": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "counts": {
+      "description": "Triage counts over completed items that pass the filters.",
+      "type": "object",
+      "required": ["advance", "escalate", "pass", "filtered_out"],
+      "additionalProperties": false,
+      "properties": {
+        "advance": { "type": "integer", "minimum": 0 },
+        "escalate": { "type": "integer", "minimum": 0 },
+        "pass": { "type": "integer", "minimum": 0 },
+        "filtered_out": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "items": { "type": "array", "items": { "$ref": "#/$defs/item" } },
+    "events_url": { "type": "string" },
+    "mock": { "type": "boolean" },
+    "disclaimer": { "$ref": "common.schema.json#/$defs/disclaimer" }
+  }
+}

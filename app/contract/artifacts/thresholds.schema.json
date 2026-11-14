@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "thresholds.json (proposed format, for the research session to confirm)",
+  "description": "The risk-slider lookup table (step D4), built on val with the production model. One table per target outcome and timeline. Important: the score must be computed exactly as the app computes it (see 'score'), and the labels from the true joint outcome and years.",
+  "type": "object",
+  "required": ["schema_version", "source", "score", "grid", "tables"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "mock": { "description": "True only for the app's mock.", "type": "boolean" },
+    "source": {
+      "type": "object",
+      "required": ["split", "n", "model_id", "created_at"],
+      "additionalProperties": false,
+      "properties": {
+        "split": { "const": "val" },
+        "n": { "type": "integer", "minimum": 1 },
+        "model_id": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "note": { "type": "string" }
+      }
+    },
+    "score": {
+      "description": "How each val founder's score was computed. Must match the app: P(outcome >= target) = sum of the outcome bands at or above the target; P(within timeline) = P(years 'under 5') for 5, P('under 5') + P('5-8') for 8, 1 for any; score = their product.",
+      "const": "p_outcome_at_or_above_target * p_years_within_timeline"
+    },
+    "label": {
+      "description": "A val founder counts as positive when their true outcome is at or above the target AND their true years are within the timeline.",
+      "const": "true_outcome_at_or_above_target AND true_years_within_timeline"
+    },
+    "grid": {
+      "description": "The thresholds every table uses, from start to stop inclusive.",
+      "type": "object",
+      "required": ["start", "stop", "step"],
+      "additionalProperties": false,
+      "properties": {
+        "start": { "type": "number", "minimum": 0, "maximum": 1 },
+        "stop": { "type": "number", "minimum": 0, "maximum": 1 },
+        "step": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }
+      }
+    },
+    "tables": {
+      "description": "Exactly one table for each of the 9 (target, timeline) pairs.",
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": {
+        "type": "object",
+        "required": ["target", "timeline_years", "n", "n_positive", "base_rate", "rows"],
+        "additionalProperties": false,
+        "properties": {
+          "target": { "enum": ["$50M", "$500M", "$1B"] },
+          "timeline_years": { "enum": [null, 5, 8] },
+          "n": { "type": "integer", "minimum": 1 },
+          "n_positive": {
+            "description": "Positives behind this table. Small values (e.g. under 20) make precision and recall noisy; the app warns.",
+            "type": "integer",
+            "minimum": 0
+          },
+          "base_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+          "rows": {
+            "description": "One row per grid threshold, ascending. A founder is flagged when score >= threshold.",
+            "type": "array",
+            "minItems": 2,
+            "items": {
+              "type": "object",
+              "required": ["threshold", "n_flagged", "tp", "precision", "recall"],
+              "additionalProperties": false,
+              "properties": {
+                "threshold": { "type": "number", "minimum": 0, "maximum": 1 },
+                "n_flagged": { "type": "integer", "minimum": 0 },
+                "tp": { "type": "integer", "minimum": 0 },
+                "precision": { "description": "tp / n_flagged; null when nothing is flagged.", "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+                "recall": { "description": "tp / n_positive; null when n_positive is 0.", "type": ["number", "null"], "minimum": 0, "maximum": 1 }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

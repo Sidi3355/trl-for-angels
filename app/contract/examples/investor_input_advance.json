@@ -1,0 +1,21 @@
+{
+  "schema_version": "0.1.0",
+  "client_ref": "row-1",
+  "founder": {
+    "name": "Ada Moreno",
+    "company_name": "Tallyframe",
+    "linkedin_url": "https://example.com/mock/ada-moreno/linkedin",
+    "website_url": "https://example.com/mock/tallyframe"
+  },
+  "founding_date": "2024-03",
+  "fields": {
+    "industry": "developer tools",
+    "cofounders": "2"
+  },
+  "notes": "Met at demo day. Deep payments-infrastructure background; says they have 40 design partners.",
+  "policy": {
+    "target": "$500M",
+    "timeline_years": null,
+    "risk": "balanced"
+  }
+}

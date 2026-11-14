@@ -1,0 +1,4 @@
+client_ref,name,company_name,linkedin_url,website_url,founding_date,notes,industry,cofounders,background,work_experience,industry_experience
+row-1,Ada Moreno,Tallyframe,https://example.com/mock/ada-moreno/linkedin,https://example.com/mock/tallyframe,2024-03,Met at demo day. Deep payments-infrastructure background; says they have 40 design partners.,developer tools,2,,,
+row-2,Samir Haddad,Clearpath Clinical,,https://example.com/mock/clearpath,2025-01,"Met at a clinical AI meetup. Says three hospital pilots are lined up. Solo for now, hiring a CTO.",healthtech,solo,,10-15,
+row-3,Jordan Pike,,,https://example.com/mock/loopcart,,Inbound through the website form.,,,,,

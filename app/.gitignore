@@ -1,0 +1,27 @@
+# Secrets (only .env.example files are committed)
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+.vercel/
+
+# OS / editors
+.DS_Store
+
+# Real-founder research output (task 3 checks): real people, never committed
+backend/.research_runs/
+
+# Next.js generated files
+frontend/next-env.d.ts
+*.tsbuildinfo

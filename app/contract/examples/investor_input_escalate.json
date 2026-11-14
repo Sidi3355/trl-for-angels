@@ -1,0 +1,24 @@
+{
+  "schema_version": "0.1.0",
+  "client_ref": "row-2",
+  "founder": {
+    "name": "Samir Haddad",
+    "company_name": "Clearpath Clinical",
+    "website_url": "https://example.com/mock/clearpath"
+  },
+  "founding_date": "2025-01",
+  "fields": {
+    "industry": "healthtech",
+    "cofounders": "solo",
+    "work_experience": "10-15"
+  },
+  "voice_fields": [
+    "work_experience"
+  ],
+  "notes": "Met at a clinical AI meetup. Says three hospital pilots are lined up. Solo for now, hiring a CTO.",
+  "policy": {
+    "target": "$500M",
+    "timeline_years": null,
+    "risk": "balanced"
+  }
+}

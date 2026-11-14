@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Investor input",
+  "description": "Request to screen one founder (POST /v1/screenings). Everything is optional except a founder identifier. Investor field values take precedence over the agent's findings.",
+  "type": "object",
+  "required": ["schema_version", "founder"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "client_ref": {
+      "description": "Optional ID the client uses to match responses (e.g. a CSV row number).",
+      "type": "string",
+      "maxLength": 80
+    },
+    "founder": { "$ref": "common.schema.json#/$defs/founder_identifier" },
+    "founding_date": {
+      "description": "The company's founding date: research uses only information from before it. If omitted, the agent looks it up; if it can't, the screening date is used and the memo says so.",
+      "$ref": "common.schema.json#/$defs/date_partial"
+    },
+    "fields": {
+      "description": "Template fields the investor knows. Values follow the template's allowed values. A missing field means 'not provided'; 'unknown' means the same.",
+      "$ref": "common.schema.json#/$defs/profile_fields"
+    },
+    "voice_fields": {
+      "description": "Keys of the fields above that came from a voice note. They get provenance 'investor_voice'.",
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/field_key" },
+      "uniqueItems": true
+    },
+    "notes": {
+      "description": "Free-text investor notes (traction, gut feel, meeting notes). Shown in the memo only and never sent to the model.",
+      "type": ["string", "null"],
+      "maxLength": 20000
+    },
+    "policy": {
+      "description": "Controls for the memo's initial verdict. The client can recompute the verdict for other controls without a new request.",
+      "$ref": "common.schema.json#/$defs/policy_request"
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "research": {
+          "description": "Run the web research agent. False uses only the investor's fields.",
+          "type": "boolean",
+          "default": true
+        },
+        "max_searches": {
+          "description": "Cap on web searches for this founder (cost control).",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 50
+        },
+        "use_demo_cache": {
+          "description": "Reuse cached research and answers for known demo founders.",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  }
+}

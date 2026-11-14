@@ -212,3 +212,22 @@ while doing the work: date, decision, reason, evidence. Newest last.
   is outside the repo and is lost when the cloud container is reclaimed.
 - **To decide at A4:** pass an explicit `cache_dir` inside the project (git-ignored or committed),
   so cached Jev answers and generated questions survive between sessions.
+
+## 2026-11-14 · A2 · 50-row sample written by Claude, grounded in real companies (user decision)
+
+- **Decision:** the 50-row quality-check sample (`data/raw/sample50.jsonl`) was written by
+  Claude Code from the section 10a prompt instead of by Adaption. Each row is based on a real
+  company and founder, listed in `data/raw/sample50_sources.md` (for review only, never model
+  input). For the 3,000-row run the user allows made-up profiles modelled on these 50.
+- **Evidence:** 38 of the 50 outcomes and dates were checked by web search on 2026-11-14. The
+  other 12 (PillPack, Quip, Heptio, RXBAR, Signal Sciences, Rapportive, Branch Media, 99dresses,
+  Canoo, uBiome, Homejoy, Starsky Robotics) come from the public record as known; the search
+  budget ran out before they could be re-checked. Founder details are bucketed into the
+  template's bands; details that weren't public are filled with plausible values, flagged per
+  row. Companies whose outcome was ambiguous (Kite, Stockwell, Lift Labs, AppHarvest) were
+  swapped for ones with a clear outcome.
+- **Conventions used (approved by the user, 2026-11-14; the 3,000-row run follows them):** years are whole elapsed years from founding to the outcome event; a
+  founder who never attended university has the education line `- no degree`; a founder whose
+  earlier startup was still running at founding has "1 still operating".
+- **Validation:** `research/validate.py --profile sample50` passes with no errors or warnings
+  (`results/data/validation_sample50.md`).

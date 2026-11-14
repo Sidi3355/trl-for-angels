@@ -1,0 +1,135 @@
+{
+  "schema_version": "0.1.0",
+  "batch_id": "batch_mock_001",
+  "batch_ref": "demo-batch",
+  "status": "complete",
+  "created_at": "2026-11-14T12:00:00Z",
+  "policy": {
+    "target": "$500M",
+    "timeline_years": null,
+    "risk": "balanced",
+    "filters": {},
+    "advance_threshold": 0.2,
+    "pass_threshold": 0.11
+  },
+  "progress": {
+    "total": 3,
+    "queued": 0,
+    "running": 0,
+    "complete": 3,
+    "failed": 0
+  },
+  "counts": {
+    "advance": 1,
+    "escalate": 1,
+    "pass": 1,
+    "filtered_out": 0
+  },
+  "items": [
+    {
+      "index": 0,
+      "client_ref": "row-1",
+      "label": "Ada Moreno",
+      "status": "complete",
+      "memo_id": "memo_mock_001",
+      "memo_url": "/v1/memos/memo_mock_001",
+      "decision": "advance",
+      "probability": 0.5664,
+      "distributions": {
+        "outcome": {
+          "shut down": 0.1522,
+          "under $50M": 0.1436,
+          "$50M-$500M": 0.1378,
+          "$500M-$1B": 0.1848,
+          "over $1B": 0.3816
+        },
+        "years": {
+          "under 5": 0.2142,
+          "5-8": 0.4441,
+          "over 8": 0.3417
+        }
+      },
+      "facets": {
+        "sector": "developer tools",
+        "team": "team",
+        "technical": true,
+        "repeat_founder": true
+      },
+      "filtered_out": false,
+      "unknown_count": 0,
+      "conflict_count": 0,
+      "error": null
+    },
+    {
+      "index": 1,
+      "client_ref": "row-2",
+      "label": "Samir Haddad",
+      "status": "complete",
+      "memo_id": "memo_mock_002",
+      "memo_url": "/v1/memos/memo_mock_002",
+      "decision": "escalate",
+      "probability": 0.1776,
+      "distributions": {
+        "outcome": {
+          "shut down": 0.5206,
+          "under $50M": 0.197,
+          "$50M-$500M": 0.1048,
+          "$500M-$1B": 0.085,
+          "over $1B": 0.0926
+        },
+        "years": {
+          "under 5": 0.418,
+          "5-8": 0.3961,
+          "over 8": 0.1859
+        }
+      },
+      "facets": {
+        "sector": "healthtech",
+        "team": "solo",
+        "technical": false,
+        "repeat_founder": false
+      },
+      "filtered_out": false,
+      "unknown_count": 2,
+      "conflict_count": 1,
+      "error": null
+    },
+    {
+      "index": 2,
+      "client_ref": "row-3",
+      "label": "Jordan Pike",
+      "status": "complete",
+      "memo_id": "memo_mock_003",
+      "memo_url": "/v1/memos/memo_mock_003",
+      "decision": "pass",
+      "probability": 0.0991,
+      "distributions": {
+        "outcome": {
+          "shut down": 0.6809,
+          "under $50M": 0.1522,
+          "$50M-$500M": 0.0678,
+          "$500M-$1B": 0.0497,
+          "over $1B": 0.0494
+        },
+        "years": {
+          "under 5": 0.4843,
+          "5-8": 0.3737,
+          "over 8": 0.142
+        }
+      },
+      "facets": {
+        "sector": "e-commerce",
+        "team": null,
+        "technical": false,
+        "repeat_founder": null
+      },
+      "filtered_out": false,
+      "unknown_count": 3,
+      "conflict_count": 0,
+      "error": null
+    }
+  ],
+  "events_url": "/v1/batches/batch_mock_001/events",
+  "mock": true,
+  "disclaimer": "Screening aid, not investment advice. The model estimates the chance of a large outcome (an exit, IPO or funding at or above the chosen target) from the founder's background on the day the company was founded. It was trained on generated data, so its accuracy on real founders is unknown. Public information only; nothing is stored after the session."
+}
