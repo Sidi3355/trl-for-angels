@@ -11,7 +11,7 @@ The full design, settled decisions and step order are in [`MASTER_PLAN.md`](MAST
 
 | Folder | What it holds |
 |---|---|
-| `data/` | `raw/` generated datasets, `splits/` train/val/test, `answers/` cached Jev answer matrices |
+| `data/` | `raw/` generated datasets, `splits/` train/val/test, `answers/` cached answer matrices (Kev-0.6B answering), `models/` saved RRF models, `predictions/` every condition's predictions |
 | `research/` | the research pipeline: splits, RRF fit, baselines, Kev conditions, evaluation, interp |
 | `app/` | the deal-screening agent: research agent, merge, render, decide, policy, API, `frontend/` |
 | `results/` | every result, written for non-researchers (see `results/README.md`) |
