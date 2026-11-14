@@ -45,7 +45,13 @@
   "rrf_settings": {
     "beta": 0.5,
     "random_state": 42,
-    "other": "library defaults"
+    "other": "library defaults",
+    "max_rules": {
+      "c1a40": 40,
+      "c2": 40,
+      "c3": "uses c2's 40",
+      "note": "user decision 2026-11-14; all other settings library defaults"
+    }
   },
   "seeds": {
     "global": 42
@@ -77,7 +83,9 @@
       "trl_estimate_before": 0.1749,
       "role": "generator only; Kev is free"
     },
-    "b1_fit_2000_rows_trl_estimate_upper_bound": 0.7125
+    "b1_fit_2000_rows_trl_estimate_upper_bound": 0.7125,
+    "b1_question_generation_actual": 0.488968,
+    "b1_trl_estimate_before": 0.722972
   },
   "measurements": {
     "a3_kaggle_t4": {
@@ -122,6 +130,64 @@
       "seconds_per_founder_incl_generation": 1.57,
       "kev_load_seconds": 30.1,
       "verdict": "PASS"
+    },
+    "kev_state_tokens": {
+      "tokenizer": "Qwen/Qwen3-0.6B-Base",
+      "c3": {
+        "mean": 872,
+        "max": 872
+      },
+      "c4": {
+        "mean_train": 173,
+        "max_train": 316
+      }
     }
+  },
+  "rrf_fit": {
+    "run": "kaggle-results: runs/20261114-160701-b1b2",
+    "repo_commit": "22f39d4",
+    "questions_generated": 93,
+    "rules": {
+      "c1a": 63,
+      "c1a40": 38,
+      "c1b": 21,
+      "c2": 40
+    },
+    "thresholds_trl_native": {
+      "c1a": 0.374,
+      "c1a40": 0.298,
+      "c1b": 0.667,
+      "c2": 0.577
+    },
+    "answer_matrices": {
+      "train": [
+        2000,
+        40
+      ],
+      "val": [
+        400,
+        40
+      ],
+      "test": [
+        600,
+        40
+      ],
+      "missing": 0
+    },
+    "minutes": {
+      "total_run": 86,
+      "c1a_fit": 46.7,
+      "c2_fit": 11.2,
+      "b2": 19
+    }
+  },
+  "ctrl": {
+    "chosen": {
+      "max_depth": 2,
+      "learning_rate": 0.1,
+      "min_child_weight": 5
+    },
+    "val_logloss": 0.4433,
+    "candidates": 12
   }
 }

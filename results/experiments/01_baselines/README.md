@@ -19,8 +19,12 @@ reported too.
 
 ## Result
 
-*Pending.* The headline will be F0.5 on test with its 95% CI, for example "out of every 10
-founders C1a flags, about N succeed".
+*Final result pending* (F0.5 on test with its 95% CI, at D1).
+
+**Provisional, val only** (`b3-provisional/`): CTRL 0.457 F0.5, C1a 0.446, C1a-40 0.426,
+C1b 0.377. In plain words, C1a flags 36 of the 400 val founders and about 6 in every 10 it flags
+really succeed, against 2 in 10 for a founder picked at random. All are far below 0.8, so the
+data isn't too easy (sanity check B4 passed).
 
 ## What it means
 

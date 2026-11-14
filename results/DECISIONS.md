@@ -355,3 +355,52 @@ while doing the work: date, decision, reason, evidence. Newest last.
   run ends. Scoring doesn't need them (predictions are made in the same run), but the probes
   and patching steps (F2, F3) and a paper's reproducibility do.
 - **If the upload fails,** the run carries on: predictions are already saved.
+
+## 2026-11-14 · B1/B2 · Questions written, answered and fitted through TRL
+
+- **Run:** `kaggle-results: runs/20261114-160701-b1b2` (repo commit `22f39d4`), 86 minutes on
+  a Kaggle T4. Outputs copied into `data/answers/`, `data/models/` and `data/predictions/`
+  with `kaggle/import_run.py`.
+- **Questions:** Claude Opus 5.5 wrote **93** questions (TRL defaults: 10 prompts × 10, minus
+  unusable ones). Kept as rules: C1a 63 (elastic net's non-zero weights), C1a-40 38, C1b 21
+  (vote), C2 40 (`max_rules=40`). Each question's train precision, recall and F0.5:
+  `data/answers/questions.csv`. The 40 Kev reads, best first: `data/answers/rules.json`.
+- **Checks passed:** every fit got the same 93 questions; C1a-40's rules are all among C2's
+  40; the answer matrices (2,000 / 400 / 600 founders × 40 questions) have no missing answers.
+- **Cost:** **$0.49** of Claude credits (TRL's estimate beforehand: at most $0.72). Kev: $0.
+- **Time:** C1a fit 47 min (Kev answering 93 questions for 2,000 founders, about 186k answers,
+  plus question writing); C2 fit 11 min (2,000 decision calls on 872-token texts, about 3 per
+  second); C1a-40 and C1b seconds (cached answers); B2 19 min.
+
+## 2026-11-14 · B3/B4 · Baselines on val, sanity check passed (test not read)
+
+- **CTRL:** XGBoost chose max depth 2, learning rate 0.1, min child weight 5 (best val log-loss
+  0.443 of 12 candidates; `data/predictions/ctrl_config.json`).
+- **Val scores** (F0.5 at the val-tuned threshold; provisional, since the val threshold is
+  tuned on the same founders it's scored on; `results/summary/b3-provisional/`):
+
+  | Condition | F0.5 | Precision | Recall | ECE |
+  |---|---|---|---|---|
+  | CTRL (XGBoost, 40 questions) | 0.457 | 0.594 | 0.237 | 0.035 |
+  | C1a (elastic net, all 93) | 0.446 | 0.556 | 0.250 | 0.030 |
+  | C1a-40 (elastic net, 40) | 0.426 | 0.432 | 0.400 | 0.036 |
+  | C1b (vote) | 0.377 | 0.358 | 0.475 | 0.220 |
+  | C2 (base Kev, 40, zero-shot) | 0.340 | 0.304 | 0.650 | 0.247 |
+
+  TRL's own train-tuned thresholds give nearly the same F0.5 for C1a (0.432), C1a-40 (0.421)
+  and C1b (0.372).
+- **B4 sanity check: passed.** The best val F0.5 is 0.457, far below the 0.8 "too easy" line,
+  so the data isn't regenerated. Test predictions exist but haven't been read; they're scored
+  once, at D1.
+- **First readings (val, to be confirmed on test with CIs):** the questions carry real signal
+  (PR-AUC about 0.40 against a base rate of 0.20). Base Kev zero-shot (C2) ranks worse
+  (PR-AUC 0.33) and is badly calibrated (ECE 0.25): it says yes too often, which is
+  expected, since the released Kev-0.6B ships uncalibrated (temperature 1.0) and wasn't
+  trained for this question. That's the gap C3 (fine-tuned and temperature-calibrated) is
+  meant to close.
+- **C3 input length, measured:** every C3 text is 872 tokens (Qwen tokenizer; same length
+  for every founder, since each line ends in a one-token yes or no), not the ~1,264 estimated
+  from the A4 questions. C4's profiles average 173 tokens (max 316). None exceed
+  `--max_state 4096`. Revised C3 fine-tune: about 2 hours for 2 epochs, about 2.5–3 hours
+  with checkpoint selection and predictions.
+- **Next:** `c_kev` (runner switched).
