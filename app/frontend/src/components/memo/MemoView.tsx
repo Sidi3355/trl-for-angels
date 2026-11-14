@@ -111,7 +111,7 @@ export function MemoView({ memoId }: { memoId: string }) {
   if (error) {
     return (
       <Page>
-        <PageHeader title="Memo unavailable" back={{ href: "/", label: "Founders" }} />
+        <PageHeader title="Memo unavailable" back={{ href: "/founders", label: "Founders" }} />
         <Notice tone="danger">{error}</Notice>
       </Page>
     );
@@ -149,7 +149,7 @@ export function MemoView({ memoId }: { memoId: string }) {
   return (
     <Page wide>
       <header className="pb-5 pt-1 lg:pb-6 lg:pt-0">
-        <Link href="/" className="-ml-1.5 mb-1.5 lg:mb-3 inline-flex items-center gap-0.5 rounded-lg py-1 pr-2 text-[14px] font-medium text-muted transition-colors hover:text-ink active:opacity-60">
+        <Link href="/founders" className="-ml-1.5 mb-1.5 lg:mb-3 inline-flex items-center gap-0.5 rounded-lg py-1 pr-2 text-[14px] font-medium text-muted transition-colors hover:text-ink active:opacity-60">
           <IconChevronLeft size={18} /> Founders
         </Link>
         <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">

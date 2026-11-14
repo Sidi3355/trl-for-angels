@@ -223,6 +223,20 @@ The light/dark toggle (System, Light, Dark).
 - `first-try-sidebar-crowded/`: **bad**. The first sidebar version, where the toggle squeezed "Prototype · example scores" onto two lines.
 - **Sent:** `phone-light-system-chose-dark.png`, `desktop-sidebar-toggle-dark-crop.png`
 
+## 14-dashboard-settings (21:45–22:00) · Current
+
+The Dashboard home, the Settings tab and the five-tab dock, on example data (a list of three screened). Light and dark.
+- `phone-*-1-dashboard-empty`: the dashboard before anything is screened
+- `phone-*-2-dashboard`, `phone-*-2b-dashboard-full`: the dashboard after a list (3 screened: 1 Meet, 1 Look closer, 1 Pass)
+- `phone-*-3-founders-filtered`: Founders opened from the Look closer tile
+- `phone-*-4-settings`, `phone-*-4b-settings-full`: Settings
+- `phone-*-5-you`: You, now just the profile
+- `phone-*-dock`: the five-tab dock, close up
+- `desktop-*-{dashboard,settings,founders}`: desktop, both themes
+- `first-try-odds-card-wraps/`: **bad**. The first desktop dashboards, where "3 pts" wrapped onto two lines in the odds card.
+- In the screenshots, Notifications reads "Blocked" because the test browser denies them by default.
+- **Sent:** `phone-light-2-dashboard`, `phone-light-dock`, `phone-light-4-settings`, `desktop-light-dashboard`
+
 ## tools
 
 - `record-walkthrough.cjs`: the script that recorded v3 and v4, with the ffmpeg command in its header, so the video can be re-shot after design changes

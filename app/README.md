@@ -36,9 +36,17 @@ build time, so set it before `npm run build` or in Vercel's environment variable
 What the frontend does, screen by screen (redesigned 2026-11-14 as an installable product: a bottom tab bar
 on phones, a sidebar on desktop, light and dark themes):
 
-- **Founders** (`/`): one search-style box to screen a founder by name, LinkedIn or website, and the founders
-  screened this session with their verdict at your bar, filterable by advance, escalate or pass. Three
-  fictional examples run in one tap. The list lives in `sessionStorage`, so it goes when the app closes.
+- **Dashboard** (`/`, the home page and the dock's first tab): "Who's the founder?" (the quick screen box), this
+  session at your bar in four tiles (screened, Meet, Look closer, Pass; each opens Founders filtered), the latest
+  five founders, your bar, the odds check from `src/data/calibration.json`, and shortcuts to a list and a voice note.
+- **Founders** (`/founders`; `?show=advance|escalate|pass` opens a filter): everyone screened this session at your
+  bar, filterable by verdict, with example founders. The list lives in `sessionStorage`, so it goes when the app closes.
+- **Settings** (`/settings`, the dock's fourth tab): appearance, your bar, notifications (whether this browser can
+  show them), this session (clear the founders, forget a passcode, show the intro again), service status, links
+  (your profile, How it works, accuracy, model card, plans, Terms, Privacy) and Delete all my data.
+- **Navigation:** phones have a five-tab dock (Dashboard, Founders, + Screen, Settings, You), icons over labels;
+  desktops a sidebar with Dashboard, Founders, Screen a list, How it works, Plans and Settings, the account chip
+  and a compact appearance toggle.
 - **Your bar** (a sheet, opened from Founders, the sidebar, any memo or You): target outcome, timeline, risk
   appetite and hard filters, with a plain reading of what the setting means on validation founders. Set once,
   applied to every verdict instantly (`localStorage`: a preference, not founder data).
@@ -62,12 +70,11 @@ on phones, a sidebar on desktop, light and dark themes):
     `scripts/calibration-from-results.py` from a research results folder (now: `b3-provisional`, TRL's C1a on
     validation). To swap in final numbers, rerun the script on `results/summary/d1-final/` (or the production
     model's calibration) and redeploy: no code changes.
-- **You** (`/account`, the dock's third tab): a sign-in look-alike that creates an investor profile **on this
+- **You** (`/account`, the dock's last tab): a sign-in look-alike that creates an investor profile **on this
   device only** (localStorage, no server account): name, optional email, sectors, stage, cheque size, geography,
   default target, timeline and risk. Saving it sets Your bar; "Only my sectors" turns sectors into the bar's
-  filter; the bar's Reset returns to the profile's defaults. Also: settings (your bar, clear the session, forget
-  the passcode, show the intro again, service status), links, and **Delete all my data** (`lib/profile.ts`:
-  removes every `screener.`/`halomark.` key from both storages and the push subscription).
+  filter; the bar's Reset returns to the profile's defaults. Settings live on `/settings`; its **Delete all my data**
+  (`lib/profile.ts`) removes every `screener.`/`halomark.` key from both storages and the push subscription.
 - **First-run intro** (`components/Onboarding.tsx`): three skippable screens (what Halomark does, what a
   percentage means, try a sample founder), shown once per device, replayable from You. Not shown over `/share`,
   `/terms` or `/privacy`.

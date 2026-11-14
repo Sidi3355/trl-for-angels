@@ -70,7 +70,7 @@
   --shadow-2: 0 24px 48px -16px rgba(14, 15, 14, 0.28), 0 4px 10px rgba(14, 15, 14, 0.08);
   --overlay: rgba(14, 15, 14, 0.5);
   /* room for the floating tab dock on phones */
-  --dock-clear: calc(max(env(safe-area-inset-bottom), 12px) + 76px);
+  --dock-clear: calc(max(env(safe-area-inset-bottom), 12px) + 80px);
   color-scheme: light;
 }
 
