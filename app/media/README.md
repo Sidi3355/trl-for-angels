@@ -142,7 +142,7 @@ A Claude Fable 5.2 design agent made the identity.
 - `desktop-home-light.png`, `desktop-home-dark.png`
 - **Sent:** `brand-board.png`, `directions.png`, `phone-home-light.png`, `phone-memo-dark.png`, `phone-about-name-light.png`
 
-## 09-wordmark-plain-halo (16:55–17:05) · Current
+## 09-wordmark-plain-halo (16:45–16:50) · Current
 
 The owner's change: the app icon keeps the halo in its blue octagonal punch, but inside the app the O of
 HALOMARK is the halo alone, in the same colour as the letters.
@@ -150,6 +150,7 @@ HALOMARK is the halo alone, in the same colour as the letters.
 - `phone-home-*.png`, `desktop-home-*.png`: the whole home screen with it
 - `phone-not-found-*.png`: the not-found page, which now shows the halo instead of the boxed mark
 - `wordmark-large-vs-real-O.png`: the wordmark at 120px above Archivo's own O, used to match the halo's height and overshoot to a real letter
+  - The first shots had the halo sitting on the baseline, overshooting only at the top. They were overwritten by the re-shoot after the fix.
 - `link-preview-image.png`: the link-preview image, regenerated with the same wordmark
 - **Sent:** `phone-header-light.png`, `desktop-sidebar-dark.png`, `phone-home-dark.png`, `wordmark-large-vs-real-O.png`
 
