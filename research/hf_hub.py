@@ -1,11 +1,14 @@
-"""Publish the production model to a free Hugging Face model repo.
+"""Publish a fine-tuned Kev checkpoint to a free Hugging Face model repo.
 
     python research/hf_hub.py upload-model runs/prod/chosen --extra runs/prod/report.json
+    python research/hf_hub.py upload-model runs/c3/chosen --name trl-for-angels-kev-c3
 
 Runs where HF_TOKEN is set (the Kaggle runner fetches it from the HF_TOKEN Kaggle Secret);
-never prints it. The repo is <token owner>/trl-for-angels-kev-prod, public: it holds no
-secrets. The Kev server (kev_server/) loads it with DECIDER_MODEL. Hugging Face Spaces that run
-code need a paid PRO plan, so the server runs on the owner's PC instead (kev_server/README.md).
+never prints it. The repo is <token owner>/<name>, public: it holds no secrets. The default
+name, trl-for-angels-kev-prod, is the production model; C3 and C4 are kept as
+trl-for-angels-kev-c3 and -c4 for the interp steps (F2, F3). The Kev server (kev_server/)
+loads the production model with DECIDER_MODEL. Hugging Face Spaces that run code need a paid
+PRO plan, so the server runs on the owner's PC instead (kev_server/README.md).
 Writes a JSON summary (--report) for the results branch.
 """
 
@@ -36,18 +39,19 @@ def main(argv: list[str] | None = None) -> int:
     up.add_argument("folder", type=Path)
     up.add_argument("--extra", type=Path, nargs="*", default=[],
                     help="more files to add, e.g. the D3 report")
+    up.add_argument("--name", default=MODEL, help=f"repo name (default {MODEL})")
     ap.add_argument("--report", type=Path, default=None)
     args = ap.parse_args(argv)
 
     hf = api()
     user = hf.whoami()["name"]
-    model_id = f"{user}/{MODEL}"
+    model_id = f"{user}/{args.name}"
     out: dict = {"user": user, "model": model_id,
                  "model_url": f"https://huggingface.co/{model_id}"}
     hf.create_repo(model_id, repo_type="model", exist_ok=True, private=False)
     commit = hf.upload_folder(repo_id=model_id, repo_type="model",
                               folder_path=str(args.folder),
-                              commit_message="Production Kev-0.6B (trl-for-angels, D3)")
+                              commit_message=f"Kev-0.6B fine-tune: {args.name}")
     for extra in args.extra:
         if extra.exists():
             hf.upload_file(path_or_fileobj=str(extra), path_in_repo=extra.name,
@@ -57,7 +61,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)
         previous = json.loads(args.report.read_text()) if args.report.exists() else {}
-        args.report.write_text(json.dumps({**previous, **out}, indent=2))
+        args.report.write_text(json.dumps({**previous, args.name: out}, indent=2))
     return 0
 
 

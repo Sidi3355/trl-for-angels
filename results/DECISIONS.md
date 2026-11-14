@@ -344,3 +344,14 @@ while doing the work: date, decision, reason, evidence. Newest last.
   - The app answers 40 questions per founder instead of ~100 (about 2.5× less Kev work).
   - **A deviation from library defaults** (MASTER_PLAN 4b.3), to be stated in the README, the
     paper and the TRL pull request.
+
+## 2026-11-14 · C1-train · C3 and C4 kept on Hugging Face
+
+- **Decision:** at the end of the `c_kev` run, the chosen C3 and C4 checkpoints are uploaded to
+  free public Hugging Face model repos, `<user>/trl-for-angels-kev-c3` and `-c4`, with their
+  training reports (`research/hf_hub.py upload-model --name ...`), using the `HF_TOKEN`
+  Kaggle Secret.
+- **Why:** the checkpoints are too big for GitHub, so without this they're lost when the Kaggle
+  run ends. Scoring doesn't need them (predictions are made in the same run), but the probes
+  and patching steps (F2, F3) and a paper's reproducibility do.
+- **If the upload fails,** the run carries on: predictions are already saved.

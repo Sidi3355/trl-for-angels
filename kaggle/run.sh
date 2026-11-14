@@ -56,6 +56,17 @@ case "$TASK" in
       "$PY" "$REPO/research/kev_predict.py" --condition "$cond" $run --kev-dir "$WORK/kev" \
         --splits "$REPO/data/splits" --models "$REPO/data/models" --out-root "$OUT" || exit 1
     done
+    # Keep C3 and C4 for the interp steps (F2, F3): too big for GitHub, so Hugging Face.
+    if [ -n "${HF_TOKEN:-}" ]; then
+      for cond in c3 c4; do
+        "$WORK/kev/.venv/bin/python" "$REPO/research/hf_hub.py" --report "$OUT/hf.json" \
+          upload-model "$WORK/runs/$cond/chosen" --name "trl-for-angels-kev-$cond" \
+          --extra "$WORK/runs/$cond/report.json" \
+          || echo "upload of $cond failed (predictions are saved anyway)" >&2
+      done
+    else
+      echo "HF_TOKEN not attached: C3 and C4 were not kept" >&2
+    fi
     ;;
   d_prod)
     # D3: the production model on the input chosen on val at D2 (PROD_INPUT: c3 or c4),
