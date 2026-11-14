@@ -84,7 +84,7 @@ export default function PlansPage() {
           <section
             key={t.name}
             aria-labelledby={`tier-${t.name}`}
-            className={cx("flex flex-col rounded-[22px] border p-5", "featured" in t ? "border-ink bg-surface shadow-[0_0_0_1px_var(--ink)]" : "border-line bg-surface")}
+            className={cx("flex flex-col rounded-[22px] border p-5", "featured" in t ? "border-accent bg-surface shadow-[0_0_0_1px_var(--accent)]" : "border-line bg-surface")}
           >
             <div className="flex items-center justify-between gap-2">
               <h2 id={`tier-${t.name}`} className="text-[22px] font-extrabold tracking-[-0.03em]">
@@ -111,7 +111,7 @@ export default function PlansPage() {
               aria-disabled="true"
               className={cx(
                 "mt-6 h-12 w-full cursor-not-allowed rounded-full text-[15.5px] font-semibold",
-                "current" in t ? "border border-line-strong text-muted" : "featured" in t ? "bg-ink text-bg opacity-60" : "bg-surface-3 text-ink-2",
+                "current" in t ? "border border-line-strong text-muted" : "featured" in t ? "bg-accent text-accent-ink opacity-60" : "bg-surface-3 text-ink-2",
               )}
             >
               {"current" in t ? "Current plan" : "Coming soon"}

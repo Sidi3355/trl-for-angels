@@ -20,12 +20,19 @@ import { useStartScreening } from "@/lib/useScreening";
 
 const VERDICT_TEXT: Record<Decision, string> = { advance: "text-advance", escalate: "text-escalate", pass: "text-pass" };
 
+const TILE_TINT: Record<Decision | "all", string> = {
+  all: "bg-accent-soft",
+  advance: "bg-advance-soft",
+  escalate: "bg-escalate-soft",
+  pass: "bg-pass-soft",
+};
+
 function Tile({ href, label, value, decision }: { href: string; label: string; value: number | null; decision?: Decision }) {
   return (
-    <Link href={href} className="group flex flex-col justify-between gap-3 rounded-[18px] border border-line bg-surface p-4 transition-colors hover:border-ink">
+    <Link href={href} className={cx("group flex flex-col justify-between gap-3 rounded-[18px] border border-transparent p-4 transition-colors hover:border-ink", TILE_TINT[decision ?? "all"])}>
       <span className="flex items-center justify-between gap-2">
         <span className="text-[14px] font-semibold text-ink-2">{label}</span>
-        {decision ? <VerdictTile decision={decision} size={26} /> : <IconArrowRight size={16} className="text-muted transition-transform group-hover:translate-x-0.5" />}
+        {decision ? <VerdictTile decision={decision} size={26} /> : <IconArrowRight size={16} className="text-accent transition-transform group-hover:translate-x-0.5" />}
       </span>
       <span className="cond text-[48px] font-black leading-[0.85] tabular">{value ?? "–"}</span>
     </Link>
@@ -57,7 +64,7 @@ export default function Dashboard() {
           </Notice>
         </div>
       )}
-      <p className="eyebrow pt-3 text-muted lg:pt-0">{ready && first ? `Hi, ${first}` : "Dashboard"}</p>
+      <p className="eyebrow pt-3 text-accent lg:pt-0">{ready && first ? `Hi, ${first}` : "Dashboard"}</p>
       <div className="mt-3">
         <QuickScreen />
       </div>

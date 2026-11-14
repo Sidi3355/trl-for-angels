@@ -29,7 +29,7 @@ function Odds() {
       </p>
       <div className="grid grid-cols-5 gap-1.5 pb-2">
         {Array.from({ length: 10 }, (_, i) => (
-          <span key={i} className={cx("h-5 w-5 rounded-full", i < 3 ? "bg-ink" : "bg-surface-3 ring-1 ring-inset ring-line-strong")} />
+          <span key={i} className={cx("h-5 w-5 rounded-full", i < 3 ? "bg-accent" : "bg-surface-3 ring-1 ring-inset ring-line-strong")} />
         ))}
       </div>
     </div>
@@ -149,7 +149,7 @@ export function Onboarding() {
             <div className="flex items-center justify-between gap-4">
               <div className="flex gap-1.5" aria-hidden>
                 {STEPS.map((_, i) => (
-                  <span key={i} className={cx("h-1.5 rounded-full transition-all", i === step ? "w-6 bg-ink" : "w-1.5 bg-line-strong")} />
+                  <span key={i} className={cx("h-1.5 rounded-full transition-all", i === step ? "w-6 bg-accent" : "w-1.5 bg-line-strong")} />
                 ))}
               </div>
               <div className="flex items-center gap-2">

@@ -218,7 +218,7 @@ function Account() {
   return (
     <Page>
       <header className="flex items-center gap-4 pb-6 pt-3 lg:pt-0">
-        <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-ink text-[22px] font-bold tracking-[-0.02em] text-bg" aria-hidden>
+        <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent text-[22px] font-bold tracking-[-0.02em] text-accent-ink" aria-hidden>
           {initials(profile.name)}
         </span>
         <div className="min-w-0">

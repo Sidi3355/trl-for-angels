@@ -118,8 +118,10 @@ on phones, a sidebar on desktop, light and dark themes):
 - **Design system ("the odds slip", second redesign by a Claude Fable 5.2 design pass):** black ink on neutral
   paper, colour kept for the verdict alone, shown as a full-colour slab (green Meet, amber Look closer, ink Pass)
   with the chance in large condensed figures and a to-scale gauge whose zones differ by pattern as well as tone.
-  One variable family, Archivo, at three widths (condensed figures, normal text, wide labels). Buttons and
-  selections are ink, not a brand colour. A floating dock on phones, a sidebar on desktop. Tokens in
+  One variable family, Archivo, at three widths (condensed figures, normal text, wide labels). The brand's
+  stamp-pad blue is the accent: primary buttons, the active sidebar item, eyebrows, link underlines, focus rings,
+  avatars and the dashboard's "Screened" tile (each verdict tile is tinted in its own verdict colour). Selections
+  in segmented controls and chips stay ink. A floating dock on phones, a sidebar on desktop. Tokens in
   `src/app/globals.css`, building blocks in `src/components/ui.tsx`. Chart colours were checked with the dataviz
   skill's palette validator against both themes' surfaces.
 - **Brand: Halomark** (renamed from Screener on 2026-11-14; identity by a Claude Fable 5.2 design pass). The mark is a

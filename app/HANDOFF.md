@@ -135,6 +135,15 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   Settings, You), the same pages in the desktop sidebar. The Dashboard is the home page (`/`, also the installed
   app's start page); the Founders list moved to `/founders`. Settings (appearance, your bar, notifications, session,
   service, links, delete all data) moved off You, which is now just the profile.
+- **A little more colour (owner, 2026-11-14: "a bit of brand colours as well as accent colours"):** the accent
+  token is now the brand's stamp-pad blue (`#1f3bd0` light, `#8fa0ff` dark, with a pale tint for highlights) instead
+  of ink. It colours primary buttons, the active sidebar item, eyebrows, link underlines, focus rings, avatars, the
+  intro's dots and the featured plan. The dashboard tiles are tinted: Screened in the blue tint, each verdict in
+  its own verdict tint. Selections in segmented controls and chips stay ink, and the verdict slab is unchanged, so
+  colour still means "verdict" wherever it's large. The phone dock is dark in both themes, so its Screen button uses
+  separate `--dock-accent` tokens (the on-dark blue in both): the light-mode blue measured 2.4:1 on the dock, the
+  on-dark blue 7.9:1. Every text and icon pair checked at 4.5:1 or better. To go back to ink, set `--accent`,
+  `--accent-hover`, `--accent-ink` and `--accent-soft` in globals.css (both dark copies too).
 - **Vercel free plan:** about 100 deployments a day. On 2026-11-14 the limit was hit (many were failed builds of
   the research branch, now skipped by the Ignored Build Step). Batch pushes to `app-track`.
 - **Voice (8b): speech-to-text only (owner, 2026-11-14).** No spoken memo briefing (E6) and no voice agent (E7):

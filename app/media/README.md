@@ -223,7 +223,7 @@ The light/dark toggle (System, Light, Dark).
 - `first-try-sidebar-crowded/`: **bad**. The first sidebar version, where the toggle squeezed "Prototype · example scores" onto two lines.
 - **Sent:** `phone-light-system-chose-dark.png`, `desktop-sidebar-toggle-dark-crop.png`
 
-## 14-dashboard-settings (21:45–22:00) · Current
+## 14-dashboard-settings (21:45–22:00) · Current layout; colours changed in 15
 
 The Dashboard home, the Settings tab and the five-tab dock, on example data (a list of three screened). Light and dark.
 - `phone-*-1-dashboard-empty`: the dashboard before anything is screened
@@ -236,6 +236,19 @@ The Dashboard home, the Settings tab and the five-tab dock, on example data (a l
 - `first-try-odds-card-wraps/`: **bad**. The first desktop dashboards, where "3 pts" wrapped onto two lines in the odds card.
 - In the screenshots, Notifications reads "Blocked" because the test browser denies them by default.
 - **Sent:** `phone-light-2-dashboard`, `phone-light-dock`, `phone-light-4-settings`, `desktop-light-dashboard`
+
+## 15-more-colour (22:35) · Current
+
+Both themes with a little more brand colour (the accent is now the stamp-pad blue), on example data (a list of three screened). Phones shot at 2×.
+- `phone-*-0-intro-odds`: the intro's second screen, with blue odds dots and a blue Next
+- `phone-*-1-dashboard`, `desktop-*-1-dashboard`: tinted session tiles, the blue eyebrow and active sidebar item
+- `phone-*-2-new`, `desktop-*-2-new`: Screen a founder, with the blue Screen founder button and focus ring
+- `phone-*-3-settings`, `desktop-*-3-settings`: Settings (selections stay ink)
+- `phone-*-4-plans`, `desktop-*-4-plans`: Plans, with the featured tier in blue
+- `phone-*-5-founders`, `desktop-*-5-founders`: the Founders list
+- `phone-*-6-memo`, `desktop-*-6-memo`: a memo; the verdict slab is unchanged
+- No bad first tries this round: the one problem (the light blue was too dim on the dark phone dock) was caught by a contrast check before any screenshot.
+- **Sent:** `phone-light-1-dashboard`, `phone-dark-1-dashboard`, `desktop-light-1-dashboard`, `phone-light-0-intro-odds`
 
 ## tools
 

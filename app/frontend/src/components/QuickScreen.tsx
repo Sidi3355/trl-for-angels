@@ -23,7 +23,7 @@ export function QuickScreen() {
       <label htmlFor="quick" className="block text-[40px] font-extrabold leading-[0.98] tracking-[-0.04em] sm:text-[52px] lg:text-[60px]">
         Who&apos;s the founder?
       </label>
-      <div className="mt-5 flex h-[64px] items-center gap-2 rounded-[20px] border-2 border-ink bg-surface pl-5 pr-2 transition-shadow focus-within:shadow-[0_0_0_4px_var(--surface-3)] lg:h-[72px] lg:pl-6 lg:pr-2.5">
+      <div className="mt-5 flex h-[64px] items-center gap-2 rounded-[20px] border-2 border-ink bg-surface pl-5 pr-2 transition-shadow focus-within:shadow-[0_0_0_4px_var(--accent-soft)] lg:h-[72px] lg:pl-6 lg:pr-2.5">
         <input
           id="quick"
           value={q}

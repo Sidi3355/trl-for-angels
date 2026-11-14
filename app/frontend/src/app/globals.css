@@ -5,7 +5,8 @@
   Direction: a printed odds slip. Neutral paper, black ink, one typeface (Archivo) used at three
   widths: extra-condensed for the big figures, normal for reading, wide capitals for small labels.
   Colour is saved for the verdict: a full-colour slab (green, amber or ink) carries the decision,
-  everything around it stays black on paper. Buttons and selections are ink, not a brand hue.
+  everything around it stays black on paper. Primary actions, links' underlines, focus rings and a few
+  highlights wear the brand's stamp-pad blue (--accent); selections stay ink, so forms stay calm.
   The brand is the stamp on the slip. In the app the name is set in ink with the halo as its O; the full
   mark (the halo struck into a cut-corner punch, in stamp-pad blue, --brand) is the app icon, and appears
   in the app only where the About page explains the name. Verdicts are struck in the punch shape (.punch).
@@ -22,10 +23,11 @@
   --faint: #6c6f6a;
   --line: #dededa;
   --line-strong: #c4c4be;
-  --accent: #0e0f0e;
-  --accent-hover: #2c2e2c;
+  /* the accent is the brand: stamp-pad blue on primary actions, and its pale tint on highlights */
+  --accent: #1f3bd0;
+  --accent-hover: #1a32b4;
   --accent-ink: #ffffff;
-  --accent-soft: #e3e3de;
+  --accent-soft: #e4e8fc;
   /* stamp-pad blue: the mark only (6.9:1 on paper) */
   --brand: #1f3bd0;
 
@@ -66,6 +68,9 @@
 
   --dock: #0e0f0e;
   --dock-ink: #ffffff;
+  /* the dock is dark in both themes, so its Screen button uses the brand's on-dark blue in both (6:1+ on the dock) */
+  --dock-accent: #8fa0ff;
+  --dock-accent-ink: #0b0c0c;
   --shadow-1: 0 1px 0 rgba(14, 15, 14, 0.04);
   --shadow-2: 0 24px 48px -16px rgba(14, 15, 14, 0.28), 0 4px 10px rgba(14, 15, 14, 0.08);
   --overlay: rgba(14, 15, 14, 0.5);
@@ -88,10 +93,10 @@
     --faint: #878984;
     --line: #262727;
     --line-strong: #3b3d3c;
-    --accent: #f3f3ef;
-    --accent-hover: #ffffff;
-    --accent-ink: #0e0f0e;
-    --accent-soft: #2a2c2b;
+    --accent: #8fa0ff;
+    --accent-hover: #a7b4ff;
+    --accent-ink: #0b0c0c;
+    --accent-soft: #1c2244;
     --brand: #8fa0ff; /* 8:1 on the dark page */
 
     --advance: #4fe396;
@@ -142,10 +147,10 @@
   --faint: #878984;
   --line: #262727;
   --line-strong: #3b3d3c;
-  --accent: #f3f3ef;
-  --accent-hover: #ffffff;
-  --accent-ink: #0e0f0e;
-  --accent-soft: #2a2c2b;
+  --accent: #8fa0ff;
+  --accent-hover: #a7b4ff;
+  --accent-ink: #0b0c0c;
+  --accent-soft: #1c2244;
   --brand: #8fa0ff; /* 8:1 on the dark page */
 
   --advance: #4fe396;
@@ -200,6 +205,8 @@
   --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
+  --color-dock-accent: var(--dock-accent);
+  --color-dock-accent-ink: var(--dock-accent-ink);
   --color-brand: var(--brand);
   --color-advance: var(--advance);
   --color-advance-fill: var(--advance-fill);
@@ -260,7 +267,7 @@ textarea {
 }
 
 :focus-visible {
-  outline: 2px solid var(--ink);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 8px;
 }

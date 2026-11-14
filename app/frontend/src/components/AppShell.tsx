@@ -62,8 +62,8 @@ function Sidebar() {
       </Link>
       <nav className="mt-6 space-y-0.5" aria-label="Main">
         {nav.map(({ href, label, icon: Icon, on }) => (
-          <Link key={href} href={href} aria-current={on ? "page" : undefined} className={cx("flex h-10 items-center gap-3 rounded-[10px] px-3 text-[15px] transition-colors", on ? "bg-surface font-semibold text-ink shadow-[0_0_0_1px_var(--line)]" : "font-medium text-muted hover:text-ink")}>
-            <Icon size={18} /> {label}
+          <Link key={href} href={href} aria-current={on ? "page" : undefined} className={cx("flex h-10 items-center gap-3 rounded-[10px] px-3 text-[15px] transition-colors", on ? "bg-accent-soft font-semibold text-ink" : "font-medium text-muted hover:text-ink")}>
+            <Icon size={18} className={on ? "text-accent" : undefined} /> {label}
           </Link>
         ))}
       </nav>
@@ -107,7 +107,7 @@ function Sidebar() {
           aria-current={pathname === "/account" ? "page" : undefined}
           className={cx("flex items-center gap-3 rounded-[12px] p-1.5 transition-colors", pathname === "/account" ? "bg-surface shadow-[0_0_0_1px_var(--line)]" : "hover:bg-surface-2")}
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-[13px] font-bold text-bg" aria-hidden>
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-[13px] font-bold text-accent-ink" aria-hidden>
             {profile ? initials(profile.name) : <IconUser size={17} />}
           </span>
           <span className="min-w-0">
@@ -180,7 +180,7 @@ function Dock() {
       <div className="pointer-events-auto flex h-[64px] w-full max-w-[420px] items-center justify-between rounded-full bg-dock px-1.5 text-dock-ink shadow-float ring-1 ring-white/10">
         {tabs.map(({ href, label, icon: Icon, on, primary }) =>
           primary ? (
-            <Link key={href} href={href} aria-label={label} aria-current={on ? "page" : undefined} className="flex h-[52px] w-[60px] shrink-0 flex-col items-center justify-center gap-0.5 rounded-full bg-dock-ink text-dock transition-transform active:scale-95">
+            <Link key={href} href={href} aria-label={label} aria-current={on ? "page" : undefined} className="flex h-[52px] w-[60px] shrink-0 flex-col items-center justify-center gap-0.5 rounded-full bg-dock-accent text-dock-accent-ink transition-transform active:scale-95">
               <IconPlus size={22} strokeWidth={2.6} />
               <span className="text-[10.5px] font-bold leading-none">{label}</span>
             </Link>
