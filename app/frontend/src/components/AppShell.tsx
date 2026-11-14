@@ -7,10 +7,15 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { useApp } from "@/components/AppState";
 import { BarSheet, BarSummary } from "@/components/BarSheet";
-import { IconDeals, IconInfo, IconPlus, IconSliders, IconUpload } from "@/components/icons";
+import { IconDeals, IconDoc, IconInfo, IconPlus, IconSliders, IconUpload, IconUser } from "@/components/icons";
+import { Onboarding } from "@/components/Onboarding";
 import { VerdictIcon, Wordmark, cx } from "@/components/ui";
 import { quickVerdict } from "@/lib/bar";
 import { percent } from "@/lib/format";
+import { initials } from "@/lib/profile";
+
+const LEARN = ["/about", "/model-card", "/calibration"];
+const ACCOUNT = ["/account", "/plans", "/terms", "/privacy"];
 
 function StatusPill() {
   const { health, healthError } = useApp();
@@ -35,11 +40,12 @@ const VERDICT_TEXT = { advance: "text-advance", escalate: "text-escalate", pass:
 
 function Sidebar() {
   const pathname = usePathname();
-  const { bar, deals, thresholds, openBarSheet } = useApp();
+  const { bar, deals, thresholds, openBarSheet, profile, ready } = useApp();
   const nav = [
     { href: "/", label: "Founders", icon: IconDeals, on: pathname === "/" },
     { href: "/batch", label: "Screen a list", icon: IconUpload, on: pathname === "/batch" },
-    { href: "/about", label: "How it works", icon: IconInfo, on: pathname === "/about" },
+    { href: "/about", label: "How it works", icon: IconInfo, on: LEARN.includes(pathname) },
+    { href: "/plans", label: "Plans", icon: IconDoc, on: pathname === "/plans" },
   ];
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-[280px] flex-col border-r border-line px-5 pb-5 pt-7 lg:flex">
@@ -90,9 +96,27 @@ function Sidebar() {
         )}
       </div>
 
-      <div className="space-y-2 border-t border-line px-1 pt-4">
-        <StatusPill />
-        <p className="text-[11.5px] leading-snug text-faint">Screening aid, not investment advice.</p>
+      <div className="space-y-3 border-t border-line pt-4">
+        <Link
+          href="/account"
+          aria-current={pathname === "/account" ? "page" : undefined}
+          className={cx("flex items-center gap-3 rounded-[12px] p-1.5 transition-colors", pathname === "/account" ? "bg-surface shadow-[0_0_0_1px_var(--line)]" : "hover:bg-surface-2")}
+        >
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-[13px] font-bold text-bg" aria-hidden>
+            {profile ? initials(profile.name) : <IconUser size={17} />}
+          </span>
+          <span className="min-w-0">
+            <span className="block truncate text-[14.5px] font-semibold">{ready && profile ? profile.name : "Sign in"}</span>
+            <span className="block text-[12px] text-muted">{ready && profile ? "Profile on this device" : "Your profile and settings"}</span>
+          </span>
+        </Link>
+        <div className="space-y-1.5 px-1">
+          <StatusPill />
+          <p className="text-[11.5px] leading-snug text-faint">
+            Screening aid, not investment advice. <Link href="/terms" className="underline underline-offset-2 hover:text-ink">Terms</Link> ·{" "}
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-ink">Privacy</Link>
+          </p>
+        </div>
       </div>
     </aside>
   );
@@ -138,7 +162,7 @@ function Dock() {
   const tabs = [
     { href: "/", label: "Founders", icon: IconDeals, on: pathname === "/" || pathname.startsWith("/memos") },
     { href: "/new", label: "Screen", icon: IconPlus, on: pathname === "/new" || pathname === "/batch" || pathname === "/share" || pathname.startsWith("/screenings"), primary: true },
-    { href: "/about", label: "About", icon: IconInfo, on: pathname === "/about" },
+    { href: "/account", label: "You", icon: IconUser, on: ACCOUNT.includes(pathname) || LEARN.includes(pathname) },
   ];
   return (
     <nav aria-label="Main" className={cx("pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center pb-[max(env(safe-area-inset-bottom),12px)] transition-transform duration-300 ease-out motion-reduce:transition-none lg:hidden", hidden && "translate-y-[150%]")}>
@@ -171,6 +195,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </main>
       <Dock />
       <BarSheet />
+      <Onboarding />
     </>
   );
 }

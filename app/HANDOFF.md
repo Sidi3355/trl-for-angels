@@ -43,6 +43,7 @@ video versions that matter. `app/backend/Dockerfile.dockerignore` keeps `app/med
 | 6 | Hosting: frontend on Vercel, backend on Railway, both on mocks | **Deployed** (2026-11-14). Waiting for the owner's test on the iPhone |
 | 7 | Batch mode UI: CSV upload, triage view | **Done (2026-11-14):** `/batch`, checked end to end on phone and desktop |
 | E5 | Voice notes (speech-to-text; MASTER_PLAN 8b) | **Done (2026-11-14), on example transcripts until the key is on Railway.** Record, transcribe (ElevenLabs), fill the form (Claude); typed notes too. Checked end to end in a browser with a fake microphone and the mock services. No real ElevenLabs call made yet: the onboarding's test waits for the owner's yes |
+| 8 | New screens (owner's request, 2026-11-14): first-run intro, How it works plus model card, calibration page, on-device profile ("You"), Terms and Privacy drafts, Plans mockup | **Done (2026-11-14)**, on mocks. Checked on an emulated iPhone 17 and a 1440px desktop, light and dark (`app/media/12-new-screens`) |
 
 ## Next step (task 6: the owner tests on the iPhone)
 
@@ -100,6 +101,32 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
 - **app-track merged into main (owner, 2026-11-14 evening):** clean merge, only `app/` changed. Adds ~100 MB of
   `app/media` to main; the Kaggle runner shallow-clones the research branch, so only a later merge of main there
   would make its clones bigger (seconds, not breakage).
+- **New screens (owner, 2026-11-14), decisions made building them:**
+  - **Navigation:** the phone dock is Founders · Screen · **You** (was About). You holds the profile, the
+    settings that used to sit on How it works, links to How it works, the model card, calibration, Plans, Terms
+    and Privacy, and Delete all my data. The desktop sidebar adds Plans and an account chip, with Terms and
+    Privacy in its footer.
+  - **Profile on the device only (owner's decision):** localStorage key `screener.profile`; no server account,
+    no database. The "sign-in" asks for a name and an optional email and says plainly that nothing is sent. The
+    profile's default target, timeline and risk set Your bar on save, "Only my sectors" sets the bar's sector
+    filter, and the bar's Reset returns to the profile's defaults. Stage, cheque size and geography aren't used by
+    the model (the page says so). Delete all my data removes every `screener.`/`halomark.` key from local and
+    session storage and the push subscription, then reloads.
+  - **Intro:** shown once per device (`screener.onboarded`), skippable at every step, replayable from You, not
+    shown over `/share`, `/terms` or `/privacy`. Its last step starts a sample founder.
+  - **Calibration numbers are provisional and not Halomark's own model:** `b3-provisional`, TRL's standard model
+    (C1a, RRF elastic net) on the 400 validation founders, because the production Kev isn't scored yet. The page
+    says so. The research session publishes `results/summary/d1-final/` and the production model's calibration;
+    then rerun `app/frontend/scripts/calibration-from-results.py` on it (the JSON is the only thing that changes).
+  - **Model card** facts come from the research branch's `results/METHODS.md` and `results/data/README.md`
+    (read 2026-11-14). Update it if they change, especially once the production model is chosen (C3 or C4).
+  - **Terms and Privacy are drafts** ("not legal advice; to be reviewed"); still to decide: provider, contact,
+    legal basis for researching named founders, governing law. Building them showed the backend logged founder
+    names (research agent) and note values (sorter); both now log only keys, counts and costs, so "nothing kept
+    after the session" holds for our logs too.
+  - **Plans:** Free (5 a month), Pro ($29/month, $290/year: 100 a month, lists, voice notes, notifications),
+    Syndicate ($99/month for 5 members: shared founders, memos, bar). Illustrative, US dollars, "Coming soon",
+    no payment code. Everything stays free in the prototype.
 - **Vercel free plan:** about 100 deployments a day. On 2026-11-14 the limit was hit (many were failed builds of
   the research branch, now skipped by the Ignored Build Step). Batch pushes to `app-track`.
 - **Voice (8b): speech-to-text only (owner, 2026-11-14).** No spoken memo briefing (E6) and no voice agent (E7):

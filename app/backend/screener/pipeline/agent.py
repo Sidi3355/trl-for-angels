@@ -182,8 +182,9 @@ class ClaudeAgent:
         run_usd, nudged = 0.0, False
         for turn in range(MAX_TURNS):
             msg = await self._call(messages, emit)
-            run_usd += self.budget.charge(msg.usage, msg.model, label=who)
-            log.info("agent %s turn %d: %s, run $%.3f, total $%.3f", who, turn, msg.stop_reason, run_usd,
+            # No names in logs or the spend record: hosting logs outlive the session.
+            run_usd += self.budget.charge(msg.usage, msg.model, label="research")
+            log.info("agent turn %d: %s, run $%.3f, total $%.3f", turn, msg.stop_reason, run_usd,
                      self.budget.spent_usd)
             if msg.stop_reason == "refusal":
                 return await self._partial(emit, "The research model declined this request, so only your fields were used.")

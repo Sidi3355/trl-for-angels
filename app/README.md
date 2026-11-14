@@ -39,7 +39,7 @@ on phones, a sidebar on desktop, light and dark themes):
 - **Founders** (`/`): one search-style box to screen a founder by name, LinkedIn or website, and the founders
   screened this session with their verdict at your bar, filterable by advance, escalate or pass. Three
   fictional examples run in one tap. The list lives in `sessionStorage`, so it goes when the app closes.
-- **Your bar** (a sheet, opened from Founders, the sidebar, any memo or About): target outcome, timeline, risk
+- **Your bar** (a sheet, opened from Founders, the sidebar, any memo or You): target outcome, timeline, risk
   appetite and hard filters, with a plain reading of what the setting means on validation founders. Set once,
   applied to every verdict instantly (`localStorage`: a preference, not founder data).
 - **Screen** (`/new`): the founder, plus optional facts you already know (tap-to-pick chips), notes and the
@@ -51,8 +51,33 @@ on phones, a sidebar on desktop, light and dark themes):
   backend re-scores; how it could end (outcome and timing charts); the founder at founding with sources;
   things worth knowing (conflicts, unknowns, warnings); notes; sources; and, under the hood, the exact
   anonymised text and answers the model read.
-- **How it works** (`/about`): the four steps, how to read a verdict, settings (your bar, clear the session,
-  forget the passcode, service status) and privacy.
+- **How it works** (`/about`): the pipeline in six plain steps (research agent, anonymised profile, TRL's questions
+  answered by Kev, a fine-tuned calibrated Kev, your bar, the verdict), how to read a verdict, the name, sharing
+  from other apps, and privacy in short. Links to:
+  - **Model card** (`/model-card`): the model, what it predicts, the training data (3,000 profiles, 2,950
+    generated), the founding-date cutoff, anonymisation, known limits. Facts from the research branch's
+    `results/METHODS.md` and `results/data/README.md`; keep them in step.
+  - **How accurate are the odds?** (`/calibration`): one reliability chart, three numbers in plain words, one
+    limits line. Every number comes from `src/data/calibration.json`, written by
+    `scripts/calibration-from-results.py` from a research results folder (now: `b3-provisional`, TRL's C1a on
+    validation). To swap in final numbers, rerun the script on `results/summary/d1-final/` (or the production
+    model's calibration) and redeploy: no code changes.
+- **You** (`/account`, the dock's third tab): a sign-in look-alike that creates an investor profile **on this
+  device only** (localStorage, no server account): name, optional email, sectors, stage, cheque size, geography,
+  default target, timeline and risk. Saving it sets Your bar; "Only my sectors" turns sectors into the bar's
+  filter; the bar's Reset returns to the profile's defaults. Also: settings (your bar, clear the session, forget
+  the passcode, show the intro again, service status), links, and **Delete all my data** (`lib/profile.ts`:
+  removes every `screener.`/`halomark.` key from both storages and the push subscription).
+- **First-run intro** (`components/Onboarding.tsx`): three skippable screens (what Halomark does, what a
+  percentage means, try a sample founder), shown once per device, replayable from You. Not shown over `/share`,
+  `/terms` or `/privacy`.
+- **Terms** (`/terms`) and **Privacy** (`/privacy`): drafts, marked "not legal advice; to be reviewed". They
+  describe the app as it is: public information only, research on named founders, nothing kept on the servers
+  after the session (memos in memory up to about two hours; logs carry no names or notes), the profile on the
+  device, and the services used (Anthropic, ElevenLabs, Kev on the owner's PC through a Cloudflare tunnel,
+  Vercel, Railway, browser push services). Update them whenever data handling changes.
+- **Plans** (`/plans`): a mockup of Free, Pro and Syndicate with a monthly/yearly toggle and "Coming soon"
+  buttons. No payment code; prices are illustrative.
 - **Installable:** `app/manifest.ts` and `public/icons/`, so "Add to Home Screen" opens it full-screen with its
   own icon.
 - **Notifications** (task 5): "Notify me when it's ready" on the progress and list screens. `public/sw.js` shows

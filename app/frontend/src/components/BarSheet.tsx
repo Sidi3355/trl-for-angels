@@ -9,7 +9,7 @@ import { IconChevronDown } from "@/components/icons";
 import { Button, Segmented, Sheet, Tag, cx } from "@/components/ui";
 import { activeFilterCount } from "@/lib/bar";
 import { percent } from "@/lib/format";
-import { DEFAULT_POLICY, resolve, tableFor, type Policy } from "@/lib/policy";
+import { resolve, tableFor, type Policy } from "@/lib/policy";
 import type { Filters, Thresholds } from "@/lib/types";
 
 type Tri = "any" | "yes" | "no";
@@ -36,12 +36,12 @@ export function BarSummary({ bar }: { bar: Policy }) {
 }
 
 export function BarSheet() {
-  const { bar, setBar, thresholds, barSheetOpen, closeBarSheet } = useApp();
+  const { bar, setBar, thresholds, barSheetOpen, closeBarSheet, defaultBar } = useApp();
   if (!barSheetOpen) return null;
-  return <BarSheetBody bar={bar} setBar={setBar} thresholdsReady={thresholds} onClose={closeBarSheet} />;
+  return <BarSheetBody bar={bar} setBar={setBar} thresholdsReady={thresholds} onClose={closeBarSheet} resetTo={defaultBar} />;
 }
 
-function BarSheetBody({ bar, setBar, thresholdsReady, onClose }: { bar: Policy; setBar: (p: Policy) => void; thresholdsReady: Thresholds | null; onClose: () => void }) {
+function BarSheetBody({ bar, setBar, thresholdsReady, onClose, resetTo }: { bar: Policy; setBar: (p: Policy) => void; thresholdsReady: Thresholds | null; onClose: () => void; resetTo: Policy }) {
   const [showFilters, setShowFilters] = useState(activeFilterCount(bar) > 0);
   const f = bar.filters;
   const setFilter = (patch: Partial<Filters>) => setBar({ ...bar, filters: { ...f, ...patch } });
@@ -88,7 +88,7 @@ function BarSheetBody({ bar, setBar, thresholdsReady, onClose }: { bar: Policy; 
       title="Your bar"
       footer={
         <div className="flex items-center gap-3">
-          <Button variant="secondary" size="lg" onClick={() => setBar(DEFAULT_POLICY)}>
+          <Button variant="secondary" size="lg" onClick={() => setBar(resetTo)}>
             Reset
           </Button>
           <Button full size="lg" onClick={onClose}>

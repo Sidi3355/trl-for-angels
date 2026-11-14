@@ -1,50 +1,91 @@
 "use client";
 
-// How it works, what the numbers mean, privacy, and the app's settings.
+// How it works: the pipeline in plain words, how to read a verdict, links to the model card and the
+// calibration page, sharing from other apps, and privacy in short. Settings live on the account page.
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { useApp } from "@/components/AppState";
-import { BarSummary } from "@/components/BarSheet";
-import { IconLock } from "@/components/icons";
-import { Button, Disclaimer, Logo, Page, PageHeader, SectionTitle, VerdictTile, cx } from "@/components/ui";
-import { API_URL, getPasscode, setPasscode } from "@/lib/api";
+import { IconChevronRight } from "@/components/icons";
+import { Button, Disclaimer, Logo, Notice, Page, PageHeader, SectionTitle, VerdictTile } from "@/components/ui";
 import { DECISION_LABELS } from "@/lib/format";
-import { clearDeals } from "@/lib/session";
 
 const STEPS = [
-  { title: "Research", body: "An AI agent searches the web for the founder's background, and keeps only what was true on the day the company was founded. Every fact links to its source." },
-  { title: "Anonymise", body: "Names of people, companies and universities are removed, and the background is written into the same standard profile the model was trained on." },
-  { title: "Score", body: "Screening questions are answered from the profile, and a calibrated decision model estimates how big the outcome could be, and how long it could take." },
-  { title: "Decide", body: "Your bar turns that chance into meet, look closer or pass. Change it any time: every verdict updates instantly." },
+  {
+    title: "Research",
+    who: "Research agent (Claude)",
+    body: "Searches the web for the founder's background and keeps only what was true on the day the company was founded. Every fact links to its source, and anything you entered wins over the agent.",
+  },
+  {
+    title: "Anonymise",
+    who: "A fixed profile",
+    body: "Names of people, companies and universities are removed, and the background is written into the same standard profile the models were trained on, line for line.",
+  },
+  {
+    title: "Ask",
+    who: "TRL's questions, answered by Kev",
+    body: "A checklist of yes/no questions, such as \u201cHas the founder had a prior exit?\u201d, written once by TRL during the research, is answered for this founder by Kev, a small open decision model.",
+  },
+  {
+    title: "Score",
+    who: "A fine-tuned, calibrated Kev",
+    body: "Turns the answers into the chance of each outcome, from shut down to over $1B, and how long it could take. Calibrated, so 30% means about 3 in 10.",
+  },
+  {
+    title: "Your settings",
+    who: "Your bar",
+    body: "Your target, timeline, risk appetite and filters turn those chances into one number: the chance this founder reaches your target.",
+  },
+  {
+    title: "Verdict",
+    who: "Meet \u00b7 Look closer \u00b7 Pass",
+    body: "Clears your bar: meet. Close to it: look closer. Below it: pass. The memo shows what moved the score, and lets you flip any answer to see what changes.",
+  },
 ];
 
-const row = "flex items-center justify-between gap-4 border-b border-line py-4";
+function MoreLink({ href, title, note }: { href: string; title: string; note: string }) {
+  return (
+    <Link href={href} className="group flex items-center justify-between gap-4 rounded-[18px] border border-line bg-surface px-4 py-4 transition-colors hover:border-ink">
+      <span>
+        <span className="block text-[17px] font-bold tracking-[-0.015em]">{title}</span>
+        <span className="block text-[13.5px] text-muted">{note}</span>
+      </span>
+      <IconChevronRight size={20} className="shrink-0 text-muted transition-transform group-hover:translate-x-0.5" />
+    </Link>
+  );
+}
 
 export default function AboutPage() {
-  const { bar, openBarSheet, health, healthError, deals } = useApp();
-  const [hasCode, setHasCode] = useState(false);
-  useEffect(() => setHasCode(Boolean(getPasscode())), []);
-  const [cleared, setCleared] = useState(false);
-
   return (
     <Page>
-      <PageHeader title="How it works" subtitle="Angels screen alone. Halomark does the first pass for you: research, a calibrated score, and the reasons behind it." />
+      <PageHeader title="How it works" subtitle="From a founder's name to Meet, Look closer or Pass, in six steps. Each one does one job, and the memo shows its work." />
 
       <ol className="grid gap-x-10 sm:grid-cols-2">
-        {STEPS.map(({ title, body }, i) => (
+        {STEPS.map(({ title, who, body }, i) => (
           <li key={title} className="flex gap-4 border-t border-line-strong py-5">
-            <span className="cond w-7 shrink-0 text-[56px] font-black leading-[0.8]" aria-hidden>
+            <span className="cond w-8 shrink-0 text-[56px] font-black leading-[0.8]" aria-hidden>
               {i + 1}
             </span>
             <div>
               <p className="text-[19px] font-bold tracking-[-0.02em]">{title}</p>
-              <p className="mt-1.5 text-[14.5px] leading-relaxed text-muted">{body}</p>
+              <p className="eyebrow mt-0.5 text-muted">{who}</p>
+              <p className="mt-1.5 text-[14.5px] leading-relaxed text-ink-2">{body}</p>
             </div>
           </li>
         ))}
       </ol>
 
-      <section className="mt-10">
+      <div className="mt-4">
+        <Notice tone="info" title="Prototype">
+          Until the trained models are plugged in, steps 3 and 4 use a placeholder, so treat every score as an example.
+        </Notice>
+      </div>
+
+      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <MoreLink href="/calibration" title="How accurate are the odds?" note="What 30% really means, checked" />
+        <MoreLink href="/model-card" title="Model card" note="The model, its data and its limits" />
+      </div>
+
+      <section className="mt-12">
         <SectionTitle note="The chance is the share of founders with a background like this who reached your target in the model's data. It is calibrated, so 30% means about 3 in 10.">
           Reading a verdict
         </SectionTitle>
@@ -78,62 +119,16 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="mt-12">
-        <SectionTitle>Settings</SectionTitle>
-        <div className="-mt-3.5">
-          <div className={row}>
-            <span className="min-w-0">
-              <span className="block text-[15.5px] font-semibold">Your bar</span>
-              <span className="block text-[13.5px] text-muted">
-                <BarSummary bar={bar} />
-              </span>
-            </span>
-            <Button variant="secondary" onClick={openBarSheet}>
-              Change
-            </Button>
-          </div>
-          <div className={row}>
-            <span className="min-w-0">
-              <span className="block text-[15.5px] font-semibold">This session&apos;s founders</span>
-              <span className="block text-[13.5px] text-muted">{cleared ? "Cleared." : `${deals.length} founder${deals.length === 1 ? "" : "s"}. Gone when you close the app.`}</span>
-            </span>
-            <Button variant="secondary" disabled={!deals.length} onClick={() => { clearDeals(); setCleared(true); }}>
-              Clear
-            </Button>
-          </div>
-          {hasCode && (
-            <div className={row}>
-              <span className="flex items-center gap-2 text-[15.5px] font-semibold">
-                <IconLock size={17} className="text-muted" /> Passcode saved for this session
-              </span>
-              <Button variant="secondary" onClick={() => { setPasscode(null); setHasCode(false); }}>
-                Forget
-              </Button>
-            </div>
-          )}
-          <div className={row}>
-            <span className="min-w-0">
-              <span className="block text-[15.5px] font-semibold">Service</span>
-              <span className="block truncate text-[13.5px] text-muted">{API_URL.replace(/^https?:\/\//, "")}</span>
-            </span>
-            <span className={cx("flex shrink-0 items-center gap-1.5 text-[13.5px] font-semibold", healthError ? "text-danger" : health ? "text-ink" : "text-muted")}>
-              {health && !healthError && <span className={cx("h-2 w-2 rounded-full", health.mock ? "bg-escalate-fill" : "bg-advance-fill")} aria-hidden />}
-              {healthError ? "Offline" : health ? (health.mock ? "Online · prototype, example scores" : "Online") : "Checking…"}
-            </span>
-          </div>
-        </div>
-      </section>
-
       <ShareSetup />
 
       <section className="mt-12">
-        <SectionTitle>Privacy</SectionTitle>
+        <SectionTitle>Privacy in short</SectionTitle>
         <ul className="space-y-2.5 text-[15px] leading-relaxed text-ink-2">
           {[
-            "Only public information is used.",
+            "Only public information is used, and only what was true when the company was founded.",
             "Your notes appear in the memo and are never sent to the model. Facts in them can fill the form, and you check every value before screening.",
-            "Voice notes are transcribed by ElevenLabs and the notes sorted by Claude; the recording isn't kept by Halomark.",
-            "Nothing is kept after your session: memos are deleted on the server, and the founders list lives only in this app until you close it.",
+            "Nothing is kept on our servers after your session. Your profile and settings stay on this device.",
+            "Claude researches and sorts notes, ElevenLabs transcribes voice notes, and Kev scores the anonymised profile.",
           ].map((t) => (
             <li key={t} className="flex gap-3">
               <span className="mt-[0.6em] h-[3px] w-3 shrink-0 rounded-full bg-ink" aria-hidden />
@@ -141,6 +136,11 @@ export default function AboutPage() {
             </li>
           ))}
         </ul>
+        <p className="mt-4 text-[14px]">
+          <Link href="/privacy" className="font-semibold underline decoration-line-strong underline-offset-[3px] hover:decoration-ink">
+            The full privacy notice (draft)
+          </Link>
+        </p>
       </section>
 
       <Disclaimer className="mt-12" />

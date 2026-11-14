@@ -193,6 +193,26 @@ transcriber and the keyword stand-in sorter, so the words are the example transc
 - `first-try-notes-covered/`: the first run of the same shots. **Bad:** on phones the sticky Screen button and the dock covered the notes box and its result. Fixed by reserving scroll space for them and bringing the result into view.
 - **Sent:** `phone-3-voice-filled.png`, `phone-4-voice-fields-tagged.png`, `phone-5-memo-you-voice.png`, `phone-6-typed-filled.png`, `phone-7-kept-your-answer.png`
 
+## 12-new-screens (19:20–19:46) · Current
+
+The owner's six new screens, on example data, at 2× (the new screenshot rule). Phones are an emulated iPhone 17;
+desktops are 1440px. Named `<device>-<theme>-<n>-<screen>.png`.
+- `phone-light-01…03`: the first-run intro
+  1. what Halomark does
+  2. what a percentage means
+  3. try a sample founder
+- `phone-light-04-sign-in`, `phone-light-05-profile` (full page), `phone-dark-05-profile`: the on-device profile
+- `phone-light-06-delete-confirm`: the "delete all my data" confirmation
+- `phone-*-07-how-it-works`, `phone-*-08-model-card`: How it works and the model card, light and dark
+- `phone-*-09-calibration`, `phone-*-09b-calibration-tooltip`: the calibration page, and a dot's tooltip
+- `phone-*-10-terms`, `phone-*-11-privacy`: the legal drafts
+- `phone-*-12-plans`, `phone-light-12b-plans-yearly`: the plans mockup, monthly and yearly
+- `phone-light-13-dock-you`: the dock's new You tab
+- `phone-dark-02-intro-2-odds`: the intro in dark
+- `desktop-light-01-intro`, plus `desktop-{light,dark}-{calibration,plans,how-it-works,sign-in,model-card}`: desktop, both themes
+- `first-try-chart-labels-overlap/`: **bad**. The first calibration shots: the x-axis title ran into "Founders in each band", and the y-axis title touched the tick labels. Fixed by spacing the chart's margins.
+- **Sent:** `phone-light-02-intro-2-odds`, `phone-light-05-profile`, `phone-light-09b-calibration-tooltip`, `phone-light-08-model-card`, `phone-light-12-plans`, `desktop-light-calibration`
+
 ## tools
 
 - `record-walkthrough.cjs`: the script that recorded v3 and v4, with the ffmpeg command in its header, so the video can be re-shot after design changes

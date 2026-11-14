@@ -1,0 +1,68 @@
+{
+  "status": "provisional",
+  "updated": "2026-11-14",
+  "model": "TRL's standard model (RRF, elastic net)",
+  "model_note": "Halomark's own model, a fine-tuned Kev, is still being trained. Its numbers will replace these, and the final ones come from 600 test founders that no model has seen.",
+  "split": "val",
+  "founders": 400,
+  "successes": 80,
+  "target": "$500M+",
+  "base_rate": 0.2,
+  "ece": 0.03,
+  "brier": 0.1427,
+  "precision": 0.5556,
+  "recall": 0.25,
+  "flagged": 36,
+  "bins": [
+    {
+      "low": 0.0,
+      "high": 0.1,
+      "count": 119,
+      "predicted": 0.0647,
+      "observed": 0.0756
+    },
+    {
+      "low": 0.1,
+      "high": 0.2,
+      "count": 140,
+      "predicted": 0.1442,
+      "observed": 0.1643
+    },
+    {
+      "low": 0.2,
+      "high": 0.3,
+      "count": 74,
+      "predicted": 0.2468,
+      "observed": 0.2838
+    },
+    {
+      "low": 0.3,
+      "high": 0.4,
+      "count": 35,
+      "predicted": 0.3325,
+      "observed": 0.2571
+    },
+    {
+      "low": 0.4,
+      "high": 0.5,
+      "count": 18,
+      "predicted": 0.4493,
+      "observed": 0.5556
+    },
+    {
+      "low": 0.5,
+      "high": 0.6,
+      "count": 12,
+      "predicted": 0.5639,
+      "observed": 0.5833
+    },
+    {
+      "low": 0.6,
+      "high": 0.7,
+      "count": 2,
+      "predicted": 0.6801,
+      "observed": 0.5
+    }
+  ],
+  "source": "results/summary/b3-provisional on the research branch (condition C1a, validation split, threshold tuned on validation)"
+}

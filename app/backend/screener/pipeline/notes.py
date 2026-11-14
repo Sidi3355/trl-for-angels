@@ -192,14 +192,14 @@ def finish(raw: dict, contract: Contract, sorter: str) -> dict:
         if value in ("", None):
             continue
         if key not in quotes:
-            log.info("note sorter: %s=%r had no quote, left blank", key, value)
+            log.info("note sorter: %s had no quote, left blank", key)
             continue
         if key == "industry" and _mentions_name(value, names):
-            log.info("note sorter: %s=%r contains a name, left blank", key, value)
+            log.info("note sorter: %s contained a name, left blank", key)
             continue
         errs = contract.errors_for_def(key, value)
         if errs:
-            log.info("note sorter: %s=%r doesn't fit the template (%s), left blank", key, value, errs[0])
+            log.info("note sorter: %s didn't fit the template, left blank", key)
             continue
         fields[key] = value
     # A prior exit needs a prior startup: drop both when the note contradicts itself.
@@ -362,7 +362,7 @@ class ClaudeSorter:
         try:
             raw = json.loads(body)
         except json.JSONDecodeError:
-            log.warning("note sorter returned non-JSON: %.200s", body)
+            log.warning("note sorter returned non-JSON (%d characters)", len(body))
             raise NoteError("sorting the notes failed; try again", code="sorting_failed") from None
         return finish({**empty_raw(), **raw}, self.contract, self.name)
 
