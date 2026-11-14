@@ -26,10 +26,10 @@ export const FIELD_LABELS: Record<FieldKey, string> = {
   prior_exits: "Earlier exits",
 };
 
-export const DECISION_LABELS: Record<Decision, string> = { advance: "Advance", escalate: "Escalate", pass: "Pass" };
+export const DECISION_LABELS: Record<Decision, string> = { advance: "Meet", escalate: "Look closer", pass: "Pass" };
 export const DECISION_HINTS: Record<Decision, string> = {
   advance: "Worth a meeting.",
-  escalate: "Look closer before deciding.",
+  escalate: "Your call. Check the details first.",
   pass: "Below your bar.",
 };
 
@@ -37,9 +37,9 @@ export const TARGET_LABELS: Record<Target, string> = { "$50M": "$50M+", "$500M":
 export const TIMELINE_LABELS: Record<string, string> = { null: "Any time", 8: "8 years", 5: "5 years" };
 export const RISK_LABELS: Record<Risk, string> = { cautious: "Cautious", balanced: "Balanced", bold: "Bold" };
 export const RISK_HINTS: Record<Risk, string> = {
-  cautious: "Advances fewer founders, more of whom succeed.",
-  balanced: "Advances about half of the founders who go on to succeed.",
-  bold: "Advances more founders, catching more winners but more misses too.",
+  cautious: "Suggests meeting fewer founders, more of whom succeed.",
+  balanced: "Suggests meeting about half of the founders who go on to succeed.",
+  bold: "Suggests meeting more founders: more winners, and more misses too.",
 };
 
 export function timelineLabel(t: Timeline): string {
@@ -173,8 +173,8 @@ export function relativeTime(iso: string): string {
 // ---- plain-language copy for the redesigned screens ----------------------------------------
 
 export const DECISION_COPY: Record<Decision, { title: string; line: string }> = {
-  advance: { title: "Advance", line: "Clears your bar. Worth a meeting." },
-  escalate: { title: "Escalate", line: "Close to your bar. Take a closer look before you decide." },
+  advance: { title: "Meet", line: "Clears your bar. Worth a meeting." },
+  escalate: { title: "Look closer", line: "Close to your bar. Check the details before you decide." },
   pass: { title: "Pass", line: "Below your bar." },
 };
 

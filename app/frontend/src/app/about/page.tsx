@@ -15,7 +15,7 @@ const STEPS = [
   { title: "Research", body: "An AI agent searches the web for the founder's background, and keeps only what was true on the day the company was founded. Every fact links to its source." },
   { title: "Anonymise", body: "Names of people, companies and universities are removed, and the background is written into the same standard profile the model was trained on." },
   { title: "Score", body: "Screening questions are answered from the profile, and a calibrated decision model estimates how big the outcome could be, and how long it could take." },
-  { title: "Decide", body: "Your bar turns that chance into advance, escalate or pass. Change it any time: every verdict updates instantly." },
+  { title: "Decide", body: "Your bar turns that chance into meet, look closer or pass. Change it any time: every verdict updates instantly." },
 ];
 
 const row = "flex items-center justify-between gap-4 border-b border-line py-4";

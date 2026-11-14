@@ -57,11 +57,11 @@ function BarSheetBody({ bar, setBar, thresholdsReady, onClose }: { bar: Policy; 
         <div className="grid grid-cols-2 gap-5">
           <div>
             <p className="cond text-[56px] font-black leading-[0.82]">{percent(r.expected_precision)}</p>
-            <p className="mt-2 text-[13px] leading-snug text-ink-2">of founders you advance reach {target}{horizon} ({oneIn(r.expected_precision)})</p>
+            <p className="mt-2 text-[13px] leading-snug text-ink-2">of founders marked Meet reach {target}{horizon} ({oneIn(r.expected_precision)})</p>
           </div>
           <div>
             <p className="cond text-[56px] font-black leading-[0.82]">{percent(r.expected_recall)}</p>
-            <p className="mt-2 text-[13px] leading-snug text-ink-2">of the founders who reach it get advanced</p>
+            <p className="mt-2 text-[13px] leading-snug text-ink-2">of the founders who reach it are marked Meet</p>
           </div>
         </div>
         <p className="border-t border-line-strong pt-3 text-[13px] leading-snug text-muted">

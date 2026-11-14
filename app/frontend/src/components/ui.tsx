@@ -183,8 +183,8 @@ export function ChipPicker<T extends string>({ label, value, options, onChange }
 // ---- status -----------------------------------------------------------------------------------
 
 const VERDICT_STYLE: Record<Decision, { pill: string; dot: string; label: string }> = {
-  advance: { pill: "bg-advance-soft text-advance", dot: "bg-advance-fill", label: "Advance" },
-  escalate: { pill: "bg-escalate-soft text-escalate", dot: "bg-escalate-fill", label: "Escalate" },
+  advance: { pill: "bg-advance-soft text-advance", dot: "bg-advance-fill", label: "Meet" },
+  escalate: { pill: "bg-escalate-soft text-escalate", dot: "bg-escalate-fill", label: "Look closer" },
   pass: { pill: "bg-pass-soft text-pass", dot: "bg-pass-fill", label: "Pass" },
 };
 

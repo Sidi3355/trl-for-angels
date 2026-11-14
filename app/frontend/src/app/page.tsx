@@ -68,8 +68,8 @@ function QuickScreen() {
 
 const FILTERS: { key: Decision | "all"; label: string }[] = [
   { key: "all", label: "All" },
-  { key: "advance", label: "Advance" },
-  { key: "escalate", label: "Escalate" },
+  { key: "advance", label: "Meet" },
+  { key: "escalate", label: "Look closer" },
   { key: "pass", label: "Pass" },
 ];
 const VERDICT_TEXT: Record<Decision, string> = { advance: "text-advance", escalate: "text-escalate", pass: "text-pass" };
@@ -187,7 +187,7 @@ export default function DealsPage() {
           <div className="mt-8 hidden border-t border-line pt-5 lg:block">
             <h2 className="eyebrow mb-3 text-muted">What you get</h2>
             <ol className="space-y-3 text-[13.5px] leading-snug text-ink-2">
-              {["A verdict against your bar: advance, escalate or pass.", "The chance of a large outcome, and what moves it.", "Every fact linked to its public source."].map((t, i) => (
+              {["A verdict against your bar: meet, look closer or pass.", "The chance of a large outcome, and what moves it.", "Every fact linked to its public source."].map((t, i) => (
                 <li key={t} className="flex gap-3">
                   <span className="cond w-3 shrink-0 text-[20px] font-extrabold leading-[1]">{i + 1}</span>
                   <span>{t}</span>

@@ -25,14 +25,14 @@ export function Gauge({ prob, advance, pass, baseline }: { prob: number; advance
   const a = advance ?? max;
   const zones = [
     { key: "pass", from: 0, to: p, fill: "hatch opacity-55", label: "Pass" },
-    { key: "escalate", from: p, to: a, fill: "bg-current opacity-30", label: "Escalate" },
-    { key: "advance", from: a, to: max, fill: "bg-current opacity-90", label: "Advance" },
+    { key: "escalate", from: p, to: a, fill: "bg-current opacity-30", label: "Look closer" },
+    { key: "advance", from: a, to: max, fill: "bg-current opacity-90", label: "Meet" },
   ].filter((z) => z.to > z.from);
   const ticks = [pass, advance].filter((t): t is number => t !== null && t > 0 && t < max);
   const sameTick = ticks.length === 2 && percent(ticks[0]) === percent(ticks[1]);
 
   return (
-    <div className="px-[11px]" role="img" aria-label={`Chance ${percent(prob)}. Pass below ${percent(pass)}, advance from ${percent(advance)}.`}>
+    <div className="px-[11px]" role="img" aria-label={`Chance ${percent(prob)}. Pass below ${percent(pass)}, meet from ${percent(advance)}.`}>
       <div className="relative h-[18px]">
         <div className="absolute inset-0 flex gap-[3px]">
           {zones.map((z, i) => (

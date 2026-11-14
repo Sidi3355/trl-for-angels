@@ -13,7 +13,7 @@ const archivo = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-
 
 export const metadata: Metadata = {
   title: { default: "Screener", template: "%s · Screener" },
-  description: "Screen a founder in a minute: public research, a calibrated advance, escalate or pass, and the reasons behind it. A screening aid, not investment advice.",
+  description: "Screen a founder in a minute: public research, a calibrated meet, look closer or pass, and the reasons behind it. A screening aid, not investment advice.",
   applicationName: "Screener",
   appleWebApp: { capable: true, title: "Screener", statusBarStyle: "default" },
   formatDetection: { telephone: false },

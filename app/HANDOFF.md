@@ -76,6 +76,14 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   Archivo at three widths, floating dock on phones. Reviewed here: logic untouched, tests and build pass,
   every verdict colour, not-found, passcode and overflow at 390px checked; the gauge marker was changed to a
   solid needle (the hollow ring read as a zero).
+- **Verdict labels for angels (owner, 2026-11-14): "Meet / Look closer / Pass"** on screen, replacing "Advance /
+  Escalate / Pass" (fund language: a solo angel has nobody to escalate to). Display only: the contract,
+  backend, policy and research keep `advance` / `escalate` / `pass` as the internal values. MASTER_PLAN still
+  uses the old words; the owner may update it.
+- **No passcode (owner, 2026-11-14):** `ACCESS_TOKEN` stays unset. Vercel's login wall stays on, so only the
+  owner's Vercel team can open the app. Revisit before switching on real research (`AGENT=claude`), which spends credits.
+- **Vercel free plan:** about 100 deployments a day. On 2026-11-14 the limit was hit (many were failed builds of
+  the research branch, now skipped by the Ignored Build Step). Batch pushes to `app-track`.
 - **Voice (8b) is go** (owner asked about ElevenLabs, 2026-11-14). Waiting on: the key in Railway as
   `ELEVENLABS_API_KEY` (and the secure form for this sandbox), a voice choice, and whether the hackathon
   has an ElevenLabs prize. Free tier only (zero-budget amendment).

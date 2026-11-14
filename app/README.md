@@ -55,7 +55,7 @@ on phones, a sidebar on desktop, light and dark themes):
 - **Installable:** `app/manifest.ts` and `public/icons/`, so "Add to Home Screen" opens it full-screen with its
   own icon. Push and the share Shortcut are task 5.
 - **Design system ("the odds slip", second redesign by a Claude Fable 5.2 design pass):** black ink on neutral
-  paper, colour kept for the verdict alone, shown as a full-colour slab (green advance, amber escalate, ink pass)
+  paper, colour kept for the verdict alone, shown as a full-colour slab (green Meet, amber Look closer, ink Pass)
   with the chance in large condensed figures and a to-scale gauge whose zones differ by pattern as well as tone.
   One variable family, Archivo, at three widths (condensed figures, normal text, wide labels). Buttons and
   selections are ink, not a brand colour. A floating dock on phones, a sidebar on desktop. Tokens in
