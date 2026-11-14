@@ -1,0 +1,50 @@
+{
+  "updated": "2026-11-14",
+  "trl": {
+    "upstream": "https://github.com/Vela-Research/think-reason-learn",
+    "fork": null,
+    "fork_note": "GitHub fork not yet created; local clone at ../think-reason-learn with remote 'upstream'",
+    "branch": "feature/decision-combiner",
+    "base_commit": "3437d64",
+    "git_describe": "v0.3.0-3-g3437d64",
+    "package_version": "0.3.0",
+    "baseline_checks_at_base_commit": {
+      "pytest": "388 passed, 2 skipped (both skips are built into the tests)",
+      "ruff_check": "all checks passed",
+      "ruff_format": "84 files already formatted",
+      "pyright": "0 errors, 0 warnings"
+    }
+  },
+  "environment": {
+    "python": "3.13.18",
+    "project_venv": ".venv (uv), from requirements.txt; exact versions in requirements.lock.txt",
+    "key_packages": {
+      "think-reason-learn": "0.3.0 (editable, fork)",
+      "xgboost": "3.4.1",
+      "scikit-learn": "1.9.1",
+      "numpy": "2.5.4",
+      "pandas": "3.1.1",
+      "openai": "3.51.0",
+      "anthropic": "1.17.0"
+    }
+  },
+  "models": {
+    "generator": null,
+    "answerer": "jev",
+    "kev_checkpoint": "jaredpalmer/kev-0.6b",
+    "kev_base": "Qwen/Qwen3-0.6B-Base"
+  },
+  "rrf_settings": {
+    "beta": 0.5,
+    "random_state": 42,
+    "other": "library defaults"
+  },
+  "seeds": {
+    "global": 42
+  },
+  "splits": {
+    "planned": {"train": 2000, "val": 400, "test": 600},
+    "actual": null
+  },
+  "costs_usd": {}
+}

@@ -1,0 +1,9 @@
+# Project environment (Python 3.13, which TRL requires).
+# TRL comes from our fork, checked out next to this repo at ../think-reason-learn
+# on branch feature/decision-combiner (based on upstream commit 3437d64, v0.3.0).
+# The [anthropic] extra adds the Anthropic SDK; the OpenAI SDK is a core TRL dependency,
+# so both generator providers are covered.
+-e ../think-reason-learn[anthropic]
+xgboost>=3.0,<4
+scikit-learn>=1.7.2,<2
+python-dotenv>=1.0,<2
