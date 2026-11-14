@@ -61,7 +61,9 @@ For the app session (`app-track`), passed on by the owner. Checked against `app-
    production model at `<tunnel address>/decider/v1/systemone` (raw: apply the temperatures).
    Both need `Authorization: Bearer <KEV_API_KEY>`; set the same key on the backend. The tunnel
    address (`https://<words>.trycloudflare.com`) changes each time it starts, so the backend should
-   read it from an environment variable rather than from `model.json`. `GET /health` reports
+   read it from an environment variable rather than from `model.json`: for example `KEV_URL`
+   (the bare tunnel address), which, when set, overrides `model.json → endpoint` for both
+   paths. A restart is then one Railway variable to paste, with no new artefact. `GET /health` reports
    readiness, and whether the decider is still base Kev standing in. Expect a few seconds per
    founder on CPU; keep the demo cache as the backup.
 
