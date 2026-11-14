@@ -146,7 +146,33 @@ while doing the work: date, decision, reason, evidence. Newest last.
   `Bearer ` header was illegal and stopped every call, including from any saved and reloaded
   model, since saving drops keys.
 
-## 2026-11-14 · A1 · Open item: TRL's cache location
+## 2026-11-14 · Research pipeline: how the Kaggle stages fit together
+
+- **Stages** (`kaggle/run.sh` tasks; each Kaggle run is self-contained, because nothing on
+  Kaggle survives between runs):
+  1. `a4`: RRF smoke test on 20 sample rows (Claude + Kev).
+  2. `b1b2`: fit C1a, C1b and C2 on train from one set of Claude questions (TRL's cache gives
+     all three the same questions, which the script checks); Kev's answers for every split;
+     TRL's own predictions for C1a, C1b and C2 on val and test.
+  3. `c_kev`: C3 and C4 fine-tuned in parallel on the two T4s, each choosing base, ep1 or ep2
+     by val log-loss and fitting its temperature on val; then EXTRA, C4 and C3 scored through
+     TRL (C3 = the saved C2 RRF with the C3 checkpoint as its combiner).
+  4. Locally, no GPU: CTRL (`baselines.py`) and evaluation (`evaluate.py`).
+- **What persists:** the runner pushes each run's small outputs (under 5 MB, no weights) to
+  `kaggle-results`, and they're copied into this branch (`data/answers`, `data/models`,
+  `data/predictions`). Fine-tuned checkpoints are not kept yet. The production model (D3)
+  and the app's serving (E1) will need a place for weights; decide then (likely a free
+  Hugging Face model repo).
+- **Checkpoint choice:** Kev only snapshots full-weight runs, so C3/C4 train one epoch, then
+  a second from it, and keep whichever of base/ep1/ep2 has the lowest val log-loss.
+
+## 2026-11-14 · A1 · Open item: TRL's cache location (closed)
+
+- **Closed:** each Kaggle run sets `cache_dir` explicitly (`$WORK/trl_cache`) and uses it
+  only within that run; every result TRL produces is saved as files, so no cache needs to
+  survive between runs.
+
+## 2026-11-14 · A1 · Open item: TRL's cache location (as first noted)
 
 - **Note:** TRL's disk cache defaults to `~/.cache/think_reason_learn/llm-cache-v2.sqlite`, which
   is outside the repo and is lost when the cloud container is reclaimed.
