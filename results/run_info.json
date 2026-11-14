@@ -56,7 +56,20 @@
       "val": 400,
       "test": 600
     },
-    "actual": null
+    "actual": {
+      "train": 2000,
+      "val": 400,
+      "test": 600,
+      "seed": 42,
+      "input_file": "full.jsonl",
+      "input_sha256": "6861ba4172c6b5b4e8a306366dbece67905dabd917b3eef4296c9a8bc023da6c",
+      "rows_read": 3000,
+      "rows_kept": 3000,
+      "rows_dropped": 0,
+      "scaled_from_planned": false,
+      "stratified_on": "outcome band",
+      "duplicate_groups": 0
+    }
   },
   "costs_usd": {
     "a4_smoke_fit_20_rows": {

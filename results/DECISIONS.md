@@ -273,9 +273,11 @@ while doing the work: date, decision, reason, evidence. Newest last.
   rules × 3,000 founders) is about 50 minutes on the GPU.
 - **Noted, not changed (TRL fidelity):** TRL kept two near-identical questions ("Does the
   profile state [that] the founder has deep prior experience…") and two overlapping
-  B2B-sector questions. RRF doesn't remove near-duplicates semantically; that's library
-  behaviour, so it stays. The elastic net copes with correlated columns, and in C2/C3 the
-  answer appears twice in the serialised text.
+  B2B-sector questions. That's upstream TRL's design: its filter for near-copies
+  (`hamming_threshold=0.15`) applies only to the vote combiner (C1b), while the elastic net
+  (C1a) takes every question and leaves redundancy to its L1 penalty. The decision combiner
+  (C2, C3) follows the elastic net, so a near-copy's answer appears twice in the serialised
+  text. Left as is.
 - **Harmless log noise:** "Error in sitecustomize … No module named 'wrapt'" still appears in
   some subprocesses on Kaggle; it doesn't stop them (exit 0).
 - **A4 is done.**
@@ -294,3 +296,17 @@ while doing the work: date, decision, reason, evidence. Newest last.
 - **Validation (A5 "done when"):** `validate.py --profile full` passes with no errors or
   warnings: band proportions exact (within ±3 points required), 0 rows dropped (under 2%
   required), no duplicates or shared career paths.
+
+## 2026-11-14 · A5/A6 · Full dataset re-checked, then split
+
+- **Re-check:** the research session's validator (the newer one, with the exact all-pairs
+  near-duplicate check) also passes `data/raw/full.jsonl`: no errors, no warnings, no near
+  duplicates.
+- **Read in the generator:** synthetic outcomes come from `background_score`, which is mostly
+  additive with five small interactions, plus noise (sd 0.62). Years depend only on the outcome
+  band. Both are now listed under the dataset's limits (`results/data/README.md`), since they
+  bound what the research can claim (interactions) and what the timeline control can know.
+- **A6:** `research/splits.py`, seed 42: 2,000 / 400 / 600, exactly 20% successful in each, the
+  band mix identical across splits, no duplicate groups, no id in two splits. The 50
+  real-grounded rows fell 31 / 6 / 13. Report: `results/data/stats.md`; input hash in
+  `results/run_info.json`.
