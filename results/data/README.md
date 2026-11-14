@@ -39,6 +39,7 @@ depend on the profile, but only weakly, as with real founders.
 | Industries | 113 distinct labels; at least 15 in every batch of 50 | |
 
 Full validator report: `results/data/validation_full.md` (`research/validate.py --profile full`).
+The questions TRL wrote about these founders, with their train scores: [questions.md](questions.md).
 
 ## Splits
 

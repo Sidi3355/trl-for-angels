@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import shutil
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -222,7 +223,7 @@ def main(argv: list[str] | None = None) -> int:
     (summary_dir / "metrics.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     plot_split = "test" if args.include_test else "val"
-    plotted = []
+    plotted, made = [], []
     for spec in args.plots.split(";"):
         group = [c for c in spec.split(",") if c in conds][:4]
         if len(group) < 1:
@@ -231,6 +232,7 @@ def main(argv: list[str] | None = None) -> int:
         title = "Calibration: " + " vs ".join(CONDITIONS[c][0] for c in group)
         plotted += plot_reliability(group, plot_split, preds,
                                     summary_dir / "plots" / name, title)
+        made.append((name, group))
     write_csv(summary_dir / "plots" / "reliability_table.csv", plotted)
 
     for exp, exp_rows in per_exp.items():
@@ -249,6 +251,12 @@ def main(argv: list[str] | None = None) -> int:
                            "decision": POSITIVE if pp >= t - 1e-9 else "failed"}
                           for i, yy, pp in zip(d["id"], d["y"], d["p"])]
         write_csv(exp_dir / "predictions.csv", pred_rows)
+        # Each experiment folder carries its own plots (section 9c): every plot with one of
+        # its conditions, copied from the summary.
+        for name, group in made:
+            if any(CONDITIONS[c][2] == exp for c in group):
+                (exp_dir / "plots").mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(summary_dir / "plots" / name, exp_dir / "plots" / name)
         (exp_dir / "config.json").write_text(json.dumps(
             {"stage": args.stage, "include_test": args.include_test,
              "threshold_protocol": "tuned on val for F0.5 with TRL's best_threshold",

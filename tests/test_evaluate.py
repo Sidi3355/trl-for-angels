@@ -43,6 +43,8 @@ def test_val_only_never_reads_test(tmp_path: Path) -> None:
         ("C2", "val-tuned F0.5")]
     assert (tmp_path / "results/summary/s1/plots/reliability_c1a_vs_c2_val.png").exists()
     assert (tmp_path / "results/experiments/01_baselines/s1/predictions.csv").exists()
+    for exp in ("01_baselines", "02_kev_zero_shot"):  # both have a condition in that plot
+        assert (tmp_path / f"results/experiments/{exp}/s1/plots/reliability_c1a_vs_c2_val.png").exists()
 
 
 def test_the_metrics_dictionary_is_copied_next_to_each_table(tmp_path: Path) -> None:

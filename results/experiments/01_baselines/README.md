@@ -51,4 +51,13 @@ Written by `research/evaluate.py` into a folder per stage (`<stage>/`):
 | `config.json` | the threshold rule, bootstrap size, seed and bins |
 | `metrics_dictionary.md` | what each column means |
 
-Reliability plots are in `results/summary/<stage>/plots/`.
+| `plots/` | reliability plots with at least one of this folder's conditions (copies of `results/summary/<stage>/plots/`) |
+
+**Plots in `b3-provisional/plots/` (val):**
+- `reliability_c1a_vs_c1b_vs_ctrl_val.png`: C1a and CTRL follow the diagonal (calibrated).
+  The vote (C1b) sits well below it: its score is the share of its questions answered yes,
+  not a probability, so when it scores 0.9 only about 4 in 10 of those founders succeed.
+- `reliability_c1a40_vs_ctrl_vs_c2_val.png`: the three learn stages that read the same 40
+  questions; C1a-40 and CTRL track the diagonal, base Kev (C2) sits below it (overconfident).
+- `reliability_c1a_vs_c2_val.png`: TRL's default against base Kev.
+- `reliability_c1a_val.png`: C1a alone (the plot meant for C3 against C1a, before C3 exists).

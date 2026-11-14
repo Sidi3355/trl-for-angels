@@ -5,8 +5,19 @@ Which final step (the "learn stage") turns those answers into the most accurate 
 calibrated prediction of founder success? Terms are explained in
 [GLOSSARY.md](GLOSSARY.md).
 
-**The answer:** not yet. The experiments are built and tested, but the dataset is still being
-generated. Once the final evaluation runs, this page will give the answer in three sentences.
+**The answer:** not yet; it comes from the final test evaluation (D1). This page will then
+give it in three sentences.
+
+**Progress (2026-11-14):**
+
+| Step | Status | Where |
+|---|---|---|
+| Dataset: 3,000 profiles, validated, split 2,000 / 400 / 600 | done | [data/](data/README.md) |
+| TRL: Claude wrote 93 questions, Kev answered them for every founder | done ($0.49) | [data/questions.md](data/questions.md) |
+| Baselines (C1a, C1a-40, C1b, CTRL) and base Kev (C2) scored on val; sanity check passed | done, provisional | [summary/b3-provisional/](summary/b3-provisional/metrics.md) |
+| Fine-tuning Kev (C3, C4) on Kaggle | running | [RUNS.md](RUNS.md) |
+| Final scores on test, with confidence intervals (D1) | next | |
+| The app's model and risk table (D3, D4) | after D1 | |
 
 **What can be claimed:** results hold for this generated dataset, with Kev-0.6B as the
 answerer. Real-world accuracy is not claimed; VCBench is the future real-data test.
@@ -41,8 +52,10 @@ reliability diagrams. Every test score has a 95% confidence interval.
 | [GLOSSARY.md](GLOSSARY.md) | every technical term in one or two plain sentences |
 | [METHODS.md](METHODS.md) | the full method in one place (data, TRL settings, conditions, fine-tuning, scoring, limits), written for a paper |
 | [DECISIONS.md](DECISIONS.md) | decision log: date, decision, reason, evidence |
+| [RUNS.md](RUNS.md) | every GPU run on Kaggle: task, exact code, result, where its log is |
 | `run_info.json` | TRL commit and version, model IDs, seeds, split sizes, measurements |
 | [data/](data/README.md) | what the dataset is, how it was made, its limits, and per-split stats |
+| [data/questions.md](data/questions.md) | the 93 questions Claude wrote, and which condition uses each |
 | [experiments/01_baselines/](experiments/01_baselines/README.md) | C1a, C1a-40, C1b and CTRL |
 | [experiments/02_kev_zero_shot/](experiments/02_kev_zero_shot/README.md) | C2 and EXTRA |
 | [experiments/03_kev_finetuned/](experiments/03_kev_finetuned/README.md) | C3 and C4 |
