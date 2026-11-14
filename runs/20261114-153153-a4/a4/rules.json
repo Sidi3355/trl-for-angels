@@ -1,0 +1,11 @@
+[
+  "Does the startup's industry fall within B2B technology (e.g., developer tools, cloud infrastructure, cybersecurity, enterprise software) or biotech?",
+  "Did the founder hold an engineering, security, or medical/scientific role (e.g., software engineer, security consultant, physician) at a company of 51+ employees before founding this startup?",
+  "Is the startup in an enterprise/B2B technology sector (such as developer tools, cloud infrastructure, cybersecurity, or biotech) rather than a consumer-facing sector (such as social apps, consumer hardware, or media)?",
+  "Does the profile state the founder has deep prior experience in the startup's industry?",
+  "Did the founder hold a role lasting 5+ years at a company with 5,000+ employees in a technical, engineering, or medical capacity (not finance, strategy, or marketing)?",
+  "Does the profile state that the founder has deep prior experience in the startup's industry?",
+  "Does the founder's job history consist of only one listed position?",
+  "Is the startup's industry a consumer-facing or social/media category (e.g., social media, social apps, messaging, news, digital media, podcasting)?",
+  "Does the profile state the founder has none (zero) prior experience in the startup's industry?"
+]
