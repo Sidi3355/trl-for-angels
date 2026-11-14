@@ -14,7 +14,7 @@ For the app session (`app-track`), passed on by the owner. Checked against `app-
   `rules.json` holds **40 questions** (the best by F0.5 on train, best first; TRL's
   `max_rules=40`, decided 2026-11-14), so the app's answerer asks Kev 40 questions per founder.
   If the D2 winner is C4 (Kev reads the profile directly), the app doesn't answer questions at
-  all: `model.json → input` says which.
+  all: `model.json → decider_input` (`"answers"` or `"profile"`) says which.
 
 ## What the app needs to change
 
