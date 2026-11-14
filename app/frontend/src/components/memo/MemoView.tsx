@@ -99,7 +99,7 @@ export function MemoView({ memoId }: { memoId: string }) {
   if (error) {
     return (
       <Page>
-        <PageHeader title="Memo unavailable" back={{ href: "/", label: "Deals" }} />
+        <PageHeader title="Memo unavailable" back={{ href: "/", label: "Founders" }} />
         <Notice tone="danger">{error}</Notice>
       </Page>
     );
@@ -137,7 +137,7 @@ export function MemoView({ memoId }: { memoId: string }) {
   return (
     <Page wide>
       <PageHeader
-        back={{ href: "/", label: "Deals" }}
+        back={{ href: "/", label: "Founders" }}
         title={
           <span className="flex items-center gap-3">
             <Avatar name={memo.founder.display_name} size={44} />

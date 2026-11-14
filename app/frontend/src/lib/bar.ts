@@ -1,5 +1,5 @@
 // "Your bar": the investor's target, timeline, risk appetite and filters, set once and applied to
-// every memo and the Deals list. A preference, not founder data, so it lives in localStorage.
+// every memo and the Founders list. A preference, not founder data, so it lives in localStorage.
 
 import { DEFAULT_POLICY, decide, filtersFailed, resolve, score, type Policy } from "./policy";
 import type { Decision, Distributions, Facets, Thresholds } from "./types";

@@ -8,7 +8,7 @@ export default function NotFound() {
       <div className="pt-16">
         <PageHeader title="Not found" subtitle="This page doesn't exist, or the memo has expired. Memos are kept only for a while." />
         <Link href="/" className="text-[16px] font-semibold text-accent hover:text-accent-hover">
-          Back to Deals
+          Back to your founders
         </Link>
       </div>
     </Page>

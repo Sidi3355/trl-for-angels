@@ -15,7 +15,7 @@ accuracy is claimed.
 |---|---|---|
 | `contract/` | JSON Schemas for every request, response and artefact, plus mocks and validators. See `contract/README.md`. | Task 1: done |
 | `backend/` | FastAPI service: screening, live progress (SSE), memos, what-if, batch, artefacts, and the research agent | Task 2: done, on mocks. Task 3: done (agent tested on 5 real founders) |
-| `frontend/` | Installable mobile-first Next.js app: deals, screening, live progress, memo, your bar, what-ifs | Task 4: done and redesigned, on mocks. Push and share (task 5) and batch UI (task 7) to come |
+| `frontend/` | Installable mobile-first Next.js app: founders list, screening, live progress, memo, your bar, what-ifs | Task 4: done and redesigned, on mocks. Push and share (task 5) and batch UI (task 7) to come |
 
 ## Run the frontend locally
 
@@ -35,10 +35,10 @@ build time, so set it before `npm run build` or in Vercel's environment variable
 What the frontend does, screen by screen (redesigned 2026-11-14 as an installable product: a bottom tab bar
 on phones, a sidebar on desktop, light and dark themes):
 
-- **Deals** (`/`): one search-style box to screen a founder by name, LinkedIn or website, and the founders
+- **Founders** (`/`): one search-style box to screen a founder by name, LinkedIn or website, and the founders
   screened this session with their verdict at your bar, filterable by advance, escalate or pass. Three
   fictional examples run in one tap. The list lives in `sessionStorage`, so it goes when the app closes.
-- **Your bar** (a sheet, opened from Deals, the sidebar, any memo or About): target outcome, timeline, risk
+- **Your bar** (a sheet, opened from Founders, the sidebar, any memo or About): target outcome, timeline, risk
   appetite and hard filters, with a plain reading of what the setting means on validation founders. Set once,
   applied to every verdict instantly (`localStorage`: a preference, not founder data).
 - **Screen** (`/new`): the founder, plus optional facts you already know (tap-to-pick chips), notes and the

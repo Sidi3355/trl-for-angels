@@ -1,7 +1,7 @@
 "use client";
 
 // App-wide state: the investor's bar, the val thresholds behind it, service health and this
-// session's deals. One provider so the sidebar, the Deals list and every memo agree.
+// session's deals. One provider so the sidebar, the Founders list and every memo agree.
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { api } from "@/lib/api";

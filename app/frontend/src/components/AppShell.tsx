@@ -38,7 +38,7 @@ function Sidebar() {
   const pathname = usePathname();
   const { bar, deals, thresholds, openBarSheet } = useApp();
   const nav = [
-    { href: "/", label: "Deals", icon: IconDeals, on: pathname === "/" },
+    { href: "/", label: "Founders", icon: IconDeals, on: pathname === "/" },
     { href: "/about", label: "How it works", icon: IconInfo, on: pathname === "/about" },
   ];
   return (
@@ -100,7 +100,7 @@ function Sidebar() {
 function TabBar() {
   const pathname = usePathname();
   const tabs = [
-    { href: "/", label: "Deals", icon: IconDeals, on: pathname === "/" || pathname.startsWith("/memos") },
+    { href: "/", label: "Founders", icon: IconDeals, on: pathname === "/" || pathname.startsWith("/memos") },
     { href: "/new", label: "Screen", icon: IconPlus, on: pathname === "/new" || pathname.startsWith("/screenings"), primary: true },
     { href: "/about", label: "About", icon: IconInfo, on: pathname === "/about" },
   ];

@@ -83,7 +83,7 @@ export default function AboutPage() {
           </button>
           <div className="flex items-center justify-between gap-3 px-4 py-3.5">
             <span>
-              <span className="block text-[15px] font-medium">This session&apos;s deals</span>
+              <span className="block text-[15px] font-medium">This session&apos;s founders</span>
               <span className="block text-[13px] text-muted">{cleared ? "Cleared." : `${deals.length} founder${deals.length === 1 ? "" : "s"}. Gone when you close the app.`}</span>
             </span>
             <Button variant="secondary" disabled={!deals.length} onClick={() => { clearDeals(); setCleared(true); }}>

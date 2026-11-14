@@ -1,4 +1,4 @@
-// Founders screened this session, for the Deals list. sessionStorage only: closed app, gone
+// Founders screened this session, for the Founders list. sessionStorage only: closed app, gone
 // (MASTER_PLAN guardrail: nothing stored after the session). The backend deletes memos on its own schedule.
 // Each entry keeps the distributions and facets, so the list can show verdicts at the investor's bar.
 

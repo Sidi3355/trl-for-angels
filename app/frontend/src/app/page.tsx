@@ -1,6 +1,6 @@
 "use client";
 
-// Deals: the founders screened this session, at the investor's bar, with one box to screen the next.
+// Founders: everyone screened this session, at the investor's bar, with one box to screen the next.
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
@@ -88,8 +88,8 @@ export default function DealsPage() {
   return (
     <Page>
       <PageHeader
-        title="Deals"
-        subtitle={deals.length ? "Founders you've screened this session, at your bar." : "Screen a founder in about a minute."}
+        title="Founders"
+        subtitle={deals.length ? "Everyone you've screened this session, judged against your bar." : "Screen a founder in about a minute."}
       />
 
       {healthError && (
@@ -115,7 +115,7 @@ export default function DealsPage() {
       {deals.length > 0 ? (
         <section className="mt-8" aria-labelledby="deals-title">
           <h2 id="deals-title" className="sr-only">
-            Your deals
+            Your founders
           </h2>
           <div className="no-scrollbar -mx-1 mb-3 flex gap-2 overflow-x-auto px-1">
             {FILTERS.map((f) => (
@@ -168,7 +168,7 @@ export default function DealsPage() {
       ) : (
         <section className="mt-8" aria-labelledby="examples-title">
           <div className="rounded-[24px] border border-dashed border-line-strong px-5 py-6 text-center sm:px-8">
-            <p className="font-display text-[19px] font-semibold">No deals yet</p>
+            <p className="font-display text-[19px] font-semibold">No founders yet</p>
             <p className="mx-auto mt-1.5 max-w-sm text-[14px] leading-relaxed text-muted">
               Search a founder above. The agent reads public sources from before they founded the company, then tells you whether they clear your bar, and why.
             </p>

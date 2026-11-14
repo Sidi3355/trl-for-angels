@@ -66,7 +66,8 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
 ## Decisions made
 
 - **Redesign (2026-11-14, owner: "make it look amazing, feel like a fully fledged product, less complicated").**
-  Deals list as home; one smart search box; "Your bar" is a single global setting in a sheet (not controls
+  Founders list as home (first called "Deals"; renamed because the owner found the investor jargon unclear);
+  one smart search box; "Your bar" is a single global setting in a sheet (not controls
   on every memo); memo leads with the verdict and a to-scale gauge; detail behind progressive disclosure.
   Inter + Space Grotesk; cool neutrals with one ink-blue accent; chart ramps validated with the dataviz
   skill. Installable (manifest and icons); push and share stay in task 5.
