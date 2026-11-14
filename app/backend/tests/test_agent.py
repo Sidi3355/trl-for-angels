@@ -86,7 +86,7 @@ def payload(**overrides):
         },
         "sources": [
             {"url": "https://example.com/profile", "title": "Profile", "published_date": "2021", "before_founding": True},
-            {"url": "https://example.com/about", "title": "About", "published_date": None, "before_founding": True},
+            {"url": "https://example.com/about", "title": "About", "published_date": "", "before_founding": True},
             {"url": "https://example.com/news-2021", "title": "Valuation news", "published_date": "2021-01",
              "before_founding": False},
         ],
@@ -154,8 +154,15 @@ def test_request_shape():
     assert call["system"][0]["cache_control"] == {"type": "ephemeral"}
     tools = {t["name"]: t for t in call["tools"]}
     assert tools["web_search"]["max_uses"] == 10 and tools["web_fetch"]["max_uses"] == 5
-    assert tools["submit_profile"] == SUBMIT_TOOL and SUBMIT_TOOL["strict"] is True
+    assert tools["submit_profile"] == SUBMIT_TOOL and "strict" not in SUBMIT_TOOL  # too large for strict mode
     assert "founding date isn't given" in call["messages"][0]["content"]
+
+
+def test_zero_fetches_leaves_web_fetch_out():
+    agent, client, ctx = make([msg("tool_use", [submit_block(payload())])])
+    agent.max_fetches = 0
+    run(agent.research(INP, ctx, no_emit))
+    assert [t["name"] for t in client.calls[0]["tools"]] == ["web_search", "submit_profile"]
 
 
 def test_nudges_when_no_submit_then_accepts():

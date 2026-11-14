@@ -52,9 +52,11 @@ python app/contract/tools/build_mocks.py   # regenerate mocks after a contract o
 ## The research agent (`AGENT=claude`)
 
 `backend/screener/pipeline/agent.py` asks Claude (default `claude-opus-5-5`, effort `medium`) to research
-one founder with web search and web fetch. It finishes by calling a strictly typed `submit_profile`
-tool with `{value, source_url, confidence, evidence}` for every template field, plus the founding date,
-its sources, post-founding facts and every real name it saw. Code then enforces the plan's rules:
+one founder with web search and web fetch. It finishes by calling a typed `submit_profile` tool with
+`{value, source_url, confidence, evidence}` for every template field, plus the founding date, its sources,
+post-founding facts and every real name it saw. The schema is too large for the API's strict mode, so
+every submission is validated against it in code, and an invalid one goes back to the model with the
+errors. Code then enforces the plan's rules:
 
 - **Founding-date cutoff:** a field whose only source describes the time after founding becomes
   unknown. Post-founding facts go to the memo's notes, never to the model.
@@ -74,6 +76,9 @@ Try it on the five real test founders in `backend/tools/test_founders.json` (a d
 ```bash
 app/backend/.venv/bin/python app/backend/tools/research_founders.py --spend --only awotona
 ```
+
+In the Claude Code cloud sandbox, prefix it with `AGENT_MAX_FETCHES=0`: the API refuses web fetch from
+restricted-network sandboxes, so the agent there runs on web search alone.
 
 It prints each founder's rendered profile, every field's provenance and source, the post-founding
 facts it kept out, and the cost. Results are saved in `app/backend/.research_runs/`, which is

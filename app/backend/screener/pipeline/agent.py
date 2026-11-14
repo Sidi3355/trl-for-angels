@@ -38,7 +38,9 @@ _ENUMS = {
     "industry_experience": ["none", "some", "deep", UNKNOWN],
 }
 _BAND = {"enum": ["under $50M", "$50M-$500M", "$500M-$1B", "over $1B"]}
-_NULLABLE_STR = {"anyOf": [{"type": "string"}, {"type": "null"}]}
+# Plain strings rather than nullable ones keep the schema small; the code treats "" as missing.
+_URL = {"type": "string", "description": "URL, or an empty string if none"}
+_DATE = {"type": "string", "description": "YYYY, YYYY-MM or YYYY-MM-DD, or an empty string if unknown"}
 
 
 def _obj(props: dict) -> dict:
@@ -66,17 +68,18 @@ _VALUE_SCHEMAS = {
 SUBMIT_TOOL = {
     "name": "submit_profile",
     "description": "Submit the founder's profile as of the founding date. Call it exactly once, at the end.",
-    "strict": True,
+    # Not strict: the API refuses this schema in strict mode ("compiled grammar is too large"). Every
+    # submission is validated against it in research() instead, and an invalid one is sent back with the errors.
     "eager_input_streaming": True,
     "input_schema": _obj({
         "founding_date": _obj({"value": {"type": "string", "description": "YYYY, YYYY-MM, YYYY-MM-DD or 'unknown'"},
-                               "source_url": _NULLABLE_STR, "evidence": {"type": "string"}}),
-        "fields": _obj({k: _obj({"value": s, "source_url": _NULLABLE_STR, "confidence": {"type": "number"},
+                               "source_url": _URL, "evidence": {"type": "string"}}),
+        "fields": _obj({k: _obj({"value": s, "source_url": _URL, "confidence": {"type": "number"},
                                  "evidence": {"type": "string"}}) for k, s in _VALUE_SCHEMAS.items()}),
         "sources": {"type": "array", "items": _obj({
-            "url": {"type": "string"}, "title": {"type": "string"}, "published_date": _NULLABLE_STR,
+            "url": {"type": "string"}, "title": {"type": "string"}, "published_date": _DATE,
             "before_founding": {"type": "boolean"}})},
-        "post_founding_notes": {"type": "array", "items": _obj({"text": {"type": "string"}, "source_url": _NULLABLE_STR})},
+        "post_founding_notes": {"type": "array", "items": _obj({"text": {"type": "string"}, "source_url": _URL})},
         "names_seen": {"type": "array", "items": {"type": "string"}},
         "research_notes": {"type": "string"},
     }),
@@ -99,8 +102,8 @@ Fill each field with the template's values exactly:
 - background: technical (engineering, computer science), business (sales, finance, consulting, marketing, operations), mixed (both), or domain specialist (deep expertise outside software, e.g. clinician, scientist, construction engineer).
 - work_experience: total years worked before founding, excluding full-time study: <5, 5-10, 10-15 or 15+. It should roughly match the job durations.
 - industry_experience: prior experience in the startup's own industry: none, some or deep. It must agree with the job industries.
-- education: 1 to 3 entries. degree as an abbreviation (BSc, BA, BEng, MSc, MEng, MBA, PhD, MD) or "no degree" for study left unfinished; field of study; the university's QS World University Rankings band: top 50, 51-100, 101-300, 300+, or unranked if not ranked by QS.
-- jobs: 1 to 6 roles before founding, oldest first. role is a plain job title. company is a generic description and NEVER a name (for example "a large search and advertising company", "a payments startup", "a teaching hospital"). company_size is the headcount band at the time. industry is the employer's industry in title case (e.g. "Fintech", "Professional Services"). duration is a band: <1, 1-2, 2-3, 3-5 or 5+ years. Count an earlier startup of the founder's own under prior_startups, not as a job.
+- education: 1 to 3 entries. degree as an abbreviation (BSc, BA, BEng, MSc, MEng, MBA, PhD, MD) or "no degree" for study left unfinished; field of study; the university's QS World University Rankings band: top 50, 51-100, 101-300, 300+, or unranked if not ranked by QS. Use the current QS ranking: it describes the university, not the founder, so it doesn't break the cutoff. Give the page showing the degree itself as education's source_url, not the rankings page.
+- jobs: 1 to 6 roles before founding, oldest first. role is a plain job title. company is a generic, neutral description and NEVER a name (for example "a large search and advertising company", "a payments startup", "a teaching hospital"), with no evaluative words such as fast-growing, leading or prestigious. company_size is the headcount band at the time. industry is the employer's industry in title case (e.g. "Fintech", "Professional Services"). duration is a band: <1, 1-2, 2-3, 3-5 or 5+ years. Count an earlier startup of the founder's own under prior_startups, not as a job.
 - prior_startups: startups the founder founded or co-founded before this one, each with an outcome: shut down, acquired (with a value band), IPO (with a value band) or still operating. Use "none" if there were none.
 - prior_exits: acquisitions or IPOs of those startups, as co-founder, with the same value bands. Use "none" if there were none.
 Value bands: under $50M, $50M-$500M, $500M-$1B, over $1B. If a sale price was never disclosed and there is no credible estimate, set both prior_startups and prior_exits to "unknown" and explain in the evidence.
@@ -136,11 +139,12 @@ class ClaudeAgent:
         self._validate = _validator()
 
     def tools(self) -> list[dict]:
-        return [
-            {"type": "web_search_20260209", "name": "web_search", "max_uses": self.max_searches},
-            {"type": "web_fetch_20260209", "name": "web_fetch", "max_uses": self.max_fetches},
-            SUBMIT_TOOL,
-        ]
+        tools = [{"type": "web_search_20260209", "name": "web_search", "max_uses": self.max_searches}]
+        # AGENT_MAX_FETCHES=0 leaves web fetch out entirely: the API refuses the tool from
+        # restricted-network sandboxes (such as the Claude Code cloud environment), even with max_uses 0.
+        if self.max_fetches > 0:
+            tools.append({"type": "web_fetch_20260209", "name": "web_fetch", "max_uses": self.max_fetches})
+        return tools + [SUBMIT_TOOL]
 
     def user_message(self, inp: dict) -> str:
         f = inp["founder"]

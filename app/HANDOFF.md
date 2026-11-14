@@ -32,7 +32,7 @@ MASTER_PLAN.md that looks inconsistent instead of silently working around it.
 |---|---|---|
 | 1 | API contract and mocks (`app/contract/`) | Done |
 | 2 | FastAPI backend on mocks (`app/backend/`) | Done |
-| 3 | Research agent, merge, render; test on 5 real founders | **In progress:** built and tested offline (29 tests). Next: the paid run on real founders |
+| 3 | Research agent, merge, render; test on 5 real founders | **In progress:** 30 offline tests; first paid run (Awotona) done for $0.31. Next: the other four, after the owner approves |
 | 4 | Mobile-first Next.js PWA (`app/frontend/`): form, live progress, memo, client-side controls, what-ifs, disclaimer | Not started |
 | 5 | PWA features: manifest, share target, web push; phone test instructions (iOS and Android differ) | Not started |
 | 6 | Hosting: frontend on Vercel, backend on Railway, both on mocks | Not started |
@@ -44,11 +44,16 @@ MASTER_PLAN.md that looks inconsistent instead of silently working around it.
    `uv venv app/backend/.venv --python 3.13 && uv pip install --python app/backend/.venv/bin/python -r app/backend/requirements-dev.txt`
 2. Check `SCREENER_ANTHROPIC_API_KEY` is set (never print it). If not, ask the owner to add it as an
    environment variable in the cloud environment's settings. Not `ANTHROPIC_API_KEY`: Claude Code itself reads that.
-3. Run **one** founder: `app/backend/.venv/bin/python app/backend/tools/research_founders.py --spend --only awotona`
-4. Show the owner the rendered profile, the field sources, the post-founding notes kept out, and the
-   cost. Ask them to confirm in the Claude Console that the usage landed on their key.
-5. Run the other four (`dubugras`, `young`, `paananen`, `cheung`) only after they approve. Then stop:
-   task 3 is done when the owner has seen the rendered profiles plus sources.
+3. ~~Run **one** founder~~ Done on 2026-11-14 (Awotona: $0.31, 62 s, 8 searches). It found three bugs,
+   all fixed: web fetch is refused from this sandbox, and the `submit_profile` schema was too large
+   for strict mode (first too many unions, then "compiled grammar is too large"). A fourth (education
+   dropped because the agent cited the 2025 QS page as its source) is fixed in the prompt; check it
+   holds on the next run.
+4. ~~Show the owner~~ Done. Still open: the owner to confirm in the Claude Console that the usage landed
+   on their key.
+5. Run the other four only after the owner approves, in this sandbox with web fetch off:
+   `AGENT_MAX_FETCHES=0 app/backend/.venv/bin/python app/backend/tools/research_founders.py --spend --only dubugras young paananen cheung`
+   Then stop: task 3 is done when the owner has seen the rendered profiles plus sources.
 
 ## Decisions made
 
@@ -72,8 +77,13 @@ MASTER_PLAN.md that looks inconsistent instead of silently working around it.
   goes in as an environment variable. Using the session's own Anthropic access is ruled out: it would
   bill the owner's Claude plan with no spend cap.
 - `ANTHROPIC_BASE_URL` is set in the sandbox to Claude Code's own gateway. The agent always uses
-  `AGENT_BASE_URL=https://api.anthropic.com` explicitly. Confirm on the first paid call that the proxy
-  passes the owner's key through. If it doesn't, run the test on Railway instead.
+  `AGENT_BASE_URL=https://api.anthropic.com` explicitly. Confirmed on the first paid call: the proxy
+  passes the owner's key through.
+- The API refuses the web fetch tool from this sandbox ("restricted network access"). It's a platform
+  restriction, so don't work around it: set `AGENT_MAX_FETCHES=0` here, and the agent runs on web search
+  alone. Hosted deployments (Railway) keep web fetch on.
+- Tests clear every setting from the environment (`tests/conftest.py`), so a key set in the sandbox
+  doesn't change them.
 - A Vercel connector is available in this environment. The Vercel project `trl-for-angels` has
   **"Ignored Build Step" set to `exit 0`**, so pushes don't trigger failing builds. **In task 6:** remove
   it, set the root directory to `app/frontend` and the framework to Next.js.
