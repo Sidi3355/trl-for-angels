@@ -114,6 +114,9 @@ while doing the work: date, decision, reason, evidence. Newest last.
   - long states (C3-like, 1,468 tokens with synthetic questions): batch 8 runs out of memory
     on 15 GB; with gradient checkpointing it works at 24.6 s/step and 5.7 GB, so about 3.4 h for
     2 epochs. Real RRF questions may be longer, which would push this up.
+- **Reproduced:** a second run with the new runner (`runs/20261114-124701-a3/`, repo commit
+  `5fdf335`) passed with matching numbers (108 answers/s; 0.17 h and 3.34 h projected), and
+  its start and finish status notes reached GitHub.
 - **To decide at C1-train:** for C3, use both T4s, train 1 epoch, or a shorter serialisation;
   choose once the real state lengths are known. Every option fits one Kaggle session.
 
