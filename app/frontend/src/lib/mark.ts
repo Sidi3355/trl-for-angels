@@ -25,6 +25,12 @@ export const MARK_HALO = MARK_HALO_OUTER + MARK_HALO_INNER;
 /** The whole mark in one colour (the halo is cut out of the punch): fill with fill-rule="evenodd". */
 export const MARK_PATH = MARK_PUNCH + MARK_HALO;
 
+/**
+ * The halo's own bounds (the outer ellipse, measured): use as the viewBox when the halo stands alone as a
+ * letter, the O of the wordmark. Wider than tall (1.355 : 1), like Archivo's wide O.
+ */
+export const HALO_VIEWBOX = "10.24 15.94 43.52 32.12";
+
 /** Brand colours: stamp-pad blue on paper. Kept here for the icons; the app reads them from globals.css. */
 export const BRAND_BLUE = "#1f3bd0";
 export const BRAND_BLUE_ON_DARK = "#8fa0ff";

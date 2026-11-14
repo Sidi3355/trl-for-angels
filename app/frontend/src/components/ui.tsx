@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { IconAlert, IconArrowUpRight, IconChevronLeft, IconMinus, IconX } from "@/components/icons";
-import { MARK_PATH, MARK_SIZE } from "@/lib/mark";
+import { HALO_VIEWBOX, MARK_HALO, MARK_PATH, MARK_SIZE } from "@/lib/mark";
 import type { Decision } from "@/lib/types";
 
 export function cx(...parts: (string | false | null | undefined)[]): string {
@@ -379,14 +379,24 @@ export function Logo({ size = 32, className }: { size?: number; className?: stri
   );
 }
 
-/** The name with the mark as its O. `size` is the type size in pixels. */
+/** The halo on its own, in the current text colour: the O of the wordmark. Height sets its size. */
+export function Halo({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox={HALO_VIEWBOX} className={className} style={style} aria-hidden>
+      <path d={MARK_HALO} fill="currentColor" fillRule="evenodd" />
+    </svg>
+  );
+}
+
+/**
+ * The name with the halo as its O, all in the text colour. Inside the app the halo stands alone; the
+ * punch around it belongs to the app icon. `size` is the type size in pixels.
+ */
 export function Wordmark({ size = 17 }: { size?: number }) {
   return (
     <span role="img" aria-label="Halomark" className="wordmark" style={{ fontSize: size }}>
       <span aria-hidden>HAL</span>
-      <svg viewBox={`0 0 ${MARK_SIZE} ${MARK_SIZE}`} className="text-brand" aria-hidden>
-        <path d={MARK_PATH} fill="currentColor" fillRule="evenodd" />
-      </svg>
+      <Halo />
       <span aria-hidden>MARK</span>
     </span>
   );

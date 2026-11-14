@@ -119,7 +119,7 @@ Contents of each version folder:
   - `capture-test-2x.jpg`, the test frame that showed the 2× capture works
 - `v4-halomark/`: the video, a strip of stills and one full-size frame at 1s
 
-## 08-halomark-brand (16:30–16:40) · Current
+## 08-halomark-brand (16:30–16:40) · Current for the app icon; the in-app wordmark changed in 09
 
 The product was renamed **Halomark**: a halo for angels, and close to *hallmark*, the stamp that certifies tested gold.
 A Claude Fable 5.2 design agent made the identity.
@@ -142,7 +142,19 @@ A Claude Fable 5.2 design agent made the identity.
 - `desktop-home-light.png`, `desktop-home-dark.png`
 - **Sent:** `brand-board.png`, `directions.png`, `phone-home-light.png`, `phone-memo-dark.png`, `phone-about-name-light.png`
 
-## tools
+## 09-wordmark-plain-halo (16:55–17:05) · Current
+
+The owner's change: the app icon keeps the halo in its blue octagonal punch, but inside the app the O of
+HALOMARK is the halo alone, in the same colour as the letters.
+- `phone-header-*.png`, `desktop-sidebar-*.png`: the wordmark at its real sizes (17px on phones, 21px on desktop), light and dark
+- `phone-home-*.png`, `desktop-home-*.png`: the whole home screen with it
+- `phone-not-found-*.png`: the not-found page, which now shows the halo instead of the boxed mark
+- `wordmark-large-vs-real-O.png`: the wordmark at 120px above Archivo's own O, used to match the halo's height and overshoot to a real letter
+- `link-preview-image.png`: the link-preview image, regenerated with the same wordmark
+- **Sent:** `phone-header-light.png`, `desktop-sidebar-dark.png`, `phone-home-dark.png`, `wordmark-large-vs-real-O.png`
+
+The walk-through video (07, v4) and the brand board (08) still show the earlier boxed O in the header.
+
 
 - `record-walkthrough.cjs`: the script that recorded v3 and v4, with the ffmpeg command in its header, so the video can be re-shot after design changes
 - `walkthrough-batch.csv`: the three example founders it pastes into "Screen a list"

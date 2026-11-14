@@ -14,7 +14,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { chromium } = require("playwright");
-const { MARK_PUNCH, MARK_HALO, MARK_PATH, BRAND_BLUE, BRAND_PAPER, BRAND_INK } = require("../src/lib/mark.ts");
+const { MARK_PUNCH, MARK_HALO, MARK_PATH, HALO_VIEWBOX, BRAND_BLUE, BRAND_PAPER, BRAND_INK } = require("../src/lib/mark.ts");
 
 const root = path.join(__dirname, "..");
 const icons = path.join(root, "public", "icons");
@@ -54,13 +54,13 @@ function openGraph(font) {
     @font-face{font-family:Archivo;src:url(data:font/woff2;base64,${font});font-weight:100 900;font-stretch:62% 125%}
     body{margin:0;width:1200px;height:630px;background:${BRAND_PAPER};color:${BRAND_INK};font-family:Archivo;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;padding:76px 84px 72px}
     .w{font-size:132px;font-weight:800;font-stretch:125%;letter-spacing:.012em;line-height:1;white-space:nowrap}
-    .w svg{height:.697em;width:.697em;margin:0 .05em 0 .055em}
+    .w svg{height:.725em;width:calc(.725em * 1.355);margin:0 .04em 0 .045em;position:relative;top:.014em}
     .t{font-size:46px;font-weight:650;letter-spacing:-.025em;line-height:1.12;max-width:17em}
     .r{display:flex;align-items:flex-end;justify-content:space-between}
     .s{display:flex;gap:14px}
     .e{font-size:19px;font-weight:650;font-stretch:116%;letter-spacing:.09em;text-transform:uppercase;color:#5b5e5a}
   </style>
-  <div><div class="w">HAL<svg viewBox="0 0 64 64"><path d="${MARK_PATH}" fill="${BRAND_BLUE}" fill-rule="evenodd"/></svg>MARK</div></div>
+  <div><div class="w">HAL<svg viewBox="${HALO_VIEWBOX}"><path d="${MARK_HALO}" fill="${BRAND_INK}" fill-rule="evenodd"/></svg>MARK</div></div>
   <div class="r"><div><div class="e">Founder screening for angel investors</div><div class="t" style="margin-top:18px">Test a founder against your bar. Get a verdict: meet, look closer or pass.</div></div>
   <div class="s">${stamp("#35d685")}${stamp("#ffb930")}${stamp("#17181a")}</div></div>`;
 }

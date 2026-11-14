@@ -6,8 +6,9 @@
   widths: extra-condensed for the big figures, normal for reading, wide capitals for small labels.
   Colour is saved for the verdict: a full-colour slab (green, amber or ink) carries the decision,
   everything around it stays black on paper. Buttons and selections are ink, not a brand hue.
-  The brand is the stamp on the slip: stamp-pad blue (--brand) appears only in the mark, never on
-  controls or verdicts, and the hallmark's cut-corner punch (.punch) is the shape a verdict is struck in.
+  The brand is the stamp on the slip. In the app the name is set in ink with the halo as its O; the full
+  mark (the halo struck into a cut-corner punch, in stamp-pad blue, --brand) is the app icon, and appears
+  in the app only where the About page explains the name. Verdicts are struck in the punch shape (.punch).
   Verdicts always come with an icon and a label; charts keep the validated ramps (dataviz skill).
 */
 :root {
@@ -232,7 +233,7 @@ textarea {
     line-height: 1.2;
     text-transform: uppercase;
   }
-  /* The wordmark: Archivo at its widest, in capitals, with the mark standing in for the O. */
+  /* The wordmark: Archivo at its widest, in capitals, with the halo standing in for the O, in the text colour. */
   .wordmark {
     display: inline-flex;
     align-items: baseline;
@@ -244,10 +245,13 @@ textarea {
     white-space: nowrap;
   }
   .wordmark svg {
-    /* Archivo's capital height, so the punch sits on the baseline and stops at the cap line */
-    width: 0.697em;
-    height: 0.697em;
-    margin: 0 0.05em 0 0.055em;
+    /* Archivo's capital height (0.697em) plus a round letter's overshoot above and below the lines;
+       a flex item's baseline is its bottom edge, so it's moved down by the lower overshoot */
+    height: 0.725em;
+    width: calc(0.725em * 1.355);
+    margin: 0 0.04em 0 0.045em;
+    position: relative;
+    top: 0.014em;
     flex: none;
   }
   /* A hallmark punch: a square with its corners cut. Verdict tiles are struck in this shape. */

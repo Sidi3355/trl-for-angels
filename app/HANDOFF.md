@@ -86,6 +86,8 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   `app/media/08-halomark-brand/directions.png`. The blue is the main judgement call: an ink-only mark is the
   fallback (`--brand` in globals.css and the colours in `src/lib/mark.ts`, then rerun the icon script).
   User-visible names only: `screener` stays as the backend package, env var and storage-key prefix.
+  **Wordmark (owner, 2026-11-14):** in the app the O is the halo alone, in the text colour, not the blue boxed
+  mark; the boxed mark is the app icon (and the illustration in About's "The name").
 - **Verdict labels for angels (owner, 2026-11-14): "Meet / Look closer / Pass"** on screen, replacing "Advance /
   Escalate / Pass" (fund language: a solo angel has nobody to escalate to). Display only: the contract,
   backend, policy and research keep `advance` / `escalate` / `pass` as the internal values. MASTER_PLAN still

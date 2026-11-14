@@ -75,9 +75,10 @@ on phones, a sidebar on desktop, light and dark themes):
   skill's palette validator against both themes' surfaces.
 - **Brand: Halomark** (renamed from Screener on 2026-11-14; identity by a Claude Fable 5.2 design pass). The mark is a
   hallmark punch (the cut-corner stamp an assay office strikes into tested gold) with an angel's halo struck into
-  it, and it stands in for the O in the wordmark, HAL◯MARK (Archivo at its widest width, weight 800, capitals).
-  Stamp-pad blue (`--brand`, `#1f3bd0`; `#8fa0ff` on dark) appears only in the mark and the app icon, never on
-  controls or verdicts; verdict tiles are struck in the same cut-corner shape (`.punch`). The geometry lives
+  it, used as the app icon in stamp-pad blue (`#1f3bd0`). Inside the app the name is HAL◯MARK (Archivo at its
+  widest width, weight 800, capitals) with the halo alone as its O, in the text colour (owner's call: cleaner than
+  the boxed mark in the header). The boxed mark appears in the app only where About explains the name; verdict
+  tiles are struck in the same cut-corner shape (`.punch`). The geometry lives
   once in `src/lib/mark.ts`; `node scripts/make-brand-assets.cjs` (after `next build`) regenerates every icon,
   the SVG favicon and the link-preview image from it. Internal names stay `screener` (the backend package,
   `SCREENER_ANTHROPIC_API_KEY`, storage keys), so nothing on the hosts changes.
