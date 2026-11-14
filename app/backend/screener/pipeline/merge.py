@@ -38,6 +38,8 @@ def merge(inp: dict, findings: Findings) -> tuple[dict, list[dict]]:
             fields[key] = {"value": agent[0], "provenance": "agent", "source_ids": list(agent[1]), "confidence": agent[2]}
         else:
             fields[key] = {"value": UNKNOWN, "provenance": "unknown", "source_ids": [], "confidence": None}
+            if findings.field_notes.get(key):
+                fields[key]["note"] = findings.field_notes[key][:500]
     return fields, conflicts
 
 

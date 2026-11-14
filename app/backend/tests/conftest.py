@@ -14,6 +14,14 @@ EXAMPLES = CONTRACT_DIR / "examples"
 MOCKS = CONTRACT_DIR / "mocks"
 
 
+@pytest.fixture(autouse=True)
+def _isolated_env(monkeypatch):
+    """Tests see only the settings they pass, never keys or switches set in the real environment."""
+    names = {f.upper() for f in Settings.model_fields} | {"SCREENER_ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY"}
+    for name in names:
+        monkeypatch.delenv(name, raising=False)
+
+
 def load(path: Path):
     return json.loads(path.read_text())
 

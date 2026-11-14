@@ -1,0 +1,40 @@
+{
+  "_about": "Five real founders for testing the research agent (MASTER_PLAN step C3-agent). Only 'input' is sent to the agent; 'reference' is what public sources say, for checking its answers by eye. Founding dates are deliberately not given, so the agent must establish them.",
+  "founders": [
+    {
+      "key": "awotona",
+      "tests": "solo founder, sales background, several unnamed failed startups",
+      "input": {"schema_version": "0.1.0", "client_ref": "test-1",
+                "founder": {"name": "Tope Awotona", "company_name": "Calendly", "website_url": "https://calendly.com"}},
+      "reference": {"founded": "2013", "cofounders": "solo", "notes": "Sales roles incl. IBM and EMC; about 3 failed startups before Calendly; later $3B valuation (2021) is post-founding."}
+    },
+    {
+      "key": "dubugras",
+      "tests": "young repeat founder with a prior exit, no degree, under 5 years of experience",
+      "input": {"schema_version": "0.1.0", "client_ref": "test-2",
+                "founder": {"name": "Henrique Dubugras", "company_name": "Brex", "website_url": "https://www.brex.com"}},
+      "reference": {"founded": "2017 (January)", "cofounders": "1", "notes": "Co-founded Pagar.me (2013 or 2014), acquired by Stone in 2016; about 8 months at Stanford, no degree."}
+    },
+    {
+      "key": "young",
+      "tests": "construction domain specialist, large founding team, big post-founding acquisition",
+      "input": {"schema_version": "0.1.0", "client_ref": "test-3",
+                "founder": {"name": "Tracy Young", "company_name": "PlanGrid"}},
+      "reference": {"founded": "2011", "cofounders": "3+", "notes": "Construction management degree (Sacramento State, 2008); project engineer at a construction firm 2008-2011; Autodesk acquisition in 2018 is post-founding."}
+    },
+    {
+      "key": "paananen",
+      "tests": "non-US repeat founder; prior exit with an undisclosed price",
+      "input": {"schema_version": "0.1.0", "client_ref": "test-4",
+                "founder": {"name": "Ilkka Paananen", "company_name": "Supercell", "website_url": "https://supercell.com"}},
+      "reference": {"founded": "2010", "cofounders": "3+", "notes": "Co-founded Sumea (2000), sold to Digital Chocolate (price not public), then ran its European studio."}
+    },
+    {
+      "key": "cheung",
+      "tests": "company that later shut down; founding date ambiguous (2010 vs 2012)",
+      "input": {"schema_version": "0.1.0", "client_ref": "test-5",
+                "founder": {"name": "Adora Cheung", "company_name": "Homejoy"}},
+      "reference": {"founded": "2010 as Pathjoy (renamed Homejoy, 2012 in some sources)", "cofounders": "1", "notes": "Product manager at Slide (acquired by Google); co-founded with her brother; Homejoy shut down in 2015 (post-founding)."}
+    }
+  ]
+}
