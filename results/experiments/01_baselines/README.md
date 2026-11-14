@@ -1,4 +1,4 @@
-# 01 · Baselines: C1a, C1b and CTRL
+# 01 · Baselines: C1a, C1a-40, C1b and CTRL
 
 ## Question
 
@@ -9,9 +9,11 @@ success from TRL's answers? These are the scores Kev has to beat.
 
 Claude wrote yes/no questions about the training founders, and base Kev-0.6B answered every
 question for every founder, through TRL's real pipeline (`research/fit_rrf.py`,
-`research/answers.py`). The answers were then combined three ways: TRL's default weighted sum
-(**C1a**, elastic net), the RRF paper's vote (**C1b**), and XGBoost (**CTRL**, tuned on val,
-`research/baselines.py`). All three use exactly the same questions and answers. Each
+`research/answers.py`). The answers were then combined four ways: TRL's default weighted sum
+over every question (**C1a**, elastic net); the same weighted sum over only the 40 best
+questions, the ones Kev reads (**C1a-40**); the RRF paper's vote (**C1b**); and XGBoost on those
+same 40 (**CTRL**, tuned on val, `research/baselines.py`). All four start from exactly the same
+questions and answers. Each
 threshold was tuned on val for F0.5; for C1a and C1b, TRL's own built-in threshold is
 reported too.
 
@@ -22,8 +24,9 @@ founders C1a flags, about N succeed".
 
 ## What it means
 
-*Pending.* For the research: the bar Kev must clear, and (CTRL against C1a) how much is
-gained just by handling combinations of answers. For the app: whether the questions carry
+*Pending.* For the research: the bar Kev must clear; C1a-40 against C1a, what limiting Kev
+to 40 questions costs; and CTRL against C1a-40, how much is gained just by handling
+combinations of answers. For the app: whether the questions carry
 signal at all. Also the sanity check (B4): above about 0.8 F0.5 means the data is too easy.
 
 ## Caveats

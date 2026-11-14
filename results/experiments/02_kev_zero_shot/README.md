@@ -8,8 +8,9 @@ TRL's answers (**C2**), or from the founder profile alone (**EXTRA**)?
 ## What we did
 
 **C2** is the new TRL learn stage (`combiner="decision"`, contributed to TRL): each founder's
-answers are written as text, one line per question ("Has the founder founded a company
-before? yes"), and Kev is asked "Will this founder's company succeed (exit, IPO or funding
+answers to the 40 best questions (TRL's `max_rules=40`, best F0.5 on train first) are written
+as text, one line per question ("Has the founder founded a company before? yes"), and Kev is
+asked "Will this founder's company succeed (exit, IPO or funding
 over $500M)?". Its probability is the score. **EXTRA** asks Kev the same question about the
 founder profile itself, exactly as TRL sends it to the answerer. Nothing is trained; the
 threshold is tuned on val for F0.5.
