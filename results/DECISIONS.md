@@ -12,6 +12,13 @@ while doing the work: date, decision, reason, evidence. Newest last.
   merge, so library behaviour is v0.3.0's. The package reports version `0.3.0`. It was upstream
   `main`'s head on 2026-11-14.
 
+## 2026-11-14 · A1 · Fork
+
+- **Decision:** TRL work happens in the fork `Sidi3355/think-reason-learn`, on branch
+  `feature/decision-combiner`, which is pushed there. The local clone's remotes are `origin` (the
+  fork) and `upstream` (Vela). The pull request (G4) goes from this branch to upstream `main`.
+- **Evidence:** the fork's `main` was at `3437d64` when it was created, the same commit as the pin.
+
 ## 2026-11-14 · A1 · Project environment
 
 - **Decision:** a Python 3.13 venv (`uv`) holding the fork in editable mode with the `[anthropic]`

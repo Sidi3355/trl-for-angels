@@ -2,8 +2,8 @@
   "updated": "2026-11-14",
   "trl": {
     "upstream": "https://github.com/Vela-Research/think-reason-learn",
-    "fork": null,
-    "fork_note": "GitHub fork not yet created; local clone at ../think-reason-learn with remote 'upstream'",
+    "fork": "https://github.com/Sidi3355/think-reason-learn",
+    "fork_note": "local clone at ../think-reason-learn; remotes 'origin' (fork) and 'upstream' (Vela)",
     "branch": "feature/decision-combiner",
     "base_commit": "3437d64",
     "git_describe": "v0.3.0-3-g3437d64",

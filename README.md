@@ -18,12 +18,13 @@ The full design, settled decisions and step order are in [`MASTER_PLAN.md`](MAST
 
 ## Setup
 
-TRL is used from our fork, checked out next to this repo, on branch `feature/decision-combiner`
-(based on upstream commit `3437d64`, TRL 0.3.0). TRL needs Python 3.13.
+TRL is used from our fork, [Sidi3355/think-reason-learn](https://github.com/Sidi3355/think-reason-learn),
+checked out next to this repo on branch `feature/decision-combiner` (based on upstream commit
+`3437d64`, TRL 0.3.0). TRL needs Python 3.13.
 
 ```bash
-git clone https://github.com/Vela-Research/think-reason-learn.git ../think-reason-learn
-git -C ../think-reason-learn switch -c feature/decision-combiner 3437d64
+git clone -b feature/decision-combiner https://github.com/Sidi3355/think-reason-learn.git ../think-reason-learn
+git -C ../think-reason-learn remote add upstream https://github.com/Vela-Research/think-reason-learn.git
 uv venv --python 3.13 .venv
 uv pip install --python .venv/bin/python -r requirements.txt
 cp .env.example .env   # then fill in the keys
