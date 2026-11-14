@@ -1,0 +1,33 @@
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:   0%|          | 1/310 [00:00<02:13,  2.31it/s]Loading weights:  68%|██████▊   | 212/310 [00:00<00:00, 522.51it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 417.35it/s]
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Fetching 13 files: 100%|██████████| 13/13 [00:00<00:00, 1285.93it/s]
+delta: warm start from /root/.cache/huggingface/hub/models--jaredpalmer--kev-0.6b/snapshots/dece6dba8d43f0f7ded45e9f5b9df12474d90843: 392 lora tensors and the pointer head loaded
+device=cuda world=1 trainable params=10.6M
+2000 training requests (holdout=[]), questions by type {'noul': 2000}
+ep0 step 10/250 loss 0.580 kl 0.000 anchor 0.000 1.455s/rec
+ep0 step 20/250 loss 0.603 kl 0.000 anchor 0.000 1.459s/rec
+ep0 step 30/250 loss 0.556 kl 0.000 anchor 0.000 1.458s/rec
+ep0 step 40/250 loss 0.520 kl 0.000 anchor 0.000 1.459s/rec
+ep0 step 50/250 loss 0.554 kl 0.000 anchor 0.000 1.460s/rec
+ep0 step 60/250 loss 0.530 kl 0.000 anchor 0.000 1.460s/rec
+ep0 step 70/250 loss 0.434 kl 0.000 anchor 0.000 1.460s/rec
+ep0 step 80/250 loss 0.601 kl 0.000 anchor 0.000 1.461s/rec
+ep0 step 90/250 loss 0.353 kl 0.000 anchor 0.000 1.460s/rec
+ep0 step 100/250 loss 0.348 kl 0.000 anchor 0.000 1.461s/rec
+ep0 step 110/250 loss 0.557 kl 0.000 anchor 0.000 1.461s/rec
+ep0 step 120/250 loss 0.433 kl 0.000 anchor 0.000 1.461s/rec
+ep0 step 130/250 loss 0.495 kl 0.000 anchor 0.000 1.461s/rec
+ep0 step 140/250 loss 0.540 kl 0.000 anchor 0.000 1.461s/rec
+ep0 step 150/250 loss 0.445 kl 0.000 anchor 0.000 1.461s/rec
+ep0 step 160/250 loss 0.520 kl 0.000 anchor 0.000 1.461s/rec
+ep0 step 170/250 loss 0.586 kl 0.000 anchor 0.000 1.461s/rec
+ep0 step 180/250 loss 0.536 kl 0.000 anchor 0.000 1.461s/rec
+ep0 step 190/250 loss 0.488 kl 0.000 anchor 0.000 1.461s/rec
+ep0 step 200/250 loss 0.472 kl 0.000 anchor 0.000 1.460s/rec
+ep0 step 210/250 loss 0.420 kl 0.000 anchor 0.000 1.460s/rec
+ep0 step 220/250 loss 0.453 kl 0.000 anchor 0.000 1.460s/rec
+ep0 step 230/250 loss 0.333 kl 0.000 anchor 0.000 1.460s/rec
+ep0 step 240/250 loss 0.443 kl 0.000 anchor 0.000 1.460s/rec
+ep0 step 250/250 loss 0.432 kl 0.000 anchor 0.000 1.460s/rec
+saved /tmp/work/runs/c3/ep1

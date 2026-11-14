@@ -1,0 +1,14 @@
+{
+  "trl-for-angels-kev-c4": {
+    "user": "Sidi3355",
+    "model": "Sidi3355/trl-for-angels-kev-c4",
+    "model_url": "https://huggingface.co/Sidi3355/trl-for-angels-kev-c4",
+    "model_commit": "704f8d4d4a42ed3f8991f75d18f643b4687b5463"
+  },
+  "trl-for-angels-kev-c3": {
+    "user": "Sidi3355",
+    "model": "Sidi3355/trl-for-angels-kev-c3",
+    "model_url": "https://huggingface.co/Sidi3355/trl-for-angels-kev-c3",
+    "model_commit": "840f3e90a7ba9844cf92ced296d7f9664d3c1839"
+  }
+}
