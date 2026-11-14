@@ -137,7 +137,7 @@ while doing the work: date, decision, reason, evidence. Newest last.
   template's bands; details that weren't public are filled with plausible values, flagged per
   row. Companies whose outcome was ambiguous (Kite, Stockwell, Lift Labs, AppHarvest) were
   swapped for ones with a clear outcome.
-- **Conventions used:** years are whole elapsed years from founding to the outcome event; a
+- **Conventions used (approved by the user, 2026-11-14; the 3,000-row run follows them):** years are whole elapsed years from founding to the outcome event; a
   founder who never attended university has the education line `- no degree`; a founder whose
   earlier startup was still running at founding has "1 still operating".
 - **Validation:** `research/validate.py --profile sample50` passes with no errors or warnings
