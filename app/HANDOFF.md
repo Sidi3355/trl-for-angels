@@ -35,22 +35,26 @@ MASTER_PLAN.md that looks inconsistent instead of silently working around it.
 | 3 | Research agent, merge, render; test on 5 real founders | **Done.** 5 founders for $1.21 in total; the owner has seen the profiles and sources |
 | 4 | Mobile-first Next.js app (`app/frontend/`): form, live progress, memo, client-side controls, what-ifs, disclaimer | **Done, on mocks.** Checked end to end in an emulated iPhone 17, light and dark |
 | 5 | PWA features: manifest, share target, web push; phone test instructions (iOS and Android differ) | Not started |
-| 6 | Hosting: frontend on Vercel, backend on Railway, both on mocks | **In progress:** deploy files pushed; the owner is setting up Railway |
+| 6 | Hosting: frontend on Vercel, backend on Railway, both on mocks | **Deployed** (2026-11-14). Waiting for the owner's test on the iPhone |
 | 7 | Batch mode UI: CSV upload, triage view | Not started (the backend side exists) |
 
-## Next step (task 6: get it on the owner's iPhone)
+## Next step (task 6: the owner tests on the iPhone)
 
-The owner asked for the prototype on their phone (2026-11-14), which is the go-ahead to host it.
+Deployed on 2026-11-14; `app/README.md`, "Deploy", has the settings and addresses.
 
-1. **Railway (the owner does this; this session has no Railway access).** Steps are in `app/README.md`,
-   "Deploy": project from the GitHub repo, branch `app-track`, config file `/app/backend/railway.json`,
-   variables `ACCESS_TOKEN` (the owner's passcode; never ask for it) and `CORS_ORIGIN_REGEX`, then
-   generate a domain. Wait for the owner to send the domain, and check `<domain>/health`.
-2. **Vercel (through the connector).** Project `trl-for-angels`: root directory `app/frontend`, framework
-   Next.js, `NEXT_PUBLIC_API_URL` = the Railway domain, remove the "Ignored Build Step" (`exit 0`). Decide
-   with the owner which branch serves the phone (production branch, or a preview URL, which needs a
-   Vercel login on the phone).
-3. Open the Vercel URL in Safari on the iPhone, enter the passcode, screen a demo founder.
+- **Backend (Railway, set up by the owner):** `https://trl-for-angels-production.up.railway.app`, branch
+  `app-track`, mocks. Variables: `RAILWAY_DOCKERFILE_PATH`, `ACCESS_TOKEN` (the owner's passcode; never ask
+  for it) and `CORS_ORIGIN_REGEX`. The "Railway config file" setting didn't take; the variable did.
+- **Frontend (Vercel, set up through the connector):** framework Next.js, root `app/frontend`, Node 22,
+  `NEXT_PUBLIC_API_URL` = the Railway domain, Ignored Build Step removed. Phone URL: the `app-track` branch
+  alias, `https://trl-for-angels-git-app-track-siddarths-projects-2714c925.vercel.app`, behind Vercel's login.
+- This sandbox can't reach `railway.app` or `vercel.app` (network policy), so checks on the live app come
+  from the owner or from the Vercel connector's logs.
+- `main` was merged from `app-track` with the owner's OK (2026-11-14), and both branches were level after it.
+  Further merges into `main` still wait for the owner.
+
+Then: the owner's UI feedback, task 5 (PWA: home-screen icon, iOS Shortcut share, push), task 7 (batch UI),
+or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25 per founder).
 
 ### Task 3 notes, for later
 

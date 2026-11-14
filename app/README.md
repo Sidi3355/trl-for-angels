@@ -171,16 +171,24 @@ The frontend goes on Vercel (root directory `app/frontend`) and the backend on R
 
 **Backend (Railway).** `backend/Dockerfile` builds from the repo root and keeps the repo layout, because
 the service reads `app/contract` and `shared/`. `backend/railway.json` points Railway at it and adds the
-`/health` check. One-time setup in Railway's dashboard: create a project from the GitHub repo, then in
-the service's settings set the branch, set the config file path to `/app/backend/railway.json`, add the
-variables below, and generate a domain. Keep it to one replica: jobs and memos live in memory.
+`/health` check. One-time setup in Railway's dashboard: create a project from the GitHub repo, set the
+service's branch, add the variables below, and generate a domain. Keep it to one replica: jobs and memos
+live in memory. In practice the "Railway config file" setting didn't take effect (Railway kept guessing
+with Railpack and failed with "No start command detected"), so `RAILWAY_DOCKERFILE_PATH` is the reliable
+way to point Railway at the Dockerfile. Leave Root Directory empty.
 
 | Variable | Value |
 |---|---|
+| `RAILWAY_DOCKERFILE_PATH` | `app/backend/Dockerfile` |
 | `ACCESS_TOKEN` | A passcode of your choice. The app asks for it once per session. |
 | `CORS_ORIGIN_REGEX` | `https://trl-for-angels[a-z0-9-]*\.vercel\.app` (production and preview URLs) |
 | `AGENT`, `SCREENER_ANTHROPIC_API_KEY` | Only for real research: `AGENT=claude` and the key. Leave out to stay on mocks. |
 
-**Frontend (Vercel).** Root directory `app/frontend`, framework Next.js, and `NEXT_PUBLIC_API_URL` set to
-the Railway domain. Until task 6, the Vercel project's "Ignored Build Step" is `exit 0`, so pushes don't
-build; task 6 removes it.
+**Frontend (Vercel).** Project `trl-for-angels`: root directory `app/frontend`, framework Next.js, Node 22,
+and `NEXT_PUBLIC_API_URL` set to the Railway domain (read at build time, so change it and redeploy). Every
+push builds. Each branch gets a stable address, `trl-for-angels-git-<branch>-siddarths-projects-2714c925.vercel.app`;
+all deployments are behind Vercel's login (the project's deployment protection), so you sign in to Vercel
+once on the phone.
+
+**Live now (2026-11-14):** backend `https://trl-for-angels-production.up.railway.app` (branch `app-track`,
+mocks); frontend `https://trl-for-angels-git-app-track-siddarths-projects-2714c925.vercel.app`.
