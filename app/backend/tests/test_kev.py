@@ -235,7 +235,8 @@ def test_what_if_answer_change_calls_only_the_decider(kev_server, artifacts, con
 def test_wrong_key_fails_the_screening_without_leaking_it(kev_server, artifacts):
     url, _ = kev_server
     with kev_client(artifacts, url, key="not-the-key") as c:
-        r = c.post("/v1/screenings", json=load(EXAMPLES / "investor_input_advance.json"))
+        r = c.post("/v1/screenings", json={"schema_version": "0.1.0", "founder": {"name": "Someone Not In The Demo"},
+                                           "fields": {"industry": "fintech", "background": "technical"}})
         job = wait_for(c, f"/v1/screenings/{r.json()['job_id']}")
     assert job["status"] == "failed"
     msg = job["error"]["message"]
@@ -297,3 +298,40 @@ def test_drivers_failing_midway_keep_what_finished(kev_server, artifacts, monkey
         _, memo = screen(c, load(EXAMPLES / "investor_input_advance.json"))
         done = wait_for(c, f"/v1/memos/{memo['memo_id']}", key="drivers_status", done=("complete", "failed"))
     assert done["drivers_status"] == "failed" and len(done["drivers"]) == 1
+
+
+def test_demo_cache_answers_with_kev_off(kev_server, artifacts, tmp_path, monkeypatch):
+    """Record the demo founders against Kev, then screen them again with Kev unreachable: same memo, no calls."""
+    from screener.pipeline import kev as kevmod
+    from tools.build_kev_demo_cache import main as build
+
+    url, calls = kev_server
+    cache_file = tmp_path / "kev_demo_cache.json"
+    for k, v in {"ARTIFACTS_DIR": str(artifacts), "KEV_URL": url, "KEV_API_KEY": KEY}.items():
+        monkeypatch.setenv(k, v)
+    assert build(cache_file) == 0
+    doc = load(cache_file)
+    assert doc["fingerprint"]["model_id"] == "kev-0.6b-prod-c3" and len(doc["answers"]) == 3
+
+    from screener.mocks.founders import DEMO_FOUNDERS
+    monkeypatch.setattr(kevmod, "DEMO_CACHE", cache_file)
+    import screener.main as mainmod
+    monkeypatch.setattr(mainmod, "DEMO_CACHE", cache_file)
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        dead = f"http://127.0.0.1:{s.getsockname()[1]}"
+    with kev_client(artifacts, dead) as c:
+        _, memo = screen(c, DEMO_FOUNDERS[0]["input"])
+        done = wait_for(c, f"/v1/memos/{memo['memo_id']}", key="drivers_status", done=("complete", "failed"))
+        assert done["drivers_status"] == "complete" and len(done["drivers"]) == done["drivers_total"]
+        # A founder the cache doesn't know still needs Kev, and says so.
+        r = c.post("/v1/screenings", json={"schema_version": "0.1.0", "founder": {"name": "Someone Not In The Demo"},
+                                           "fields": {"industry": "fintech", "background": "technical"}})
+        job = wait_for(c, f"/v1/screenings/{r.json()['job_id']}")
+    assert job["status"] == "failed" and "Kev" in job["error"]["message"]
+
+    # A cache built for another model is ignored.
+    other = dict(doc, fingerprint={**doc["fingerprint"], "model_id": "something-else"})
+    cache_file.write_text(json.dumps(other))
+    from screener.pipeline.kev import KevCache
+    assert len(KevCache(cache_file, model_id="kev-0.6b-prod-c3", rules=load(artifacts / "rules.json"))) == 0

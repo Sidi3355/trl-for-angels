@@ -26,7 +26,7 @@ from .pipeline.agent import ClaudeAgent
 from .pipeline.batch import CsvError, parse_csv
 from .pipeline.budget import Budget
 from .pipeline.context import NotConfigured, Pipeline
-from .pipeline.kev import kev_urls, probe
+from .pipeline.kev import DEMO_CACHE, KevCache, kev_urls, probe
 from .pipeline.models import KevAnswerer, KevDecider, MockAnswerer, MockDecider
 from .pipeline.notes import (
     ClaudeSorter,
@@ -37,7 +37,7 @@ from .pipeline.notes import (
     NoteTools,
     audio_extension,
 )
-from .pipeline.research import MockAgent
+from .pipeline.research import MockAgent, WithDemoFounders
 from .pipeline.whatif import WhatIfError
 from .push import Pusher
 from .service import InvalidRequest, NotFound, Service
@@ -51,15 +51,17 @@ def build_components(settings: Settings, artifacts, contract: Contract, budget: 
     """Instantiate the configured agent, answerer and decider; collect what isn't available."""
     built, errors = {}, {}
     kev_call = {"timeout_s": settings.kev_timeout_s or float(artifacts.model["endpoint"].get("timeout_s", 60)),
-                "max_retries": settings.kev_max_retries}
+                "max_retries": settings.kev_max_retries,
+                "cache": KevCache(DEMO_CACHE if settings.kev_demo_cache else None,
+                                  model_id=artifacts.model["model_id"], rules=artifacts.rules)}
     makers = {
         "agent": {"mock": MockAgent,
-                  "claude": lambda: ClaudeAgent(
+                  "claude": lambda: WithDemoFounders(ClaudeAgent(
                       api_key=secret(settings.anthropic_api_key), model=settings.agent_model,
                       base_url=settings.agent_base_url, max_searches=settings.agent_max_searches,
                       max_fetches=settings.agent_max_fetches, effort=settings.agent_effort,
                       max_tokens=settings.agent_max_tokens, min_confidence=settings.agent_min_confidence,
-                      budget=budget, contract=contract)},
+                      budget=budget, contract=contract))},
         "answerer": {"mock": MockAnswerer, "kev": lambda: KevAnswerer(
             url=kev_urls(artifacts.model, settings.kev_url)[0], api_key=secret(settings.kev_api_key),
             rules=artifacts.rules, auth_required=artifacts.model["endpoint"]["auth"]["type"] != "none", **kev_call)},

@@ -7,14 +7,19 @@ Every call goes through TRL's own LLM and LLMSession (MASTER_PLAN 4b), and the d
 from TRL's answers_text, so the app sends exactly what Kev was trained on. The tunnel address changes each
 time it starts, so KEV_URL (one Railway variable) overrides model.json's placeholder endpoint.
 
-Nothing is stored: TRL's reply cache is turned off for this process.
+Nothing is stored: TRL's reply cache is turned off for this process. The one exception is KevCache: real Kev
+replies for the three fictional demo founders, built ahead of time and committed, so the dashboard's examples
+answer at once and still work while the PC is off (the "demo cache" backup in docs/app_integration.md).
 """
 
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
 import math
 import re
+from pathlib import Path
 from urllib.parse import urlsplit
 
 from .context import NotConfigured
@@ -23,6 +28,38 @@ log = logging.getLogger("screener.kev")
 
 PLACEHOLDER = "replace-with-tunnel"
 ANSWER_P = {"yes": 1.0, "no": 0.0}  # serialised answers back to a P(yes) that answers_text turns into the same word
+
+
+DEMO_CACHE = Path(__file__).resolve().parents[1] / "data" / "kev_demo_cache.json"
+
+
+def _key(text: str) -> str:
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
+class KevCache:
+    """Real Kev replies by exact input text, for the demo founders (built by tools/build_kev_demo_cache.py).
+
+    Only used when it was built for this model.json (model_id) and this rules.json (the same questions), and only
+    for exactly the same text, so it can never answer for a real founder. record=True also keeps new replies."""
+
+    def __init__(self, path: Path | None, *, model_id: str, rules: dict, record: bool = False):
+        self.fingerprint = {"model_id": model_id, "rules_sha256": _key("\n".join(r["question"] for r in rules["rules"]))}
+        self.record = record
+        self.answers: dict[str, list[float | None]] = {}  # profile text -> P(yes) per rule (None: no answer)
+        self.decisions: dict[str, dict[str, dict[str, float]]] = {}  # decider text -> raw probabilities per question
+        if path is not None and path.exists():
+            doc = json.loads(path.read_text())
+            if doc.get("fingerprint") == self.fingerprint:
+                self.answers, self.decisions = doc["answers"], doc["decisions"]
+            else:
+                log.info("the demo cache was built for another model or question list, so it isn't used")
+
+    def __len__(self) -> int:
+        return len(self.answers) + len(self.decisions)
+
+    def dump(self) -> dict:
+        return {"fingerprint": self.fingerprint, "answers": self.answers, "decisions": self.decisions}
 
 
 class KevUnavailable(RuntimeError):
@@ -77,7 +114,7 @@ class KevAnswerer:
     name = "kev"
 
     def __init__(self, *, url: str, api_key: str | None, rules: dict, auth_required: bool, timeout_s: float,
-                 max_retries: int):
+                 max_retries: int, cache: KevCache | None = None):
         if rules.get("mock"):
             raise NotConfigured("ANSWERER=kev needs the real rules.json (ARTIFACTS_DIR=shared/artifacts)")
         if auth_required and not api_key:
@@ -88,10 +125,16 @@ class KevAnswerer:
         self.endpoints = _endpoints(url, api_key, "answerer")
         self.ids = [r["id"] for r in rules["rules"]]
         self.questions = {r["id"]: YesNoQuestion(r["question"]) for r in rules["rules"]}
+        self.cache = cache
 
     async def answer(self, profile_text: str, fields: dict, ctx) -> list[float]:
+        key = _key(profile_text)
+        if self.cache is not None and key in self.cache.answers:
+            return [math.nan if p is None else p for p in self.cache.answers[key]]
         [row] = await _ask(self.endpoints, self.url, [profile_text], self.questions, "answerer")
         p_yes = [row[i].probability() if row.get(i) is not None else math.nan for i in self.ids]
+        if self.cache is not None and self.cache.record:
+            self.cache.answers[key] = [None if math.isnan(p) else p for p in p_yes]
         missing = sum(math.isnan(p) for p in p_yes)
         if missing:
             log.warning("Kev left %d of %d questions unanswered; they read 'unknown'", missing, len(p_yes))
@@ -103,7 +146,8 @@ class KevDecider:
     name = "kev"
     slow = True  # seconds per decision on a CPU: the memo's drivers are filled in afterwards (memo.fill_drivers)
 
-    def __init__(self, *, url: str, api_key: str | None, model: dict, rules: dict, timeout_s: float, max_retries: int):
+    def __init__(self, *, url: str, api_key: str | None, model: dict, rules: dict, timeout_s: float, max_retries: int,
+                 cache: KevCache | None = None):
         if model.get("mock"):
             raise NotConfigured("DECIDER=kev needs the real model.json (ARTIFACTS_DIR=shared/artifacts)")
         if model["endpoint"]["auth"]["type"] != "none" and not api_key:
@@ -122,6 +166,7 @@ class KevDecider:
         self.temperatures = ({qid: float(temp[qid]) for qid in self.questions if temp.get(qid)}
                              if temp.get("applied_by") == "client" else {})
         self.rule_questions = [r["question"] for r in rules["rules"]]
+        self.cache = cache
 
     def state(self, answer_labels: list[str] | None, profile_text: str) -> str:
         if self.input == "profile":
@@ -140,17 +185,28 @@ class KevDecider:
         return await self.decide_states([self.state(i.get("answer_labels"), i.get("profile_text", "")) for i in inputs])
 
     async def decide_states(self, states: list[str]) -> list[dict]:
-        rows = await _ask(self.endpoints, self.url, states, self.questions, "decider")
-        return [self._distributions(row) for row in rows]
+        """Distributions for each text: from the demo cache where it has the exact text, from Kev for the rest."""
+        keys = [_key(s) for s in states]
+        known = self.cache.decisions if self.cache is not None else {}
+        raw: dict[str, dict] = {k: known[k] for k in keys if k in known}
+        todo = [(k, s) for k, s in zip(keys, states) if k not in raw]
+        if todo:
+            rows = await _ask(self.endpoints, self.url, [s for _, s in todo], self.questions, "decider")
+            for (k, _), row in zip(todo, rows):
+                raw[k] = self._raw(row)
+                if self.cache is not None and self.cache.record:
+                    self.cache.decisions[k] = raw[k]
+        return [{qid: rounded(temper(dict(raw[k][qid]), self.temperatures.get(qid))) for qid in self.questions}
+                for k in keys]
 
-    def _distributions(self, row: dict) -> dict:
+    def _raw(self, row: dict) -> dict[str, dict[str, float]]:
+        """Kev's served (raw) probabilities per question, before the temperatures."""
         out = {}
         for qid, q in self.questions.items():
             ans = row.get(qid)
             if ans is None:
                 raise KevUnavailable(f"Kev's decider gave no usable answer for {qid}")
-            probs = {label: float(ans.probabilities.get(label, 0.0)) for label in q.labels}
-            out[qid] = rounded(temper(probs, self.temperatures.get(qid)))
+            out[qid] = {label: float(ans.probabilities.get(label, 0.0)) for label in q.labels}
         return out
 
 

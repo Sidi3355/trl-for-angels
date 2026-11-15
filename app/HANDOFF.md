@@ -164,6 +164,11 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   - **Calibration page:** now the final test numbers for C3 (the recipe behind the app's model: 600 test
     founders, 1 point calibration gap, 3 in 10 of its top picks succeeded), marked Final. The model card says the
     model is honest but cautious (never above about 40%) and not more accurate than TRL's standard model.
+  - **From research's `docs/app_integration.md` (owner pointed at it):** a Kev demo cache for the three example
+    founders (real Kev replies, committed; used only for the same model, questions and text), the example founders
+    keep canned research when `AGENT=claude` (matched by their `example.com/mock` addresses only), and the verdict
+    shows the base rate ("All founders: 20%"). Research's suggested risk presets were not adopted: some set Meet and
+    Pass at the same line, and the app's rule always leaves a Look closer band (the doc allows either).
   - **Railway image:** TRL brings pandas, scikit-learn and scipy, about 300 MB more. It's installed from a GitHub
     download link (no git in the slim image); this sandbox can't reach that link, so the first Railway build is
     the real check. A failed build leaves the previous deployment running.

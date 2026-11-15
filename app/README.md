@@ -258,6 +258,17 @@ branch): base `jaredpalmer/kev-0.6b` at `/answerer/v1/systemone`, the production
   server's own health check (cached for 30 seconds).
 - **If Kev is down,** a screening fails with a message that names the host and asks whether the PC server and
   its tunnel are running. It never shows the key.
+- **Demo cache** (`backend/screener/data/kev_demo_cache.json`, research's "keep the demo cache as the backup"):
+  the real Kev's replies for the three fictional example founders, drivers included, built with
+  `backend/tools/build_kev_demo_cache.py` against the real models. The examples then answer at once and still
+  work while the PC is off. It's used only with the `model.json` (`model_id`) and `rules.json` (its questions)
+  it was built for, and only for exactly the same text, so it never answers for anyone else. Rebuild it when
+  research exports a new model; `KEV_DEMO_CACHE=false` turns it off.
+- **Example founders with real research:** with `AGENT=claude` the three example founders still get their canned
+  research (recognised by their placeholder `example.com/mock/...` addresses, never by name alone), so they cost
+  nothing and can't pick up a real person who shares a made-up name.
+- **Against the base rate:** the verdict shows "All founders: 20%" under the chance (the share of validation
+  founders who reached the bar's target and timeline), because the model's chances are cautious.
 - **Bar with no data:** no validation founder reached $1B within 5 years, so that combination has no thresholds.
   The bar sheet says "Not enough data", the verdict says there's no bar, and every founder shows Look closer.
 
