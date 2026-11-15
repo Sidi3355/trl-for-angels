@@ -1,9 +1,10 @@
 {
- "frames": 299,
+ "frames": 290,
  "fps": 30,
  "speed": 1.0,
- "seconds": 9.97,
+ "seconds": 9.67,
  "source_seconds": 10.0,
+ "xfade_s": 0.3,
  "segments": [
   {
    "seg": "c6a_factors",

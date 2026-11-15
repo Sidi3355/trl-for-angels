@@ -6,8 +6,9 @@ clips: constant 30 fps JPEG sequences at 804x1748 in clips/<name>/000001.jpg...,
 
 A clip is one or more segments played in order (a jump cut between them). A segment can be cut to part of
 itself: {"seg": name, "from": s, "to": s} in source seconds, or {"seg": name, "tail": s} for its last seconds.
-A clip can be sped up (speed > 1) or fitted to a length (fit_s: speed chosen so it lasts that long); the video
-shows a "sped up" badge for those. Only the live research clip is sped up; the rest play at real speed.
+A clip can be sped up (speed > 1) or fitted to a length (fit_s), but none is now: the live research is shown as
+real-speed excerpts instead (version 2; sped-up footage made the progress bar's pulse flicker). Joins between
+parts crossfade over xfade_s seconds, so a cut never jumps.
 """
 
 from __future__ import annotations
@@ -19,20 +20,25 @@ import sys
 import tempfile
 from pathlib import Path
 
+from PIL import Image
+
 HERE = Path(__file__).resolve().parents[1]
 RAW, OUT = HERE / "raw", HERE / "clips"
 W, H, FPS = 804, 1748, 30
 
 # Slot lengths come from scenes/manifest.json (Fable's scenes); a clip longer than its slot is cut by the scene.
 CLIPS = {
-    "c1_type": {"segments": ["c1_type", {"seg": "c2_research", "to": 4.6}]},  # typing, then the research starting
-    "c2_research": {"segments": [{"seg": "c2_research", "from": 4.6}], "fit_s": 12.6},
+    "c1_type": {"segments": ["c1_type", {"seg": "c2_research", "to": 3.0}]},  # typing, then the research starting
+    # real speed: a search arriving, the sources filling in when research is done, the verdict landing (~3 min in)
+    "c2_research": {"segments": [{"seg": "c2_research", "from": 25.0, "to": 29.0},
+                                 {"seg": "c2_research", "from": 50.5, "to": 54.5},
+                                 {"seg": "c2_research", "from": 181.0}], "xfade_s": 0.3},
     "c3_profile": {"segments": [{"seg": "c3_profile", "from": 2.2}]},
     "c4_verdict": {"segments": [{"seg": "c4_verdict", "from": 0.5}]},  # from the verdict landing, not the page loading
     "c5_bar": {"segments": ["c5_bar"]},
-    "c6_whatif": {"segments": ["c6a_factors", "c6b_whatif"]},
+    "c6_whatif": {"segments": ["c6a_factors", "c6b_whatif"], "xfade_s": 0.3},
     "c7_list": {"segments": [{"seg": "c7_list", "tail": 2.6}]},
-    "c8_voice": {"segments": [{"seg": "c8a_record", "tail": 1.4}, {"seg": "c8b_filled", "tail": 1.65}]},
+    "c8_voice": {"segments": [{"seg": "c8a_record", "tail": 1.5}, {"seg": "c8b_filled", "tail": 1.8}], "xfade_s": 0.25},
     "c9_notify": {"segments": [{"seg": "c9_notify", "tail": 2.55}]},
     "c10_profile": {"segments": [{"seg": "c10_profile", "from": 0.3, "to": 3.3}]},
 }
@@ -85,16 +91,24 @@ def build(name: str, spec: dict) -> dict:
     dest.mkdir(parents=True)
     for n, b in saved.items():
         (dest / n).write_bytes(b)
-    n = 0
-    for seg, a, b in parts:
+    n, k = 0, round(spec.get("xfade_s", 0) * FPS)
+    for j, (seg, a, b) in enumerate(parts):
         with tempfile.TemporaryDirectory() as tmp:
             render_segment(seg, speed, Path(tmp))
             frames = sorted(Path(tmp).glob("*.jpg"))
             lo, hi = round(a / speed * FPS), round(b / speed * FPS)
-            for f in frames[lo:hi]:
+            frames = frames[lo:hi]
+            if j and k:  # crossfade: blend the last k frames written with this part's first k
+                for i in range(min(k, n, len(frames))):
+                    prev = dest / f"{n - k + 1 + i:06d}.jpg"
+                    mixed = Image.blend(Image.open(prev).convert("RGB"), Image.open(frames[i]).convert("RGB"), (i + 1) / (k + 1))
+                    mixed.save(prev, quality=92)
+                frames = frames[k:]
+            for f in frames:
                 n += 1
                 shutil.move(str(f), dest / f"{n:06d}.jpg")
     meta = {"frames": n, "fps": FPS, "speed": speed, "seconds": round(n / FPS, 2), "source_seconds": round(total, 1),
+            "xfade_s": spec.get("xfade_s", 0),
             "segments": [{"seg": s, "from": round(a, 2), "to": round(b, 2)} for s, a, b in parts]}
     (dest / "meta.json").write_text(json.dumps(meta, indent=1) + "\n")
     return meta

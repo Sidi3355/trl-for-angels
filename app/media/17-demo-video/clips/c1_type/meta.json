@@ -1,9 +1,10 @@
 {
- "frames": 281,
+ "frames": 233,
  "fps": 30,
  "speed": 1.0,
- "seconds": 9.37,
- "source_seconds": 9.4,
+ "seconds": 7.77,
+ "source_seconds": 7.8,
+ "xfade_s": 0,
  "segments": [
   {
    "seg": "c1_type",
@@ -13,7 +14,7 @@
   {
    "seg": "c2_research",
    "from": 0.0,
-   "to": 4.6
+   "to": 3.0
   }
  ]
 }

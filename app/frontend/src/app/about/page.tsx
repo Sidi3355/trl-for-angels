@@ -25,7 +25,7 @@ const STEPS = [
   {
     title: "Ask",
     who: "TRL's questions, answered by Kev",
-    body: "A checklist of 40 yes/no questions, such as \u201cHas the founder had a prior exit?\u201d, written once with TRL during the research, is answered for this founder by Kev, a small open decision model.",
+    body: "A checklist of 40 yes/no questions, such as \u201cHas the founder had a prior exit?\u201d, written once with TRL during the research, is answered for this founder by Kev, a small open-source decision model.",
   },
   {
     title: "Score",
@@ -71,7 +71,7 @@ const TRL_STEPS = [
   {
     step: "Reason",
     trl: "A model answers every question for each sample.",
-    here: "Kev-0.6B, an open decision model, answers them in place of TRL's usual answerer (TypeSafe's Jev), to run for free.",
+    here: "Kev-0.6B, an open-source decision model, answers them in place of TRL's usual answerer (TypeSafe's Jev), to run for free.",
   },
   {
     step: "Learn",

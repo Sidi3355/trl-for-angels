@@ -58,8 +58,8 @@ export default function ModelCardPage() {
             [
               "What it is",
               <>
-                An open, small decision model: Qwen3-0.6B-Base with a rank-16 LoRA and a pointer head that turns the model&apos;s reading into a probability for each option. Kev is an open
-                reconstruction of TypeSafe&apos;s Jev, released as <span className="font-mono text-[13px]">jaredpalmer/kev-0.6b</span>.
+                A small, open-source decision model (Apache-2.0): Qwen3-0.6B-Base with a rank-16 LoRA and a pointer head that turns the model&apos;s reading into a probability for each option. Kev is an
+                open-source reconstruction of TypeSafe&apos;s Jev, released as <span className="font-mono text-[13px]">jaredpalmer/kev-0.6b</span>.
               </>,
             ],
             [
