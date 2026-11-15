@@ -264,6 +264,13 @@ The app on the **real models** for the first time: research's real `rules.json`,
 - `first-try-mid-load/`: **bad**. The first what-if shot, taken before the answer arrived (it still showed 32%), and a bar-sheet shot with the "Not enough data" note below the fold.
 - **Sent:** `phone-light-1-memo-verdict`, `phone-light-2-factors-pending`, `phone-light-5-what-if`, `phone-light-9-calibration`
 
+## 18-how-it-works-trl (2026-11-15, 10:10) · Current
+
+How it works, two new sections (owner's request): **Why names are removed** (what anonymising keeps: a university's degree, subject and ranking band; an employer's description, size, industry and tenure; and the three reasons) and **Built on TRL, by Vela Research** (TRL is Vela Research's open-source, MIT-licensed library; each step "In TRL" against "In Halomark"; what this project added; links to TRL and Kev on GitHub). The model card's wording matches. Phones shot at 2×.
+- `*-why-names`, `*-built-on-trl`: each section, phone and desktop, light and dark
+- `*-light-full`: the whole page
+- **Sent:** `desktop-light-built-on-trl`, `phone-light-why-names`
+
 ## tools
 
 - `record-walkthrough.cjs`: the script that recorded v3 and v4, with the ffmpeg command in its header, so the video can be re-shot after design changes

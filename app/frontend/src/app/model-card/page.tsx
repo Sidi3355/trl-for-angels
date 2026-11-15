@@ -64,7 +64,7 @@ export default function ModelCardPage() {
             ],
             [
               "How it's built",
-              "With TRL (Think, Reason, Learn; Vela Research). Claude Opus 5.5 wrote a checklist of yes/no questions about founders once; base Kev answers them for each founder; a fine-tuned Kev makes the final call.",
+              "With TRL (Think, Reason, Learn), Vela Research's open-source library (MIT licence), adapted for this project. Claude Opus 5.5 wrote a checklist of yes/no questions about founders once; base Kev answers them for each founder; a fine-tuned Kev makes the final call, a step this project added to TRL.",
             ],
             [
               "What it reads",
@@ -123,7 +123,7 @@ export default function ModelCardPage() {
             ],
             [
               "Anonymisation",
-              "No names of people, companies, universities or products, no exact dates or places. Employers become descriptions such as “a payments company”. The model sees the same fixed profile it was trained on.",
+              "No names of people, companies, universities or products, no exact dates or places. What the names said stays: a university becomes its degree, subject and QS ranking band; an employer becomes a description such as “a payments company”, with its size, industry and how long they stayed. The model sees the same fixed profile it was trained on.",
             ],
             ["Unknowns", "A detail the research couldn't confirm is written as unknown, never guessed."],
           ]}

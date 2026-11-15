@@ -1,12 +1,14 @@
 "use client";
 
-// How it works: the pipeline in plain words, how to read a verdict, links to the model card and the
-// calibration page, sharing from other apps, and privacy in short. Settings live on the account page.
+// How it works: the pipeline in plain words, what anonymising keeps and why, what's built on TRL (Vela Research's
+// open-source library) and what this project added, how to read a verdict, links to the model card and the
+// calibration page, sharing from other apps, and privacy in short.
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { useApp } from "@/components/AppState";
 import { IconChevronRight } from "@/components/icons";
-import { Button, Disclaimer, Logo, Notice, Page, PageHeader, SectionTitle, VerdictTile } from "@/components/ui";
+import { Disclaimer, Logo, Notice, Page, PageHeader, SectionTitle, VerdictTile, linkClass } from "@/components/ui";
 import { DECISION_LABELS } from "@/lib/format";
 
 const STEPS = [
@@ -18,12 +20,12 @@ const STEPS = [
   {
     title: "Anonymise",
     who: "A fixed profile",
-    body: "Names of people, companies and universities are removed, and the background is written into the same standard profile the models were trained on, line for line.",
+    body: "Names come out, but what they tell you stays: a university becomes its degree, subject and world-ranking band, and an employer becomes a short description with its size, industry and how long they stayed. The result is the standard profile the models were trained on, line for line.",
   },
   {
     title: "Ask",
     who: "TRL's questions, answered by Kev",
-    body: "A checklist of yes/no questions, such as \u201cHas the founder had a prior exit?\u201d, written once by TRL during the research, is answered for this founder by Kev, a small open decision model.",
+    body: "A checklist of 40 yes/no questions, such as \u201cHas the founder had a prior exit?\u201d, written once with TRL during the research, is answered for this founder by Kev, a small open decision model.",
   },
   {
     title: "Score",
@@ -54,7 +56,32 @@ function MoreLink({ href, title, note }: { href: string; title: string; note: st
   );
 }
 
+const WHY_ANONYMOUS = [
+  ["The model only knows this format", "It learned from 3,000 profiles written exactly this way, most of them generated, so it has never seen a real university or company name and couldn't use one reliably."],
+  ["Names leak hindsight", "Language models know what became of well-known companies and their alumni. A name would let the model recall outcomes instead of judging the background, and the founder's own company name would give the answer away."],
+  ["No brand-name shortcuts", "The training data was built so that no single detail decides the outcome. The ranking band and the employer's description keep the real signal without the halo of the name."],
+] as const;
+
+const TRL_STEPS = [
+  {
+    step: "Think",
+    trl: "A language model writes yes/no questions that tell outcomes apart.",
+    here: "Claude Opus 5.5 wrote 93 questions about founders, once. The 40 that predicted best are kept.",
+  },
+  {
+    step: "Reason",
+    trl: "A model answers every question for each sample.",
+    here: "Kev-0.6B, an open decision model, answers them in place of TRL's usual answerer (TypeSafe's Jev), to run for free.",
+  },
+  {
+    step: "Learn",
+    trl: "A classical model turns the answers into a prediction (an elastic net by default).",
+    here: "A fine-tuned Kev makes the final call instead, added to TRL as a new option, and compared with TRL's own.",
+  },
+] as const;
+
 export default function AboutPage() {
+  const { health } = useApp();
   return (
     <Page>
       <PageHeader title="How it works" subtitle="From a founder's name to Meet, Look closer or Pass, in six steps. Each one does one job, and the memo shows its work." />
@@ -74,11 +101,84 @@ export default function AboutPage() {
         ))}
       </ol>
 
-      <div className="mt-4">
-        <Notice tone="info" title="Prototype">
-          Until the trained models are plugged in, steps 3 and 4 use a placeholder, so treat every score as an example.
-        </Notice>
-      </div>
+      {health?.mock && (
+        <div className="mt-4">
+          <Notice tone="info" title="Prototype">
+            Parts of this server still run on stand-ins (shown on each memo), so treat those scores as examples.
+          </Notice>
+        </div>
+      )}
+
+      <section className="mt-12" aria-labelledby="names">
+        <SectionTitle id="names" note="You still see who the founder is, and every source, in the memo. Only what the model reads is anonymised.">
+          Why names are removed
+        </SectionTitle>
+        <dl>
+          {WHY_ANONYMOUS.map(([k, v]) => (
+            <div key={k} className="grid gap-1 border-b border-line py-3.5 sm:grid-cols-[220px_1fr] sm:gap-6">
+              <dt className="text-[15px] font-bold tracking-[-0.01em]">{k}</dt>
+              <dd className="text-[14.5px] leading-relaxed text-ink-2">{v}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="mt-3 text-[13.5px] leading-relaxed text-muted">
+          The exact university or employer can carry more than a ranking band. Letting the model read that detail would be a research change: new training data and retraining.
+        </p>
+      </section>
+
+      <section className="mt-12" aria-labelledby="trl">
+        <SectionTitle id="trl">Built on TRL, by Vela Research</SectionTitle>
+        <p className="max-w-[66ch] text-[15px] leading-relaxed text-ink-2">
+          The scoring in Halomark runs on <strong className="font-bold text-ink">TRL (Think, Reason, Learn)</strong>, an open-source library from{" "}
+          <strong className="font-bold text-ink">Vela Research</strong>, released under the MIT licence. TRL is their work. Halomark uses it, adapts it and builds on it: the
+          framework, its question-writing and its answering pipeline are Vela&apos;s; the choices and additions below are this project&apos;s.
+        </p>
+        <ol className="mt-5">
+          {TRL_STEPS.map(({ step, trl, here }, i) => (
+            <li key={step} className="grid gap-2 border-t border-line-strong py-4 sm:grid-cols-[120px_1fr_1fr] sm:gap-6">
+              <p className="text-[19px] font-bold tracking-[-0.02em]">
+                <span className="cond mr-2 text-[28px] font-black">{i + 1}</span>
+                {step}
+              </p>
+              <p className="text-[14.5px] leading-relaxed text-ink-2">
+                <span className="eyebrow block text-muted">In TRL</span>
+                {trl}
+              </p>
+              <p className="text-[14.5px] leading-relaxed text-ink-2">
+                <span className="eyebrow block text-accent">In Halomark</span>
+                {here}
+              </p>
+            </li>
+          ))}
+        </ol>
+        <div className="mt-2 rounded-[18px] bg-surface-2 px-4 py-4 text-[14.5px] leading-relaxed text-ink-2">
+          <p className="font-bold text-ink">What this project added</p>
+          <ul className="mt-2 space-y-1.5">
+            {[
+              "In a fork of TRL: a final step that hands the decision to a decision model (Jev, Kev or any model with the same interface), and option descriptions for multiple-choice questions.",
+              "Kev fine-tuned on TRL's answers, with calibrated odds, compared against TRL's own final steps on the same founders.",
+              "Around it, the app: web research limited to before the founding date, the anonymised profile, your bar, and the memo.",
+            ].map((t) => (
+              <li key={t} className="flex gap-3">
+                <span className="mt-[0.6em] h-[3px] w-3 shrink-0 rounded-full bg-ink" aria-hidden />
+                {t}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 text-[13.5px] text-muted">
+            In testing, no final step beat TRL&apos;s default on accuracy; the fine-tuned Kev gave the best-calibrated odds.
+          </p>
+        </div>
+        <p className="mt-3 text-[14px]">
+          <a href="https://github.com/Vela-Research/think-reason-learn" target="_blank" rel="noopener noreferrer" className={linkClass}>
+            TRL on GitHub (Vela Research)
+          </a>
+          <span className="text-muted"> · </span>
+          <a href="https://github.com/jaredpalmer/kev" target="_blank" rel="noopener noreferrer" className={linkClass}>
+            Kev on GitHub
+          </a>
+        </p>
+      </section>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <MoreLink href="/calibration" title="How accurate are the odds?" note="What 30% really means, checked" />
