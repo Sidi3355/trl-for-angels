@@ -63,7 +63,7 @@ body {
 .phone .status .island { position: absolute; left: 164px; top: 11px; width: 118px; height: 32px; border-radius: 16px; background: #0e0f0e; }
 .phone .status svg { position: absolute; right: 36px; top: 17px; width: 74px; height: 16px; }
 .phone .foot { position: absolute; left: 0; top: 48px; width: 446px; height: 970px; }
-.phone .foot img { will-change: transform, clip-path; position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; object-position: top center; display: block; }
+.phone .foot img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; object-position: top center; display: block; }
 .phone .ph-tag { position: absolute; left: 0; right: 0; bottom: 0; height: 190px; display: none; align-items: center; justify-content: center;
   text-align: center; background: #e3e3de; color: #5b5e5a; font-stretch: 125%; font-weight: 700; font-size: 13px; letter-spacing: .14em;
   text-transform: uppercase; line-height: 1.6; }
@@ -76,7 +76,8 @@ body {
 /* everything left of the phone that leaves before a cut */
 .left { position: absolute; left: 0; top: 0; width: 1300px; height: 1080px; }
 /* the running head stops short of the phone in the app scenes */
-.head.short { right: 646px; }
+/* its folio sits beside the wordmark, so a zoomed phone never cuts through it */
+.head.short { right: 646px; justify-content: flex-start; gap: 44px; }
 
 /* cut-corner tags (the hallmark punch shape), outlined: a blue block with a paper block set inside it */
 .tag { --c: 12px; position: absolute; isolation: isolate; display: inline-block; padding: 13px 22px 12px; font-stretch: 125%; font-weight: 800;

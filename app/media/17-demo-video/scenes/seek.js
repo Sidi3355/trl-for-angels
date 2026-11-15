@@ -196,9 +196,23 @@
       }).then(function (ok) {
         var real = ok && c.img.getAttribute('src') !== ph;
         c.img.style.visibility = ok ? 'visible' : 'hidden';
+        // footage fills its box exactly (804x1748 into 446x970 is a third of a pixel short), so nothing shows under it
+        c.img.style.objectFit = real ? 'fill' : 'contain';
         c.real = real;
       });
     })).then(function () {
+      // Inside the phone each clip after the first wipes up over the one before it, over WIPE seconds from its `from`.
+      // Set here as a pure function of t (not as an animation), so that only the clips actually in view are in the
+      // page at all: a frame at a join is then drawn exactly as the next scene draws it.
+      var WIPE = 0.4, top = 0;
+      clipState.forEach(function (c, i) { if (i > 0 && t >= c.from + WIPE) top = i; });
+      clipState.forEach(function (c, i) {
+        var p = i === 0 ? 1 : (t - c.from) / WIPE;
+        p = p < 0 ? 0 : p > 1 ? 1 : p;
+        var e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+        c.img.style.display = (p <= 0 || i < top) ? 'none' : 'block';
+        c.img.style.clipPath = p >= 1 ? 'none' : 'inset(' + ((1 - e) * 100).toFixed(3) + '% 0 0 0)';
+      });
       // the phone says so when it is showing a still in place of footage (visible in previews; never in the final cut)
       els('.phone').forEach(function (p) {
         var mine = clipState.filter(function (c) { return p.contains(c.img); });
@@ -293,8 +307,6 @@
       return { name: c.name, from: c.from, to: c.to, offset: c.offset || 0, img: el('#clip-' + i), meta: metas[c.name] || null, real: false };
     });
     readyP = document.fonts.load('800 40px Archivo').then(function () { return document.fonts.ready; }).then(function () {
-      // inside the phone, each clip after the first wipes up over the one before it
-      (cfg.clips || []).forEach(function (c, i) { if (i > 0) HM.wipe('#clip-' + i, c.from, { dir: 'up', dur: 0.4 }); });
       if (cfg.build) cfg.build(HM);
     });
     return readyP;

@@ -52,8 +52,9 @@ function assemble() {
     start += s.duration;
   });
   // the voice sections mixed onto one track, padded to the video's length, with a gentle fade at the very end
-  const end = start.toFixed(3), fadeAt = Math.max(0, start - 1.2).toFixed(3);
-  const mix = manifest.map((_, i) => `[a${i}]`).join('') + `amix=inputs=${manifest.length}:normalize=0,atrim=0:${end},apad=whole_dur=${end},afade=t=out:st=${fadeAt}:d=1.2[out]`;
+  // fade with the closing ink sheet (Fable: the last scene's final 0.9 s; the sheet takes 0.8 s)
+  const end = start.toFixed(3), fadeAt = Math.max(0, start - 1.0).toFixed(3);
+  const mix = manifest.map((_, i) => `[a${i}]`).join('') + `amix=inputs=${manifest.length}:normalize=0,atrim=0:${end},apad=whole_dur=${end},afade=t=out:st=${fadeAt}:d=0.8[out]`;
   ff([...inputs, '-filter_complex', filters.join(';') + ';' + mix, '-map', '[out]', '-ac', '2', path.join(BUILD, 'voice.wav')]);
   ff(['-i', path.join(BUILD, 'video.mp4'), '-i', path.join(BUILD, 'voice.wav'), '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k',
     '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11', '-shortest', '-movflags', '+faststart', path.join(ROOT, 'halomark-demo.mp4')]);

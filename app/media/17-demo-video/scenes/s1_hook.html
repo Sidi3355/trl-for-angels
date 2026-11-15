@@ -56,6 +56,7 @@
     <div class="tg"><span>A first pass</span> <span>you can trust.</span></div>
   </div>
   <div class="head short" id="head2"><span data-wordmark></span><span class="folio"></span></div>
+  <div id="headcover" style="position:absolute;left:0;top:30px;width:1300px;height:80px;background:var(--paper)"></div>
 </div>
 <script src="data.js"></script>
 <script src="seek.js"></script>
@@ -88,8 +89,8 @@ HM.scene({
     HM.set('.lock .wl', 8.5, { dy: 70, dur: 0.4, stagger: 0.045 });
     HM.set('.lock .tg span', 10.15, { dy: 30, dur: 0.45, stagger: 0.6 });  // "a first pass / they can trust"
     // hand over to s2: the lockup leaves, the running head is set
-    HM.out('#lock', 12.25, { dur: 0.4 });
-    HM.wipe('#head2', 12.4, { dur: 0.45 });
+    HM.out('#lock', 12.2, { dur: 0.4 });
+    HM.out('#headcover', 12.4, { dur: 0.45, dir: 'right' });   // uncovered left to right, so the head itself is drawn exactly as in s2
   }
 });
 </script>

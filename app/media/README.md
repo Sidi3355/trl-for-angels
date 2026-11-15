@@ -264,16 +264,18 @@ The app on the **real models** for the first time: research's real `rules.json`,
 - `first-try-mid-load/`: **bad**. The first what-if shot, taken before the answer arrived (it still showed 32%), and a bar-sheet shot with the "Not enough data" note below the fold.
 - **Sent:** `phone-light-1-memo-verdict`, `phone-light-2-factors-pending`, `phone-light-5-what-if`, `phone-light-9-calibration`
 
-## 17-demo-video (2026-11-15, 08:55–10:20) · Current
+## 17-demo-video (2026-11-15, 08:55–11:00) · Current
 
-**`halomark-demo.mp4`**: the 1:53 demo video, 1920×1080, 30 fps, -16 LUFS. App walkthrough on the real models and research's real artefacts, with one real founder (Tope Awotona: live research, about 3 minutes shown sped up 14.3× and labelled as such) and the made-up example founders for the montage.
+**`halomark-demo.mp4` (version 2, current)**: 1:49, after the owner's notes on version 1: voice George (British; the requested Archer is a library voice the free ElevenLabs plan can't use through the API), "Halo-mark" pronounced right (checked by transcribing it back), "open-source" wording, a bridge line back into the app, the closing line chosen from three takes for the lowest ending; the live research shown as real-speed excerpts (no speed-up, so no flickering bar and no badge); crossfaded cuts inside clips; Fable's designed transitions between every scene (an ink sheet into the research, a paper sheet back out; joins checked pixel for pixel); a larger phone with a status bar and Dynamic Island; five zoom-ins (sources found, the anonymised profile, the 31% verdict, the what-if, the voice note); the end settles to ink with the audio faded. Brief: `BRIEF-v2.md`; voiceover script: `tools/voiceover.py`.
+
+**`halomark-demo-v1.mp4` (version 1, superseded)**: the 1:53 first cut the owner reviewed (voice Alice; research sped up 14.3×, labelled), 1920×1080, 30 fps, -16 LUFS. App walkthrough on the real models and research's real artefacts, with one real founder (Tope Awotona: live research, about 3 minutes shown sped up 14.3× and labelled as such) and the made-up example founders for the montage.
 - **Design:** motion scenes by Claude Fable 5.2 (`scenes/`, "the odds slip": ink on paper, struck stamps, the research scene inverted). Brief: `BRIEF.md`; Fable's notes: `scenes/README.md`.
 - **Voiceover:** ElevenLabs, voice Alice, eleven_multilingual_v2, one file per section (`voiceover/`), from `script.json`. 1,174 characters, plus about 230 for the voice-note demo audio (`voice-note/`, a second voice played into the browser's simulated microphone, then transcribed and sorted for real).
 - **Footage:** recorded by `tools/record-clips.cjs` and `tools/record-notify.cjs` (phone at 2×), cut to the scenes' slots by `tools/frames-to-clips.py`; the raw frames and 30 fps frame sequences are git-ignored. Rendered frame by frame by `tools/render-video.cjs` (each scene's `seek(t)`), joined with the voice by ffmpeg.
-- `poster.png`: the title card; `contact-sheet.jpg`: a frame every 4 seconds.
+- `poster.png`: the title card (version 2); `contact-sheet.jpg`: a frame every 3 seconds (version 2); `contact-sheet-v1.jpg`: version 1's.
 - **Research spend:** two live research runs on Tope Awotona ($0.32, then $0.28): the first screening timed out while the machine was overloaded (fixed: `KEV_TIMEOUT_S` 180) and its footage showed the "0 sources" bug (fixed).
 - **Found and fixed while filming:** the real research agent never reported its sources to the progress screen; the memo's question list showed rule ids while drivers filled in; a pasted web address ran off the progress title.
-- **Sent:** `halomark-demo.mp4`
+- **Sent:** both versions, as `halomark-demo.mp4` at the time
 
 ## 18-how-it-works-trl (2026-11-15, 10:10) · Current
 
