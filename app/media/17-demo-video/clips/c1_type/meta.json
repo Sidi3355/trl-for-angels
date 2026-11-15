@@ -1,0 +1,19 @@
+{
+ "frames": 281,
+ "fps": 30,
+ "speed": 1.0,
+ "seconds": 9.37,
+ "source_seconds": 9.4,
+ "segments": [
+  {
+   "seg": "c1_type",
+   "from": 0.0,
+   "to": 4.76
+  },
+  {
+   "seg": "c2_research",
+   "from": 0.0,
+   "to": 4.6
+  }
+ ]
+}

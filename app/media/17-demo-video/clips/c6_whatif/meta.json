@@ -1,0 +1,19 @@
+{
+ "frames": 299,
+ "fps": 30,
+ "speed": 1.0,
+ "seconds": 9.97,
+ "source_seconds": 10.0,
+ "segments": [
+  {
+   "seg": "c6a_factors",
+   "from": 0.0,
+   "to": 5.03
+  },
+  {
+   "seg": "c6b_whatif",
+   "from": 0.0,
+   "to": 4.95
+  }
+ ]
+}

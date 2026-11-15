@@ -13,7 +13,7 @@ const W = 402, H = 874, DPR = 2, B = 'http://localhost:3000';
   await c.addInitScript(() => { try { localStorage.setItem('screener.onboarded', '1'); } catch {} });
   const p = await c.newPage();
   await p.goto(B + '/', { waitUntil: 'networkidle' });
-  await p.locator('#quick').fill('example.com/mock/clearpath');
+  // the dashboard's second example founder (Samir Haddad): its input carries the placeholder address
   const dir = path.join(raw, 'c9_notify');
   fs.rmSync(dir, { recursive: true, force: true });
   fs.mkdirSync(dir, { recursive: true });
@@ -25,7 +25,7 @@ const W = 402, H = 874, DPR = 2, B = 'http://localhost:3000';
     frames.push({ file, t: f.metadata.timestamp });
     try { await cdp.send('Page.screencastFrameAck', { sessionId: f.sessionId }); } catch {}
   });
-  await p.getByRole('button', { name: 'Screen founder' }).click();
+  await p.locator('section[aria-labelledby="latest"] button').nth(1).click();
   await p.waitForURL(/screenings\//);
   await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 92, maxWidth: W * DPR, maxHeight: H * DPR, everyNthFrame: 1 });
   await p.getByRole('button', { name: /Notify me/ }).waitFor();

@@ -118,7 +118,8 @@ export function Progress({ jobId }: { jobId: string }) {
         <div className="flex items-end justify-between gap-4">
           <div className="min-w-0">
             <p className="eyebrow text-muted">{ready ? "Done" : error ? "Stopped" : "Screening"}</p>
-            <h1 className="mt-2 text-[36px] font-extrabold leading-[1] tracking-[-0.04em] lg:text-[50px]">
+            {/* a pasted web address is one long word: let it wrap instead of running off the screen */}
+            <h1 className="mt-2 text-[36px] font-extrabold leading-[1] tracking-[-0.04em] [overflow-wrap:anywhere] lg:text-[50px]">
               {ready ? "Memo ready" : who ? `Researching ${who}` : "Starting…"}
             </h1>
           </div>
