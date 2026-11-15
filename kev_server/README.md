@@ -42,7 +42,7 @@ Window 1, in this folder:
 ```powershell
 $env:KEV_API_KEY = "<your passcode>"            # the same passcode the app's backend has
 $env:DECIDER_MODEL = "Sidi3355/trl-for-angels-kev-prod"   # the production model (D3)
-uv run python serve.py
+.venv\Scripts\python serve.py                  # macOS or Linux: .venv/bin/python serve.py
 ```
 
 The first start downloads the models (about 2.5 GB); later starts take about a minute.
