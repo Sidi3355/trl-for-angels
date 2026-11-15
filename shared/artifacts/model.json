@@ -1,0 +1,151 @@
+{
+  "schema_version": "0.1.0",
+  "mock": false,
+  "model_id": "kev-0.6b-prod-c3",
+  "created_at": "2026-11-15T02:41:59Z",
+  "endpoint": {
+    "base_url": "https://replace-with-tunnel.trycloudflare.com/decider",
+    "path": "/v1/systemone",
+    "auth": {
+      "type": "bearer",
+      "env_var": "KEV_API_KEY"
+    },
+    "timeout_s": 60
+  },
+  "decider_input": "answers",
+  "request": {
+    "questions": {
+      "outcome": {
+        "type": "choice",
+        "instructions": "What final outcome will this founder's company reach?",
+        "criteria": {
+          "shut down": "the company closed",
+          "under $50M": "exited, listed or raised, at a value under $50M",
+          "$50M-$500M": "exit, IPO or funding value between $50M and $500M",
+          "$500M-$1B": "exit, IPO or funding value between $500M and $1B",
+          "over $1B": "exit, IPO or funding value over $1B"
+        }
+      },
+      "years": {
+        "type": "choice",
+        "instructions": "How long after founding will the company reach that outcome?",
+        "criteria": {
+          "under 5": "fewer than 5 years from founding",
+          "5-8": "5 to 8 years from founding",
+          "over 8": "more than 8 years from founding"
+        }
+      }
+    },
+    "response_format": "kev.serve /v1/systemone returns {\"answers\": {\"outcome\": {\"type\": \"choice\", \"choice\": \"<option>\", \"confidence\": <c>, \"probabilities\": {\"<option>\": <p>, ...}}, \"years\": {...}}, \"usage\": {...}}. The server runs raw (KEV_TEMPERATURE=1.0); apply each question's temperature as p^(1/T), renormalised (research/common.apply_temperature)."
+  },
+  "temperature": {
+    "applied_by": "client",
+    "outcome": 1.148698354997035,
+    "years": 0.8705505632961241
+  },
+  "answerer": {
+    "spec": "LLM(\"kev-0.6b\", base_url=\"https://replace-with-tunnel.trycloudflare.com/answerer/v1/systemone\", kind=\"decision\") (TRL; jaredpalmer/kev-0.6b, served in fp32)",
+    "via": "trl"
+  },
+  "validation": {
+    "split": "val",
+    "chosen_checkpoint": "ep2",
+    "val_raw": {
+      "n": 800,
+      "nll": 1.1630073945610346,
+      "acc": 0.48875,
+      "ece": 0.027189782586566957,
+      "brier": 0.6304793474710744,
+      "mean_conf": 0.515939782586567,
+      "confident_error_rate": 0.0,
+      "coverage_at_0_9": 0.0,
+      "accuracy_at_0_9": null,
+      "coverage_at_5pct_error": 0.0,
+      "coverage_at_1pct_error": 0.0,
+      "aurc": 0.40133925768174045,
+      "error_rate_at_0_9": null,
+      "confidence_bias": 0.027189782586567013,
+      "top_bins": {
+        "0.9": {
+          "n": 0,
+          "errors": 0,
+          "error_rate": null
+        },
+        "0.95": {
+          "n": 0,
+          "errors": 0,
+          "error_rate": null
+        },
+        "0.99": {
+          "n": 0,
+          "errors": 0,
+          "error_rate": null
+        }
+      },
+      "selective": {
+        "0.5": {
+          "coverage": 0.5,
+          "accuracy": 0.5875,
+          "confidence_cutoff": 0.4961050004927814
+        },
+        "0.8": {
+          "coverage": 0.8,
+          "accuracy": 0.5265625,
+          "confidence_cutoff": 0.41477563469264717
+        }
+      }
+    },
+    "val_calibrated": {
+      "n": 800,
+      "nll": 1.1614954975841336,
+      "acc": 0.48875,
+      "ece": 0.020647384370519817,
+      "brier": 0.6296054149048196,
+      "mean_conf": 0.4916272209141035,
+      "confident_error_rate": 0.0,
+      "coverage_at_0_9": 0.0,
+      "accuracy_at_0_9": null,
+      "coverage_at_5pct_error": 0.0,
+      "coverage_at_1pct_error": 0.0,
+      "aurc": 0.398598102486272,
+      "error_rate_at_0_9": null,
+      "confidence_bias": 0.0028772209141034732,
+      "top_bins": {
+        "0.9": {
+          "n": 0,
+          "errors": 0,
+          "error_rate": null
+        },
+        "0.95": {
+          "n": 0,
+          "errors": 0,
+          "error_rate": null
+        },
+        "0.99": {
+          "n": 0,
+          "errors": 0,
+          "error_rate": null
+        }
+      },
+      "selective": {
+        "0.5": {
+          "coverage": 0.5,
+          "accuracy": 0.585,
+          "confidence_cutoff": 0.4746205662978062
+        },
+        "0.8": {
+          "coverage": 0.8,
+          "accuracy": 0.5328125,
+          "confidence_cutoff": 0.40663494769978115
+        }
+      }
+    }
+  },
+  "answer_serialisation": {
+    "format": "binary",
+    "threshold": 0.5,
+    "line_template": "{question} {answer}",
+    "separator": "\n",
+    "order": "rules.json"
+  }
+}

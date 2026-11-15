@@ -1,0 +1,16 @@
+[
+  { "id": "s1_hook", "file": "s1_hook.html", "duration": 12.7, "voice": { "file": "../voiceover/s1_hook.mp3", "at": 0.5 }, "clips": [] },
+  { "id": "s2_start", "file": "s2_start.html", "duration": 9.8, "voice": { "file": "../voiceover/s2_start.mp3", "at": 0.5 },
+    "clips": [{ "name": "c1_type", "from": 0.4, "to": 9.8 }] },
+  { "id": "s3_research", "file": "s3_research.html", "duration": 19.4, "voice": { "file": "../voiceover/s3_research.mp3", "at": 0.5 },
+    "clips": [{ "name": "c2_research", "from": 0, "to": 13.1 }, { "name": "c3_profile", "from": 13.1, "to": 19.4 }] },
+  { "id": "s4_verdict", "file": "s4_verdict.html", "duration": 17.4, "voice": { "file": "../voiceover/s4_verdict.mp3", "at": 0.5 },
+    "clips": [{ "name": "c4_verdict", "from": 0.3, "to": 8.6 }, { "name": "c5_bar", "from": 8.6, "to": 17.4 }] },
+  { "id": "s5_drivers", "file": "s5_drivers.html", "duration": 7.6, "voice": { "file": "../voiceover/s5_drivers.mp3", "at": 0.5 },
+    "clips": [{ "name": "c6_whatif", "from": 0.3, "to": 7.6 }] },
+  { "id": "s6_research", "file": "s6_research.html", "duration": 26.5, "voice": { "file": "../voiceover/s6_research.mp3", "at": 0.5 }, "clips": [] },
+  { "id": "s7_extras", "file": "s7_extras.html", "duration": 11.1, "voice": { "file": "../voiceover/s7_extras.mp3", "at": 0.5 },
+    "clips": [{ "name": "c7_list", "from": 0, "to": 2.6 }, { "name": "c8_voice", "from": 2.6, "to": 5.65 },
+              { "name": "c9_notify", "from": 5.65, "to": 8.2 }, { "name": "c10_profile", "from": 8.2, "to": 11.1 }] },
+  { "id": "s8_close", "file": "s8_close.html", "duration": 8.8, "voice": { "file": "../voiceover/s8_close.mp3", "at": 0.5 }, "clips": [] }
+]

@@ -13,6 +13,8 @@ import type { Distributions, Driver } from "@/lib/types";
 
 export function Factors({
   drivers,
+  status,
+  total,
   base,
   bar,
   flipped,
@@ -22,6 +24,8 @@ export function Factors({
   error,
 }: {
   drivers: Driver[];
+  status: "complete" | "pending" | "failed";
+  total: number | null;
   base: Distributions;
   bar: Policy;
   flipped: Set<string>;
@@ -37,7 +41,7 @@ export function Factors({
       .map((d) => ({ d, impact: b - score(d.distributions, bar.target, bar.timeline_years) }))
       .sort((x, y) => Math.abs(y.impact) - Math.abs(x.impact));
   }, [drivers, base, bar.target, bar.timeline_years]);
-  if (!ranked.length) return null;
+  if (!ranked.length && status === "complete") return null;
   const maxImpact = Math.max(...ranked.map((r) => Math.abs(r.impact)), 0.01);
   const visible = all ? ranked : ranked.slice(0, 5);
 
@@ -50,6 +54,20 @@ export function Factors({
       >
         What moves the score
       </SectionTitle>
+      {status === "pending" && (
+        <p role="status" className="mb-3 flex items-start gap-2 rounded-[14px] bg-accent-soft px-3.5 py-3 text-[13.5px] leading-snug text-ink-2">
+          <Spinner size={14} className="mt-[2px] shrink-0" />
+          <span>
+            Checking each answer the other way round{total ? `: ${drivers.length} of ${total} done` : ""}. The model takes a few seconds per question, so this fills in over the next
+            few minutes. The verdict above is already final.
+          </span>
+        </p>
+      )}
+      {status === "failed" && (
+        <p className="mb-3 rounded-[14px] bg-surface-2 px-3.5 py-3 text-[13.5px] leading-snug text-ink-2">
+          The model stopped answering{drivers.length ? ` after ${drivers.length} of ${total ?? drivers.length} questions` : ""}, so this list is incomplete. The verdict above isn&apos;t affected.
+        </p>
+      )}
       <div className="mb-1 flex items-center gap-4 text-[12.5px] font-medium text-muted">
         <span className="flex items-center gap-1.5"><span className="h-2.5 w-3.5 rounded-[3px] bg-[var(--viz-down)]" />Lowers the chance</span>
         <span className="flex items-center gap-1.5"><span className="h-2.5 w-3.5 rounded-[3px] bg-[var(--viz-up)]" />Raises it</span>

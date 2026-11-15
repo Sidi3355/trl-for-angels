@@ -3,8 +3,9 @@
 Every mock-to-real swap is one setting:
     ARTIFACTS_DIR  app/contract/mocks  ->  shared/artifacts      (rules, thresholds, model)
     AGENT          mock                ->  claude                (research agent; needs ANTHROPIC_API_KEY)
-    ANSWERER       mock                ->  jev                   (needs TYPESAFE_API_KEY)
-    DECIDER        mock                ->  kev                   (endpoint from model.json; KEV_API_KEY if needed)
+    ANSWERER       mock                ->  kev                   (base Kev at KEV_URL/answerer; KEV_API_KEY)
+    DECIDER        mock                ->  kev                   (production Kev at KEV_URL/decider; KEV_API_KEY)
+    KEV_URL        (unset)             ->  https://<words>.trycloudflare.com   (the PC's tunnel; changes each start)
     TRANSCRIBER    auto: mock          ->  elevenlabs            (voice notes; needs ELEVENLABS_API_KEY)
     NOTE_SORTER    auto: off           ->  claude                (notes -> form fields; needs ANTHROPIC_API_KEY)
 """
@@ -37,19 +38,26 @@ class Settings(BaseSettings):
     # Mock-to-real switches
     artifacts_dir: str = "app/contract/mocks"
     agent: Literal["mock", "claude"] = "mock"
-    answerer: Literal["mock", "jev"] = "mock"
+    answerer: Literal["mock", "kev"] = "mock"
     decider: Literal["mock", "kev"] = "mock"
 
     # Keys (never committed; set them in the host's dashboard)
     # In this cloud sandbox use SCREENER_ANTHROPIC_API_KEY: Claude Code itself reads ANTHROPIC_API_KEY.
     anthropic_api_key: SecretStr | None = Field(
         default=None, validation_alias=AliasChoices("SCREENER_ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY"))
-    typesafe_api_key: SecretStr | None = None
     kev_api_key: SecretStr | None = None
     elevenlabs_api_key: SecretStr | None = None
     vapid_public_key: str | None = None
     vapid_private_key: SecretStr | None = None
     vapid_subject: str | None = None  # e.g. mailto:you@example.com, required by web push
+
+    # Kev (ANSWERER=kev, DECIDER=kev): research's kev_server on the owner's PC behind a Cloudflare tunnel.
+    kev_url: str | None = None  # the bare tunnel address; overrides model.json's endpoint for both models
+    # Per Kev request. Answering 40 questions takes ~7 s on 4 idle cores but over a minute on a busy CPU (seen in
+    # testing), so the default is generous; a PC that's off still fails at once (connection refused).
+    kev_timeout_s: float = 180.0
+    kev_max_retries: int = 1  # a PC that's off should fail a screening quickly, not after minutes of retries
+    kev_demo_cache: bool = True  # real Kev replies for the demo founders (screener/data/kev_demo_cache.json)
 
     # Research agent (AGENT=claude)
     agent_model: str = "claude-opus-5-5"
@@ -92,7 +100,7 @@ class Settings(BaseSettings):
 
     def key_status(self) -> dict[str, bool]:
         """Which keys are set (never their values)."""
-        names = {"ANTHROPIC_API_KEY": "anthropic_api_key", "TYPESAFE_API_KEY": "typesafe_api_key",
+        names = {"ANTHROPIC_API_KEY": "anthropic_api_key",
                  "KEV_API_KEY": "kev_api_key", "ELEVENLABS_API_KEY": "elevenlabs_api_key",
                  "VAPID_PRIVATE_KEY": "vapid_private_key"}
         return {label: getattr(self, n) is not None and bool(getattr(self, n).get_secret_value()) for label, n in names.items()}

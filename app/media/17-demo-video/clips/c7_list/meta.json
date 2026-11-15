@@ -1,0 +1,14 @@
+{
+ "frames": 78,
+ "fps": 30,
+ "speed": 1.0,
+ "seconds": 2.6,
+ "source_seconds": 2.6,
+ "segments": [
+  {
+   "seg": "c7_list",
+   "from": 8.65,
+   "to": 11.25
+  }
+ ]
+}

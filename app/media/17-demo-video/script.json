@@ -1,0 +1,48 @@
+{
+  "_about": "Halomark demo video (2 min, 16:9), version 2. Voiceover by ElevenLabs (voice George, British; the owner asked for Archer, but ElevenLabs' free plan can't use library voices through the API, so they chose a built-in British male voice; eleven_multilingual_v2), one file per section, generated in order with request stitching so the sections flow as one read. 'text' is what the captions show; 'tts' is what the voice reads (Halomark spelled Halo-mark so it's said HAY-lo-mark). Every claim is checked against the app and the research: the calibration figure is C3 (fine-tuned Kev on TRL's answers) on 600 test founders, generated data. Version 1 (voice Alice) is in voiceover/v1-alice/.",
+  "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+  "voice_name": "George - Warm, Captivating Storyteller (British)",
+  "model_id": "eleven_multilingual_v2",
+  "sections": [
+    {
+      "id": "s1_hook",
+      "scene": "Title: the problem, then the Halomark mark",
+      "text": "Angel investors screen founders alone. No analyst, no second opinion, just a stack of names and a gut feeling. Halomark gives every angel a first pass they can trust."
+    },
+    {
+      "id": "s2_start",
+      "scene": "App: dashboard, type a name",
+      "text": "Type a name, or share a LinkedIn profile from any app. Here's Tope Awotona, on the day he founded Calendly."
+    },
+    {
+      "id": "s3_research",
+      "scene": "App: live research (real-speed excerpts), then the anonymised profile",
+      "text": "Halomark's research agent searches the web, but only counts what was public before the company was founded. Every fact comes with its source, and anything it can't confirm stays unknown. Then it strips out every name, so the model judges the background, not the brand."
+    },
+    {
+      "id": "s4_verdict",
+      "scene": "App: the verdict, then the bar sheet",
+      "text": "Then the verdict: meet, look closer, or pass, with the chance of reaching your target, next to the odds for all founders. Change your bar, a bigger exit, a shorter timeline, a bolder appetite, and every verdict updates instantly."
+    },
+    {
+      "id": "s5_drivers",
+      "scene": "App: what moves the score, one what-if",
+      "text": "It also shows what moves the score. Tap any answer to see the verdict if it went the other way."
+    },
+    {
+      "id": "s6_research",
+      "scene": "Motion graphics: Think, Reason, Learn; the calibration chart",
+      "text": "Under the hood is TRL, Vela Research's open-source think, reason, learn framework. Claude wrote a checklist of yes-or-no questions, and the best forty made the cut. Kev, a small open-source decision model, answers them, and our fine-tuned Kev turns those answers into odds. Tested on six hundred founders it had never seen, the odds were off by about one percentage point."
+    },
+    {
+      "id": "s7_extras",
+      "scene": "Back to the app: screen a list, voice note, notification, on-device profile",
+      "text": "Back in the app, there's more. Screen a whole list from a spreadsheet, fill in the form with a voice note after a meeting, and get a notification when it's done. And your profile never leaves your phone."
+    },
+    {
+      "id": "s8_close",
+      "scene": "End card",
+      "text": "Halomark, calibrated odds for angels. A screening aid. Not investment advice."
+    }
+  ]
+}

@@ -1,7 +1,9 @@
 """Research agent: fills template fields from public, pre-founding information.
 
 AGENT=mock (default): serves canned findings for the three demo founders and finds nothing for anyone
-else, while streaming realistic progress events. AGENT=claude: the Claude API with web search (pipeline/agent.py).
+else, while streaming realistic progress events. AGENT=claude: the Claude API with web search (pipeline/agent.py),
+except for the three fictional demo founders (WithDemoFounders): they keep their canned findings, so the
+dashboard's examples cost nothing and never pick up a real person who shares a made-up name.
 """
 
 from __future__ import annotations
@@ -76,3 +78,21 @@ class MockAgent:
                     await ctx.sleep(0.25)
         return Findings(fields=f["fields"], sources=sources, post_founding=f["post_founding"],
                         founding_date=tuple(f["founding_date"]) if f.get("founding_date") else None)
+
+
+class WithDemoFounders:
+    """The real agent for everyone except the fictional demo founders, recognised by their placeholder addresses
+    (example.com/mock/...), never by name alone."""
+
+    def __init__(self, real, demo: MockAgent | None = None):
+        self.real, self.demo = real, demo or MockAgent()
+        self.name = real.name
+
+    async def research(self, inp: dict, ctx: Pipeline, emit: Emitter) -> Findings:
+        if find_demo_founder(inp["founder"], by_name=False) is not None:
+            return await self.demo.research(inp, ctx, emit)
+        return await self.real.research(inp, ctx, emit)
+
+    def __getattr__(self, item):  # anything else (budget, model, ...) is the real agent's
+        return getattr(self.real, item)
+

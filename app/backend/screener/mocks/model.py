@@ -2,9 +2,9 @@
 
 It exists so the mocks hang together (answers follow from the profile, distributions follow from the
 answers, drivers and what-ifs follow from flipping answers), and so the task 2 backend can serve
-plausible what-if results before Jev and the production Kev are wired in.
+plausible what-if results without the Kev server.
 
-- mock_answer(fields)  stands in for Jev answering rules.json through TRL: P(yes) per rule.
+- mock_answer(fields)  stands in for base Kev answering rules.json through TRL: P(yes) per rule.
 - mock_decide(answers) stands in for the production Kev: outcome and years distributions from the
   binary answers (ordinal logistic on a weighted sum; years as a mixture given the outcome).
 """
@@ -223,10 +223,10 @@ def _full(fields: dict) -> dict:
 
 
 def mock_answer(fields: dict, rule_ids: list[str] | None = None) -> list[float]:
-    """Mock Jev: P(yes) per rule, in rule order, from merged template field values.
+    """Mock answerer: P(yes) per rule, in rule order, from merged template field values.
 
     Mock rules (r01-r20) use their hand-written answer functions. Any other rule ID (e.g. the real
-    rules.json while Jev is still mocked) gets a stable placeholder in [0.05, 0.95].
+    rules.json while the answerer is mocked) gets a stable placeholder in [0.05, 0.95].
     """
     f = _full(fields)
     ids = rule_ids if rule_ids is not None else RULE_IDS

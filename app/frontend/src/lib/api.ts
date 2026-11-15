@@ -99,6 +99,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 }
 
 let thresholdsPromise: Promise<Thresholds> | null = null;
+let rulesPromise: Promise<{ rules: { id: string; question: string }[] }> | null = null;
 
 export const api = {
   health: () => request<Health>("/health"),
@@ -132,6 +133,14 @@ export const api = {
   /** Template fields found in free-form notes, for the investor to check before screening. */
   sortNote: (body: NoteSortRequest) =>
     request<NoteSortResponse>("/v1/notes/sort", { method: "POST", body: JSON.stringify(body) }),
+  /** The screening questions (rules.json), for labelling a memo's answers. Fetched once per page load. */
+  rules: () => {
+    rulesPromise ??= request<{ rules: { id: string; question: string }[] }>("/v1/artifacts/rules").catch((e) => {
+      rulesPromise = null;
+      throw e;
+    });
+    return rulesPromise;
+  },
   /** The val lookup table behind the risk control. Fetched once per page load. */
   thresholds: () => {
     thresholdsPromise ??= request<Thresholds>("/v1/artifacts/thresholds").catch((e) => {

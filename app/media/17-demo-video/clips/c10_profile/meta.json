@@ -1,0 +1,14 @@
+{
+ "frames": 90,
+ "fps": 30,
+ "speed": 1.0,
+ "seconds": 3.0,
+ "source_seconds": 3.0,
+ "segments": [
+  {
+   "seg": "c10_profile",
+   "from": 0.3,
+   "to": 3.3
+  }
+ ]
+}

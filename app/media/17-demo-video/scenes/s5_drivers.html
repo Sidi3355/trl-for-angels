@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Halomark demo · s5_drivers</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .hl { font-size: 138px; margin-top: 34px; }
+  .sub { margin-top: 42px; width: 880px; }
+  .flip { position: absolute; left: 96px; top: 668px; width: 900px; height: 150px; border-top: 3px solid var(--ink); border-bottom: 3px solid var(--ink); display: flex; align-items: center; gap: 30px; }
+  .flip .label { width: 160px; }
+  .chip { position: relative; width: 150px; height: 78px; }
+  .chip span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 800; border: 3px solid var(--ink); border-radius: 40px; }
+  .chip .y { background: var(--ink); color: var(--paper); }
+  .chip .n { background: var(--paper); color: var(--ink); }
+  .arrow { width: 70px; height: 24px; flex: none; }
+  .res { position: relative; width: 400px; height: 96px; }
+  .res > div { position: absolute; inset: 0; display: flex; align-items: center; gap: 22px; font-size: 54px; font-weight: 800; letter-spacing: -.03em; white-space: nowrap; }
+  .res svg { width: 84px; height: 84px; flex: none; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="head"><span data-wordmark></span><span class="folio"><b>05</b> &nbsp;What moves the score</span></div>
+  <div class="col">
+    <div class="eyebrow kicker" id="eb">The drivers</div>
+    <h1 class="headline hl"><span class="w">What moves</span><br><span class="w">the score.</span></h1>
+    <p class="sub" id="sub">Tap any answer to see the verdict if it went the other way.</p>
+  </div>
+  <div class="flip" id="flip">
+    <span class="label">One answer</span>
+    <div class="chip"><span class="y" id="cy">Yes</span><span class="n" id="cn">No</span></div>
+    <svg class="arrow" viewBox="0 0 70 24"><path d="M0 12H64M54 2L64 12L54 22" fill="none" stroke="#0e0f0e" stroke-width="3.5"/></svg>
+    <div class="res">
+      <div id="r1"><svg data-punch="meet"></svg>Meet</div>
+      <div id="r2"><svg data-punch="closer"></svg>Look closer</div>
+    </div>
+  </div>
+  <div class="phone" id="phone"><div class="screen"><img id="c6" alt="">
+  <div class="ph-tag"></div></div></div>
+</div>
+<script src="data.js"></script>
+<script src="seek.js"></script>
+<script>
+HM.scene({
+  id: 's5_drivers', duration: 7.6, voiceAt: 0.5,
+  clips: [{ name: 'c6_whatif', from: 0.3, to: 7.6, img: '#c6' }],
+  build: function (HM) {
+    HM.fade('#eb', 0.2);
+    HM.set('.hl .w', 0.75, { dy: 60, dur: 0.45, stagger: 0.75 });   // "shows what moves / the score"
+    HM.set('#sub', 3.0, { dur: 0.5 });                                // "Tap any answer"
+    HM.wipe('#flip', 3.6, { dur: 0.5 });
+    // the answer flips, and the verdict with it ("if it went the other way")
+    var flipAt = 5.3;
+    HM.tl('#cy', [[flipAt, { transform: 'scaleY(1)', opacity: 1 }, 'strike'], [flipAt + 0.12, { transform: 'scaleY(0)', opacity: 1 }, 'linear'], [flipAt + 0.121, { transform: 'scaleY(0)', opacity: 0 }]]);
+    HM.tl('#cn', [[flipAt + 0.12, { transform: 'scaleY(0)', opacity: 0 }, 'linear'], [flipAt + 0.121, { transform: 'scaleY(0)', opacity: 1 }, 'set'], [flipAt + 0.3, { transform: 'scaleY(1)', opacity: 1 }]]);
+    HM.tl('#r1', [[flipAt + 0.2, { opacity: 1 }, 'linear'], [flipAt + 0.3, { opacity: 0 }]]);
+    HM.strike('#r2', flipAt + 0.42, { from: 1.4 });
+    HM.jolt('#flip', flipAt + 0.42, 4);
+  }
+});
+</script>
+</body>
+</html>

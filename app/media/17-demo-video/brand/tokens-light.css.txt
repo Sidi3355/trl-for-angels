@@ -1,0 +1,66 @@
+:root {
+  --bg: #eeeeea;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --surface-3: #e3e3de;
+  --ink: #0e0f0e;
+  --ink-2: #2e302e;
+  --muted: #5b5e5a;
+  --faint: #6c6f6a;
+  --line: #dededa;
+  --line-strong: #c4c4be;
+  /* the accent is the brand: stamp-pad blue on primary actions, and its pale tint on highlights */
+  --accent: #1f3bd0;
+  --accent-hover: #1a32b4;
+  --accent-ink: #ffffff;
+  --accent-soft: #e4e8fc;
+  /* stamp-pad blue: the mark only (6.9:1 on paper) */
+  --brand: #1f3bd0;
+
+  --advance: #0a6a3a;
+  --advance-fill: #1fb96b;
+  --advance-soft: #d9f4e4;
+  --escalate: #7f4d00;
+  --escalate-fill: #f0a21a;
+  --escalate-soft: #fcebc7;
+  --pass: #44474b;
+  --pass-fill: #7c8086;
+  --pass-soft: #e5e5e1;
+  --danger: #b3261e;
+  --danger-soft: #fbe4e1;
+  --warn: #7a4b00;
+  --warn-soft: #fbebc8;
+
+  /* the verdict slab: one loud block per memo */
+  --slab-advance: #35d685;
+  --slab-advance-ink: #04210f;
+  --slab-escalate: #ffb930;
+  --slab-escalate-ink: #2a1800;
+  --slab-pass: #17181a;
+  --slab-pass-ink: #f4f4f0;
+
+  /* charts (validated with the dataviz palette script) */
+  --viz-o1: #86b6ef;
+  --viz-o2: #5598e7;
+  --viz-o3: #2a78d6;
+  --viz-o4: #1c5cab;
+  --viz-o5: #104281;
+  --viz-y1: #f3a37a;
+  --viz-y2: #e2622d;
+  --viz-y3: #a8431a;
+  --viz-up: #2a78d6;
+  --viz-down: #e34948;
+  --viz-track: #e3e3de;
+
+  --dock: #0e0f0e;
+  --dock-ink: #ffffff;
+  /* the dock is dark in both themes, so its Screen button uses the brand's on-dark blue in both (6:1+ on the dock) */
+  --dock-accent: #8fa0ff;
+  --dock-accent-ink: #0b0c0c;
+  --shadow-1: 0 1px 0 rgba(14, 15, 14, 0.04);
+  --shadow-2: 0 24px 48px -16px rgba(14, 15, 14, 0.28), 0 4px 10px rgba(14, 15, 14, 0.08);
+  --overlay: rgba(14, 15, 14, 0.5);
+  /* room for the floating tab dock on phones */
+  --dock-clear: calc(max(env(safe-area-inset-bottom), 12px) + 80px);
+  color-scheme: light;
+}

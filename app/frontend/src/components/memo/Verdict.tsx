@@ -7,6 +7,7 @@ import { BarSummary } from "@/components/BarSheet";
 import { IconSliders } from "@/components/icons";
 import { SLAB, VerdictIcon, cx, useCountTo } from "@/components/ui";
 import { DECISION_COPY, chanceOf, percent } from "@/lib/format";
+import { tableFor } from "@/lib/policy";
 import type { Verdict as V } from "@/lib/types";
 
 function niceMax(x: number): number {
@@ -73,9 +74,19 @@ export function Gauge({ prob, advance, pass, baseline }: { prob: number; advance
 }
 
 export function VerdictCard({ verdict, baseline, whatIf, loading, onReset }: { verdict: V; baseline: V; whatIf: boolean; loading: boolean; onReset: () => void }) {
-  const { bar, openBarSheet } = useApp();
+  const { bar, openBarSheet, thresholds } = useApp();
   const copy = DECISION_COPY[verdict.decision];
   const pol = verdict.policy;
+  // The share of all validation founders who reached this target and timeline: the model's chances are cautious,
+  // so a number means more next to the typical founder's (research's app_integration.md, point 7).
+  let baseRate: number | null = null;
+  try {
+    baseRate = thresholds ? tableFor(thresholds, pol.target, pol.timeline_years).base_rate : null;
+  } catch {
+    baseRate = null;
+  }
+  // No validation founder reached this target and timeline (e.g. $1B+ within 5 years), so there are no thresholds.
+  const noBar = pol.advance_threshold === null && pol.pass_threshold === null;
   const changed = whatIf && baseline.probability !== verdict.probability;
   const shown = useCountTo(verdict.probability);
   const figure = percent(shown).replace("%", "");
@@ -100,7 +111,9 @@ export function VerdictCard({ verdict, baseline, whatIf, loading, onReset }: { v
         </div>
 
         <p className="mt-2 text-[50px] font-black leading-[0.9] tracking-[-0.05em] sm:text-[58px]">{copy.title}</p>
-        <p className="mt-2.5 text-[15.5px] font-medium leading-snug opacity-85">{copy.line}</p>
+        <p className="mt-2.5 text-[15.5px] font-medium leading-snug opacity-85">
+          {noBar ? "No bar for this target and timeline: too few founders got there to judge. Try a longer timeline." : copy.line}
+        </p>
 
         <div className="mt-6 flex items-end gap-4 sm:mt-7">
           <p className="cond text-[136px] font-black leading-[0.74] tracking-[-0.02em] sm:text-[150px]">
@@ -112,10 +125,12 @@ export function VerdictCard({ verdict, baseline, whatIf, loading, onReset }: { v
             chance of
             <br />
             {chanceOf(pol.target, pol.timeline_years)}
-            {changed && (
+            {changed ? (
               <span className="tabular mt-1.5 block text-[13.5px] font-medium opacity-75">
                 was <span className="line-through">{percent(baseline.probability)}</span>
               </span>
+            ) : (
+              baseRate !== null && <span className="tabular mt-1.5 block text-[13.5px] font-medium opacity-75">All founders: {percent(baseRate)}</span>
             )}
           </p>
         </div>

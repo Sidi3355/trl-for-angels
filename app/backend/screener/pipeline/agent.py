@@ -182,8 +182,9 @@ class ClaudeAgent:
         run_usd, nudged = 0.0, False
         for turn in range(MAX_TURNS):
             msg = await self._call(messages, emit)
-            run_usd += self.budget.charge(msg.usage, msg.model, label=who)
-            log.info("agent %s turn %d: %s, run $%.3f, total $%.3f", who, turn, msg.stop_reason, run_usd,
+            # No names in logs or the spend record: hosting logs outlive the session.
+            run_usd += self.budget.charge(msg.usage, msg.model, label="research")
+            log.info("agent turn %d: %s, run $%.3f, total $%.3f", turn, msg.stop_reason, run_usd,
                      self.budget.spent_usd)
             if msg.stop_reason == "refusal":
                 return await self._partial(emit, "The research model declined this request, so only your fields were used.")
@@ -305,6 +306,10 @@ class ClaudeAgent:
             post.append({"text": n["text"][:1000], "source_ids": [src["id"]] if src else []})
         for s in sources:
             s["used_for"] = sorted(set(s["used_for"]))
+            # The progress screen counts and lists these, as it does for the mock agent's.
+            after = s["before_founding"] is False
+            await emit("source", f"Found {s['title']}" + (": from after founding, so memo notes only." if after else "."),
+                       data={"source": dict(s)})
         await emit("stage", f"Research done: {len(fields)} of 9 fields found from {len(sources)} sources "
                             f"(${run_usd:.2f}).", stage="researching")
         return Findings(fields=fields, sources=sources, post_founding=post, founding_date=founding,

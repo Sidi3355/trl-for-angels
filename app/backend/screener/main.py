@@ -10,6 +10,7 @@ import contextlib
 import json
 import logging
 import re
+import time
 from typing import Literal
 
 from fastapi import APIRouter, Depends, FastAPI, Header, Query, Request
@@ -21,14 +22,22 @@ from .artifacts import load_artifacts
 from .config import Settings, secret
 from .contract import Contract, ContractError
 from .mocks.founders import DEMO_FOUNDERS
-from .pipeline.batch import CsvError, parse_csv
-from .pipeline.context import NotConfigured, Pipeline
-from .pipeline.models import JevAnswerer, KevDecider, MockAnswerer, MockDecider
-from .pipeline.notes import (ClaudeSorter, ElevenLabsTranscriber, MockSorter, MockTranscriber, NoteError, NoteTools,
-                             audio_extension)
 from .pipeline.agent import ClaudeAgent
+from .pipeline.batch import CsvError, parse_csv
 from .pipeline.budget import Budget
-from .pipeline.research import MockAgent
+from .pipeline.context import NotConfigured, Pipeline
+from .pipeline.kev import DEMO_CACHE, KevCache, KevUnavailable, kev_urls, probe
+from .pipeline.models import KevAnswerer, KevDecider, MockAnswerer, MockDecider
+from .pipeline.notes import (
+    ClaudeSorter,
+    ElevenLabsTranscriber,
+    MockSorter,
+    MockTranscriber,
+    NoteError,
+    NoteTools,
+    audio_extension,
+)
+from .pipeline.research import MockAgent, WithDemoFounders
 from .pipeline.whatif import WhatIfError
 from .push import Pusher
 from .service import InvalidRequest, NotFound, Service
@@ -41,16 +50,24 @@ SSE_KEEPALIVE_S = 15
 def build_components(settings: Settings, artifacts, contract: Contract, budget: Budget) -> tuple[dict, dict]:
     """Instantiate the configured agent, answerer and decider; collect what isn't available."""
     built, errors = {}, {}
+    kev_call = {"timeout_s": max(settings.kev_timeout_s, float(artifacts.model["endpoint"].get("timeout_s", 60))),
+                "max_retries": settings.kev_max_retries,
+                "cache": KevCache(DEMO_CACHE if settings.kev_demo_cache else None,
+                                  model_id=artifacts.model["model_id"], rules=artifacts.rules)}
     makers = {
         "agent": {"mock": MockAgent,
-                  "claude": lambda: ClaudeAgent(
+                  "claude": lambda: WithDemoFounders(ClaudeAgent(
                       api_key=secret(settings.anthropic_api_key), model=settings.agent_model,
                       base_url=settings.agent_base_url, max_searches=settings.agent_max_searches,
                       max_fetches=settings.agent_max_fetches, effort=settings.agent_effort,
                       max_tokens=settings.agent_max_tokens, min_confidence=settings.agent_min_confidence,
-                      budget=budget, contract=contract)},
-        "answerer": {"mock": MockAnswerer, "jev": lambda: JevAnswerer(secret(settings.typesafe_api_key))},
-        "decider": {"mock": MockDecider, "kev": lambda: KevDecider(secret(settings.kev_api_key), artifacts.model)},
+                      budget=budget, contract=contract))},
+        "answerer": {"mock": MockAnswerer, "kev": lambda: KevAnswerer(
+            url=kev_urls(artifacts.model, settings.kev_url)[0], api_key=secret(settings.kev_api_key),
+            rules=artifacts.rules, auth_required=artifacts.model["endpoint"]["auth"]["type"] != "none", **kev_call)},
+        "decider": {"mock": MockDecider, "kev": lambda: KevDecider(
+            url=kev_urls(artifacts.model, settings.kev_url)[1], api_key=secret(settings.kev_api_key),
+            model=artifacts.model, rules=artifacts.rules, **kev_call)},
     }
     for part, options in makers.items():
         choice = getattr(settings, part)
@@ -208,6 +225,10 @@ def _install_error_handlers(app: FastAPI) -> None:
     async def _unconfigured(_, e: NotConfigured):
         return _error(503, "not_configured", str(e), retryable=True)
 
+    @app.exception_handler(KevUnavailable)
+    async def _kev_down(_, e: KevUnavailable):
+        return _error(503, "model_unavailable", str(e), retryable=True)
+
     @app.exception_handler(NoteError)
     async def _note(_, e: NoteError):
         return _error(e.status, e.code, str(e), retryable=e.retryable)
@@ -238,7 +259,18 @@ async def health(request: Request) -> dict:
         "keys": s.key_status(),
         "research_spend": request.app.state.budget.summary() if "claude" in (s.agent, request.app.state.notes.summary()["note_sorter"]) else None,
         "jobs": svc.stats() if svc else None,
+        "kev": await _kev_status(request.app.state, s) if "kev" in (s.answerer, s.decider) else None,
     }
+
+
+async def _kev_status(state, s: Settings) -> dict | None:
+    """The Kev server's own health, checked at most every 30 s so /health stays quick when the PC is off."""
+    cached = getattr(state, "kev_status", None)
+    now = time.monotonic()
+    if cached is None or now - cached[0] > 30:
+        cached = (now, await probe(s.kev_url, secret(s.kev_api_key)))
+        state.kev_status = cached
+    return cached[1]
 
 
 def service(request: Request) -> Service:

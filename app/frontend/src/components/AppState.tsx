@@ -1,13 +1,15 @@
 "use client";
 
-// App-wide state: the investor's bar, the val thresholds behind it, service health and this
-// session's deals. One provider so the sidebar, the Founders list and every memo agree.
+// App-wide state: the investor's bar, the val thresholds behind it, service health, this session's
+// deals and the on-device profile. One provider so the sidebar, the Founders list and every memo agree.
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { api } from "@/lib/api";
 import { loadBar, saveBar } from "@/lib/bar";
 import { registerServiceWorker } from "@/lib/push";
 import { DEFAULT_POLICY, type Policy } from "@/lib/policy";
+import { barFromProfile, loadProfile, storeProfile, type Profile } from "@/lib/profile";
+import { applyTheme, loadTheme } from "@/lib/theme";
 import { listDeals, onDealsChange, type Deal } from "@/lib/session";
 import type { Health, Thresholds } from "@/lib/types";
 
@@ -21,6 +23,14 @@ interface AppState {
   barSheetOpen: boolean;
   openBarSheet: () => void;
   closeBarSheet: () => void;
+  /** True once this device's storage has been read (so pages don't flash the signed-out state). */
+  ready: boolean;
+  /** The investor's profile, from this device's storage; null until they "sign in". */
+  profile: Profile | null;
+  /** Save the profile on this device and prefill the bar from it. */
+  saveProfile: (p: Profile) => boolean;
+  /** The bar "Reset" returns to: the profile's defaults, or the app's. */
+  defaultBar: Policy;
 }
 
 const Ctx = createContext<AppState | null>(null);
@@ -32,9 +42,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [healthError, setHealthError] = useState<string | null>(null);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [barSheetOpen, setBarSheetOpen] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     setBarState(loadBar());
+    setProfile(loadProfile());
+    applyTheme(loadTheme()); // the browser-chrome colour; the page colours were set before paint
+    setReady(true);
     setDeals(listDeals());
     registerServiceWorker();
     const off = onDealsChange(() => setDeals(listDeals()));
@@ -48,6 +63,16 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     saveBar(p);
   }, []);
 
+  const saveProfile = useCallback(
+    (p: Profile) => {
+      const saved = storeProfile(p);
+      setProfile(p);
+      setBar(barFromProfile(p, bar));
+      return saved;
+    },
+    [bar, setBar],
+  );
+
   const value = useMemo<AppState>(
     () => ({
       bar,
@@ -59,8 +84,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       barSheetOpen,
       openBarSheet: () => setBarSheetOpen(true),
       closeBarSheet: () => setBarSheetOpen(false),
+      ready,
+      profile,
+      saveProfile,
+      defaultBar: profile ? barFromProfile(profile, DEFAULT_POLICY) : DEFAULT_POLICY,
     }),
-    [bar, setBar, thresholds, health, healthError, deals, barSheetOpen],
+    [bar, setBar, thresholds, health, healthError, deals, barSheetOpen, ready, profile, saveProfile],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

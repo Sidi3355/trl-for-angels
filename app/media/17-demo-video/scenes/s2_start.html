@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Halomark demo · s2_start</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .hl { font-size: 150px; margin-top: 34px; }
+  .sub { margin-top: 40px; width: 860px; }
+  .slip { position: absolute; left: 96px; top: 596px; width: 860px; }
+  #real { top: 424px; transform: rotate(-5deg); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="head"><span data-wordmark></span><span class="folio"><b>02</b> &nbsp;Start a screening</span></div>
+  <div class="col">
+    <div class="eyebrow kicker" id="eb">Who's the founder?</div>
+    <h1 class="headline hl"><span class="w">Type</span> <span class="w">a</span> <span class="w">name.</span></h1>
+    <p class="sub" id="sub">Or share a LinkedIn profile from any app.</p>
+  </div>
+  <div class="slip" id="slip">
+    <div class="r"><span class="label">Founder</span><span class="v">Tope Awotona</span></div>
+    <div class="r"><span class="label">Company</span><span class="v">Calendly</span></div>
+    <div class="r"><span class="label">As of</span><span class="v">The day he founded it</span></div>
+  </div>
+  <div class="tag sidetag" id="real">The real app</div>
+  <div class="phone" id="phone"><div class="screen"><img id="c1" alt="">
+  <div class="ph-tag"></div></div></div>
+</div>
+<script src="data.js"></script>
+<script src="seek.js"></script>
+<script>
+HM.scene({
+  id: 's2_start', duration: 9.8, voiceAt: 0.5,
+  clips: [{ name: 'c1_type', from: 0.4, to: 9.8, img: '#c1' }],
+  build: function (HM) {
+    HM.set('#phone', 0, { dy: 1000, dur: 0.7 });           // the phone comes up into frame once; it stays through s5
+    HM.fade('#eb', 0.2);
+    HM.set('.hl .w', 0.5, { dy: 60, dur: 0.42, stagger: 0.2 });   // "Type a name"
+    HM.set('#sub', 1.6, { dur: 0.5 });                           // "or share a LinkedIn profile"
+    HM.strike('#real', 3.3, { rot: -5 });
+    HM.wipe('#slip', 4.7, { dir: 'down', dur: 0.5 });             // "Here's Tope Awotona"
+    HM.set(document.querySelectorAll('#slip .v')[0], 4.95, { dy: 24, dur: 0.4 });
+    HM.set(document.querySelectorAll('#slip .v')[2], 6.6, { dy: 24, dur: 0.4 });   // "on the day he founded"
+    HM.set(document.querySelectorAll('#slip .v')[1], 7.85, { dy: 24, dur: 0.4 });  // "Calendly"
+  }
+});
+</script>
+</body>
+</html>

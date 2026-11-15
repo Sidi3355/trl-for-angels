@@ -1,10 +1,11 @@
 "use client";
 
 // The evidence behind the memo: what to watch out for, notes, sources and what the model read.
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { IconAlert, IconChevronDown, IconFlip } from "@/components/icons";
 import { SectionTitle, SourceRef, Tag, cx } from "@/components/ui";
+import { api } from "@/lib/api";
 import { answerLabel, hostOf, unknownPathLabel } from "@/lib/format";
 import type { Memo } from "@/lib/types";
 
@@ -123,7 +124,13 @@ export function Sources({ memo }: { memo: Memo }) {
 
 export function UnderTheHood({ memo }: { memo: Memo }) {
   const [open, setOpen] = useState(false);
-  const labels = new Map(memo.drivers.map((d) => [d.id, d.label]));
+  // The questions come from rules.json: the drivers carry them too, but they may still be filling in.
+  const [questions, setQuestions] = useState<Map<string, string> | null>(null);
+  useEffect(() => {
+    if (!open || questions || !memo.answers) return;
+    api.rules().then((r) => setQuestions(new Map(r.rules.map((q) => [q.id, q.question]))), () => undefined);
+  }, [open, questions, memo.answers]);
+  const labels = new Map([...memo.drivers.map((d) => [d.id, d.label] as const), ...(questions ?? [])]);
   return (
     <section>
       <div className="overflow-hidden rounded-[18px] border border-line-strong">
@@ -148,12 +155,12 @@ export function UnderTheHood({ memo }: { memo: Memo }) {
                   {memo.answers.map((a) => (
                     <li key={a.rule_id} className="flex items-center gap-3 px-3 py-2.5">
                       <span className="min-w-0 flex-1 text-[13.5px] leading-snug">{labels.get(a.rule_id) ?? a.rule_id}</span>
-                      <span className="text-[12px] tabular text-muted">{Math.round(a.p_yes * 100)}%</span>
-                      <span className={cx("w-10 rounded-full py-0.5 text-center text-[12px] font-bold", a.answer === "yes" ? "bg-ink text-bg" : "bg-surface-3 text-ink-2")}>{answerLabel(a.answer)}</span>
+                      <span className="text-[12px] tabular text-muted">{a.p_yes === null ? "–" : `${Math.round(a.p_yes * 100)}%`}</span>
+                      <span className={cx("min-w-10 rounded-full px-2 py-0.5 text-center text-[12px] font-bold", a.answer === "yes" ? "bg-ink text-bg" : "bg-surface-3 text-ink-2")}>{answerLabel(a.answer)}</span>
                     </li>
                   ))}
                 </ul>
-                <p className="mt-2 text-[12.5px] text-muted">The percentage is the answerer&apos;s confidence that the answer is yes.</p>
+                <p className="mt-2 text-[12.5px] text-muted">The percentage is the answerer&apos;s confidence that the answer is yes. Unknown means it gave no answer, and the decision model reads it as unknown.</p>
               </div>
             )}
             <p className="text-[12.5px] text-muted">

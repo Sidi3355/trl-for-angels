@@ -1,0 +1,14 @@
+{
+ "frames": 296,
+ "fps": 30,
+ "speed": 1.0,
+ "seconds": 9.87,
+ "source_seconds": 9.9,
+ "segments": [
+  {
+   "seg": "c3_profile",
+   "from": 2.2,
+   "to": 12.06
+  }
+ ]
+}

@@ -299,7 +299,7 @@ function Triage({ id }: { id: string }) {
 
       <p className="mt-10 text-[13px] text-muted">
         Verdicts follow your bar: change it and the columns re-sort instantly. Every founder here is also in your{" "}
-        <Link href="/" className={linkClass}>
+        <Link href="/founders" className={linkClass}>
           Founders
         </Link>{" "}
         list. <Link href="/batch" className={linkClass}>Screen another list</Link>

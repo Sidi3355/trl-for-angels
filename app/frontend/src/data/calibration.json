@@ -1,0 +1,47 @@
+{
+  "status": "final",
+  "updated": "2026-11-15",
+  "model": "Fine-tuned Kev reading TRL's answers (C3)",
+  "model_note": "The recipe behind Halomark's model: Kev, fine-tuned on 2,000 founders, reading the answers to TRL's 40 questions. These are its scores on 600 test founders it never learned from or was tuned on, for the yes/no question ($500M or more). Halomark's own version, trained the same way, also predicts the outcome band and timing.",
+  "split": "test",
+  "founders": 600,
+  "successes": 120,
+  "target": "$500M+",
+  "base_rate": 0.2,
+  "ece": 0.0121,
+  "brier": 0.1555,
+  "precision": 0.3333,
+  "recall": 0.1,
+  "flagged": 36,
+  "bins": [
+    {
+      "low": 0.0,
+      "high": 0.1,
+      "count": 99,
+      "predicted": 0.0715,
+      "observed": 0.0909
+    },
+    {
+      "low": 0.1,
+      "high": 0.2,
+      "count": 218,
+      "predicted": 0.1504,
+      "observed": 0.1651
+    },
+    {
+      "low": 0.2,
+      "high": 0.3,
+      "count": 238,
+      "predicted": 0.2524,
+      "observed": 0.2479
+    },
+    {
+      "low": 0.3,
+      "high": 0.4,
+      "count": 45,
+      "predicted": 0.332,
+      "observed": 0.3556
+    }
+  ],
+  "source": "results/summary/d1-final (C3, test) on the research branch"
+}

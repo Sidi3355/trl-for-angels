@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { AppShell } from "@/components/AppShell";
 import { AppStateProvider } from "@/components/AppState";
 import { PasscodeGate } from "@/components/PasscodeGate";
+import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 // Self-hosted at build time by next/font: no request to Google from the user's phone.
@@ -43,7 +44,12 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={archivo.variable}>
+    // data-theme (light or dark) is set before first paint by THEME_SCRIPT when the person chose one in the app;
+    // without it the system setting decides. suppressHydrationWarning: the script changes <html> before React.
+    <html lang="en" className={archivo.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body>
         <AppStateProvider>
           <AppShell>{children}</AppShell>

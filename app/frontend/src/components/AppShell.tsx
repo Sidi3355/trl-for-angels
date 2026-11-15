@@ -7,10 +7,18 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { useApp } from "@/components/AppState";
 import { BarSheet, BarSummary } from "@/components/BarSheet";
-import { IconDeals, IconInfo, IconPlus, IconSliders, IconUpload } from "@/components/icons";
+import { IconDeals, IconDoc, IconGear, IconHome, IconInfo, IconPlus, IconSliders, IconUpload, IconUser } from "@/components/icons";
+import { Onboarding } from "@/components/Onboarding";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { VerdictIcon, Wordmark, cx } from "@/components/ui";
 import { quickVerdict } from "@/lib/bar";
 import { percent } from "@/lib/format";
+import { initials } from "@/lib/profile";
+
+const LEARN = ["/about", "/model-card", "/calibration"];
+const SETTINGS = ["/settings", "/plans", "/terms", "/privacy", ...LEARN];
+const FOUNDERS = (p: string) => p === "/founders" || p.startsWith("/memos");
+const SCREEN = (p: string) => p === "/new" || p === "/batch" || p === "/share" || p.startsWith("/screenings");
 
 function StatusPill() {
   const { health, healthError } = useApp();
@@ -35,15 +43,18 @@ const VERDICT_TEXT = { advance: "text-advance", escalate: "text-escalate", pass:
 
 function Sidebar() {
   const pathname = usePathname();
-  const { bar, deals, thresholds, openBarSheet } = useApp();
+  const { bar, deals, thresholds, openBarSheet, profile, ready } = useApp();
   const nav = [
-    { href: "/", label: "Founders", icon: IconDeals, on: pathname === "/" },
+    { href: "/", label: "Dashboard", icon: IconHome, on: pathname === "/" },
+    { href: "/founders", label: "Founders", icon: IconDeals, on: FOUNDERS(pathname) },
     { href: "/batch", label: "Screen a list", icon: IconUpload, on: pathname === "/batch" },
-    { href: "/about", label: "How it works", icon: IconInfo, on: pathname === "/about" },
+    { href: "/about", label: "How it works", icon: IconInfo, on: LEARN.includes(pathname) },
+    { href: "/plans", label: "Plans", icon: IconDoc, on: pathname === "/plans" },
+    { href: "/settings", label: "Settings", icon: IconGear, on: pathname === "/settings" || pathname === "/terms" || pathname === "/privacy" },
   ];
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-[280px] flex-col border-r border-line px-5 pb-5 pt-7 lg:flex">
-      <Link href="/" className="px-1">
+      <Link href="/" className="px-1" aria-label="Halomark dashboard">
         <Wordmark size={21} />
       </Link>
       <Link href="/new" className="mt-7 flex h-12 items-center justify-center gap-2 rounded-full bg-accent text-[15px] font-semibold text-accent-ink transition-[background,transform] hover:bg-accent-hover active:scale-[0.98]">
@@ -51,8 +62,8 @@ function Sidebar() {
       </Link>
       <nav className="mt-6 space-y-0.5" aria-label="Main">
         {nav.map(({ href, label, icon: Icon, on }) => (
-          <Link key={href} href={href} aria-current={on ? "page" : undefined} className={cx("flex h-10 items-center gap-3 rounded-[10px] px-3 text-[15px] transition-colors", on ? "bg-surface font-semibold text-ink shadow-[0_0_0_1px_var(--line)]" : "font-medium text-muted hover:text-ink")}>
-            <Icon size={18} /> {label}
+          <Link key={href} href={href} aria-current={on ? "page" : undefined} className={cx("flex h-10 items-center gap-3 rounded-[10px] px-3 text-[15px] transition-colors", on ? "bg-accent-soft font-semibold text-ink" : "font-medium text-muted hover:text-ink")}>
+            <Icon size={18} className={on ? "text-accent" : undefined} /> {label}
           </Link>
         ))}
       </nav>
@@ -90,9 +101,31 @@ function Sidebar() {
         )}
       </div>
 
-      <div className="space-y-2 border-t border-line px-1 pt-4">
-        <StatusPill />
-        <p className="text-[11.5px] leading-snug text-faint">Screening aid, not investment advice.</p>
+      <div className="space-y-3 border-t border-line pt-4">
+        <Link
+          href="/account"
+          aria-current={pathname === "/account" ? "page" : undefined}
+          className={cx("flex items-center gap-3 rounded-[12px] p-1.5 transition-colors", pathname === "/account" ? "bg-surface shadow-[0_0_0_1px_var(--line)]" : "hover:bg-surface-2")}
+        >
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-[13px] font-bold text-accent-ink" aria-hidden>
+            {profile ? initials(profile.name) : <IconUser size={17} />}
+          </span>
+          <span className="min-w-0">
+            <span className="block truncate text-[14.5px] font-semibold">{ready && profile ? profile.name : "Sign in"}</span>
+            <span className="block text-[12px] text-muted">{ready && profile ? "Profile on this device" : "Your profile and settings"}</span>
+          </span>
+        </Link>
+        <div className="space-y-1.5 px-1">
+          <div className="flex items-center justify-between gap-2 pb-1">
+            <span className="text-[12.5px] font-medium text-muted">Appearance</span>
+            <ThemeToggle compact />
+          </div>
+          <StatusPill />
+          <p className="text-[11.5px] leading-snug text-faint">
+            Screening aid, not investment advice. <Link href="/terms" className="underline underline-offset-2 hover:text-ink">Terms</Link> ·{" "}
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-ink">Privacy</Link>
+          </p>
+        </div>
       </div>
     </aside>
   );
@@ -136,23 +169,30 @@ function Dock() {
     document.documentElement.toggleAttribute("data-dock-hidden", hidden);
   }, [hidden]);
   const tabs = [
-    { href: "/", label: "Founders", icon: IconDeals, on: pathname === "/" || pathname.startsWith("/memos") },
-    { href: "/new", label: "Screen", icon: IconPlus, on: pathname === "/new" || pathname === "/batch" || pathname === "/share" || pathname.startsWith("/screenings"), primary: true },
-    { href: "/about", label: "About", icon: IconInfo, on: pathname === "/about" },
+    { href: "/", label: "Dashboard", icon: IconHome, on: pathname === "/" },
+    { href: "/founders", label: "Founders", icon: IconDeals, on: FOUNDERS(pathname) },
+    { href: "/new", label: "Screen", icon: IconPlus, on: SCREEN(pathname), primary: true },
+    { href: "/settings", label: "Settings", icon: IconGear, on: SETTINGS.includes(pathname) },
+    { href: "/account", label: "You", icon: IconUser, on: pathname === "/account" },
   ];
   return (
-    <nav aria-label="Main" className={cx("pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center pb-[max(env(safe-area-inset-bottom),12px)] transition-transform duration-300 ease-out motion-reduce:transition-none lg:hidden", hidden && "translate-y-[150%]")}>
-      <div className="pointer-events-auto flex h-[60px] items-center gap-1 rounded-full bg-dock p-1.5 text-dock-ink shadow-float ring-1 ring-white/10">
+    <nav aria-label="Main" className={cx("pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center px-3 pb-[max(env(safe-area-inset-bottom),12px)] transition-transform duration-300 ease-out motion-reduce:transition-none lg:hidden", hidden && "translate-y-[150%]")}>
+      <div className="pointer-events-auto flex h-[64px] w-full max-w-[420px] items-center justify-between rounded-full bg-dock px-1.5 text-dock-ink shadow-float ring-1 ring-white/10">
         {tabs.map(({ href, label, icon: Icon, on, primary }) =>
           primary ? (
-            <Link key={href} href={href} aria-current={on ? "page" : undefined} className="flex h-12 items-center gap-1.5 rounded-full bg-dock-ink pl-4 pr-5 text-[15px] font-bold text-dock transition-transform active:scale-95">
-              <IconPlus size={20} strokeWidth={2.6} />
-              {label}
+            <Link key={href} href={href} aria-label={label} aria-current={on ? "page" : undefined} className="flex h-[52px] w-[60px] shrink-0 flex-col items-center justify-center gap-0.5 rounded-full bg-dock-accent text-dock-accent-ink transition-transform active:scale-95">
+              <IconPlus size={22} strokeWidth={2.6} />
+              <span className="text-[10.5px] font-bold leading-none">{label}</span>
             </Link>
           ) : (
-            <Link key={href} href={href} aria-current={on ? "page" : undefined} className={cx("flex h-12 w-[92px] items-center justify-center gap-1.5 rounded-full text-[13.5px] font-semibold transition-[background,opacity]", on ? "bg-white/14" : "opacity-65 active:opacity-100")}>
-              <Icon size={18} strokeWidth={2} />
-              {label}
+            <Link
+              key={href}
+              href={href}
+              aria-current={on ? "page" : undefined}
+              className={cx("flex h-[52px] min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-full transition-[background,opacity]", on ? "bg-white/14" : "opacity-60 active:opacity-100")}
+            >
+              <Icon size={19} strokeWidth={2} />
+              <span className="text-[10.5px] font-semibold leading-none">{label}</span>
             </Link>
           ),
         )}
@@ -171,6 +211,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </main>
       <Dock />
       <BarSheet />
+      <Onboarding />
     </>
   );
 }

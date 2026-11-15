@@ -1,0 +1,14 @@
+{
+ "frames": 233,
+ "fps": 30,
+ "speed": 1.0,
+ "seconds": 7.77,
+ "source_seconds": 7.8,
+ "segments": [
+  {
+   "seg": "c5_bar",
+   "from": 0.0,
+   "to": 7.77
+  }
+ ]
+}

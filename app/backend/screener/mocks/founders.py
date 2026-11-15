@@ -161,11 +161,15 @@ def _norm(s: str | None) -> str:
     return re.sub(r"[^a-z0-9]", "", (s or "").lower())
 
 
-def find_demo_founder(founder: dict) -> dict | None:
-    """The demo founder matching an identifier by name, LinkedIn URL or website, if any."""
-    keys = {_norm(founder.get("name")), _norm(founder.get("linkedin_url")), _norm(founder.get("website_url"))} - {""}
+def find_demo_founder(founder: dict, *, by_name: bool = True) -> dict | None:
+    """The demo founder matching an identifier by name, LinkedIn URL or website, if any.
+
+    by_name=False matches only the demo founders' own placeholder addresses (example.com/mock/...): with real
+    research on, a real founder who shares a demo founder's name must get real research, not the canned story."""
+    names = ("linkedin_url", "website_url") if not by_name else ("name", "linkedin_url", "website_url")
+    keys = {_norm(founder.get(k)) for k in names} - {""}
     for spec in DEMO_FOUNDERS:
         f = spec["input"]["founder"]
-        if keys & ({_norm(f.get("name")), _norm(f.get("linkedin_url")), _norm(f.get("website_url"))} - {""}):
+        if keys & ({_norm(f.get(k)) for k in names} - {""}):
             return spec
     return None

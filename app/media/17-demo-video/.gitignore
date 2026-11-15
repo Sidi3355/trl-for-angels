@@ -1,0 +1,4 @@
+# Generated, large, or rebuilt by tools/: raw screencast frames, 30 fps clip frames, rendered frames and scene encodes.
+raw/
+clips/*/0*.jpg
+build/

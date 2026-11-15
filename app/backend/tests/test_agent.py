@@ -6,7 +6,7 @@ from types import SimpleNamespace as NS
 
 import pytest
 
-from conftest import CONTRACT_DIR
+from conftest import CONTRACT_DIR, MOCKS
 from screener.artifacts import load_artifacts
 from screener.contract import get_contract
 from screener.pipeline.agent import ClaudeAgent, SUBMIT_TOOL
@@ -139,6 +139,9 @@ def test_pause_turn_then_submit_maps_fields_and_enforces_rules():
     assert f.founding_date == ("2013", ["s2"]) and f.post_founding[0]["source_ids"] == ["s3"]
     assert {s["id"]: s["before_founding"] for s in f.sources} == {"s1": True, "s2": True, "s3": False}
     assert ("search", "Searching: Pat Example founder background") in events
+    # each source is reported to the progress screen (it counts them), the post-founding one marked as such
+    sources = [m for kind, m in events if kind == "source"]
+    assert len(sources) == 3 and sum("from after founding" in m for m in sources) == 1
     # after pause_turn the history ends with the assistant turn: no extra user message
     assert [m["role"] for m in client.calls[1]["messages"]] == ["user", "assistant"]
     expected = cost_of(usage(searches=4), "claude-opus-5-5") + cost_of(usage(searches=2), "claude-opus-5-5")
@@ -221,3 +224,34 @@ def test_missing_key_is_not_configured():
         ClaudeAgent(api_key=None, model="m", base_url="https://api.anthropic.com", max_searches=1, max_fetches=1,
                     effort="low", max_tokens=1000, min_confidence=0.5, budget=Budget(1, 1),
                     contract=get_contract(CONTRACT_DIR))
+
+
+def test_demo_founders_keep_canned_research_when_research_is_real():
+    """AGENT=claude: the fictional demo founders (placeholder addresses) never reach the real agent; a real
+    founder who merely shares a demo founder's name does."""
+    import asyncio
+
+    from screener.artifacts import load_artifacts
+    from screener.contract import get_contract
+    from screener.mocks.founders import DEMO_FOUNDERS
+    from screener.pipeline.context import Pipeline, no_emit
+    from screener.pipeline.research import Findings, WithDemoFounders
+
+    class Real:
+        name = "claude"
+        calls = 0
+
+        async def research(self, inp, ctx, emit):
+            Real.calls += 1
+            return Findings(ran=False, note="real")
+
+    contract = get_contract(CONTRACT_DIR)
+    ctx = Pipeline(artifacts=load_artifacts(MOCKS, contract), agent=None, answerer=None, decider=None, pace=0)
+    agent = WithDemoFounders(Real())
+    assert agent.name == "claude"
+    for spec in DEMO_FOUNDERS:
+        found = asyncio.run(agent.research(spec["input"], ctx, no_emit))
+        assert found.ran and found.fields
+    assert Real.calls == 0
+    same_name = {"schema_version": "0.1.0", "founder": {"name": DEMO_FOUNDERS[2]["input"]["founder"]["name"]}}
+    assert asyncio.run(agent.research(same_name, ctx, no_emit)).note == "real" and Real.calls == 1

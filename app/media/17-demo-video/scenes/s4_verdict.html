@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Halomark demo · s4_verdict</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .verd { position: absolute; left: 96px; top: 206px; width: 1000px; }
+  .verd .v { display: flex; align-items: center; gap: 36px; height: 150px; }
+  .verd .v svg { width: 112px; height: 112px; flex: none; }
+  .verd .v .t { font-size: 124px; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+  .verd .note { margin-top: 34px; padding-top: 26px; border-top: 3px solid var(--ink); width: 900px; }
+  .ybar { position: absolute; left: 96px; top: 150px; width: 1000px; }
+  .ybar .hl { font-size: 150px; margin-top: 34px; }
+  .ybar .rows { margin-top: 44px; width: 900px; border-bottom: 3px solid var(--ink); }
+  .ybar .r { display: flex; align-items: baseline; gap: 30px; padding: 20px 0 18px; border-top: 3px solid var(--ink); }
+  .ybar .r .label { width: 170px; flex: none; }
+  .ybar .r .t { font-size: 54px; font-weight: 800; letter-spacing: -.03em; }
+  .ybar .fin { margin-top: 32px; font-size: 38px; font-weight: 600; letter-spacing: -.015em; }
+
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="head"><span data-wordmark></span><span class="folio"><b>04</b> &nbsp;The verdict</span></div>
+  <div id="partA" style="position:absolute;left:0;top:0;width:1240px;height:1080px">
+    <div class="col"><div class="eyebrow" id="eb">The verdict</div></div>
+    <div class="verd">
+      <div class="v"><svg data-punch="meet"></svg><span class="t">Meet</span></div>
+      <div class="v"><svg data-punch="closer"></svg><span class="t">Look closer</span></div>
+      <div class="v"><svg data-punch="pass"></svg><span class="t">Pass</span></div>
+      <p class="sub note" id="note">The chance of reaching your target, next to the odds for all founders.</p>
+    </div>
+  </div>
+  <div class="ybar" id="partB">
+    <div class="eyebrow" id="eb2">Yours to set</div>
+    <h1 class="headline hl"><span class="w">Your</span> <span class="w">bar.</span></h1>
+    <div class="rows">
+      <div class="r"><span class="label">Target</span><span class="t">A bigger exit</span></div>
+      <div class="r"><span class="label">Timeline</span><span class="t">A shorter timeline</span></div>
+      <div class="r"><span class="label">Risk</span><span class="t">A bolder appetite</span></div>
+    </div>
+    <p class="fin" id="fin">Every verdict updates instantly.</p>
+  </div>
+  <div class="phone" id="phone"><div class="screen"><img id="c4" alt=""><img id="c5" alt="">
+  <div class="ph-tag"></div></div></div>
+</div>
+<script src="data.js"></script>
+<script src="seek.js"></script>
+<script>
+HM.scene({
+  id: 's4_verdict', duration: 17.4, voiceAt: 0.5,
+  clips: [{ name: 'c4_verdict', from: 0.3, to: 8.6, img: '#c4' }, { name: 'c5_bar', from: 8.6, to: 17.4, img: '#c5' }],
+  build: function (HM) {
+    HM.fade('#eb', 0.2);
+    var svgs = document.querySelectorAll('.verd svg'), ts = document.querySelectorAll('.verd .t');
+    [1.76, 2.3, 3.3].forEach(function (t, i) {        // "meet, look closer, or pass"
+      HM.strike(svgs[i], t, { from: 2 });
+      HM.set(ts[i], t + 0.04, { dy: 40, dur: 0.4 });
+    });
+    HM.jolt('.verd', 3.3, 4);
+    HM.wipe('#note', 4.2, { dur: 0.6 });               // "with the chance of reaching your target"
+    HM.out('#partA', 8.3);
+    // "Change your bar"
+    HM.wipe('#c5', 8.6, { dir: 'up', dur: 0.45 });
+    HM.fade('#eb2', 8.75);
+    HM.set('#partB .w', 8.9, { dy: 60, dur: 0.42, stagger: 0.38 });
+    var rows = document.querySelectorAll('.ybar .r');
+    HM.wipe('.ybar .rows', 9.7, { dur: 0.4 });
+    [10.05, 11.1, 12.45].forEach(function (t, i) { HM.set(rows[i].children, t, { dy: 26, dur: 0.4, stagger: 0.06 }); });
+    HM.set('#fin', 14.0, { dur: 0.5 });                 // "every verdict updates instantly"
+  }
+});
+</script>
+</body>
+</html>

@@ -37,7 +37,7 @@ export function PageHeader({ title, subtitle, back, action, eyebrow }: { title: 
           <IconChevronLeft size={18} /> {back.label}
         </Link>
       )}
-      {eyebrow && <p className="eyebrow mb-2 text-muted">{eyebrow}</p>}
+      {eyebrow && <p className="eyebrow mb-2 text-accent">{eyebrow}</p>}
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <h1 className="text-[34px] font-extrabold leading-[1.02] tracking-[-0.035em] lg:text-[46px]">{title}</h1>
@@ -98,7 +98,7 @@ export function Button({ children, variant = "primary", size = "md", full, class
 }
 
 /** An inline text action: ink, underlined. */
-export const linkClass = "font-semibold text-ink underline decoration-line-strong decoration-[1.5px] underline-offset-[3px] transition-colors hover:decoration-ink";
+export const linkClass = "font-semibold text-ink underline decoration-accent/55 decoration-[1.5px] underline-offset-[3px] transition-colors hover:decoration-accent";
 
 export function Segmented<T extends string | number | null>({
   label,
@@ -181,6 +181,32 @@ export function ChipPicker<T extends string>({ label, value, options, onChange }
   );
 }
 
+/** Several-of chips (checkboxes that look like ChipPicker's). */
+export function ChipMulti({ label, values, options, onChange }: { label: string; values: string[]; options: { value: string; label: string }[]; onChange: (v: string[]) => void }) {
+  return (
+    <div role="group" aria-label={label} className="flex flex-wrap gap-2">
+      {options.map((o) => {
+        const on = values.includes(o.value);
+        return (
+          <button
+            key={o.value}
+            type="button"
+            role="checkbox"
+            aria-checked={on}
+            onClick={() => onChange(on ? values.filter((v) => v !== o.value) : [...values, o.value])}
+            className={cx(
+              "h-10 rounded-full border px-4 text-[14.5px] font-medium transition-colors duration-150",
+              on ? "border-ink bg-ink text-bg" : "border-line-strong text-ink-2 hover:border-ink",
+            )}
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 // ---- status -----------------------------------------------------------------------------------
 
 const VERDICT_STYLE: Record<Decision, { pill: string; dot: string; label: string }> = {
@@ -230,7 +256,7 @@ export function verdictDot(decision: Decision): string {
 export function Tag({ children, tone = "neutral", title }: { children: ReactNode; tone?: "neutral" | "accent" | "warn" | "good"; title?: string }) {
   const tones = {
     neutral: "bg-surface-3 text-ink-2",
-    accent: "bg-ink text-bg",
+    accent: "bg-accent text-accent-ink",
     warn: "bg-warn-soft text-warn",
     good: "bg-advance-soft text-advance",
   };

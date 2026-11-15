@@ -43,6 +43,8 @@ video versions that matter. `app/backend/Dockerfile.dockerignore` keeps `app/med
 | 6 | Hosting: frontend on Vercel, backend on Railway, both on mocks | **Deployed** (2026-11-14). Waiting for the owner's test on the iPhone |
 | 7 | Batch mode UI: CSV upload, triage view | **Done (2026-11-14):** `/batch`, checked end to end on phone and desktop |
 | E5 | Voice notes (speech-to-text; MASTER_PLAN 8b) | **Done (2026-11-14), on example transcripts until the key is on Railway.** Record, transcribe (ElevenLabs), fill the form (Claude); typed notes too. Checked end to end in a browser with a fake microphone and the mock services. No real ElevenLabs call made yet: the onboarding's test waits for the owner's yes |
+| 8 | New screens (owner's request, 2026-11-14): first-run intro, How it works plus model card, calibration page, on-device profile ("You"), Terms and Privacy drafts, Plans mockup | **Done (2026-11-14)**, on mocks. Checked on an emulated iPhone 17 and a 1440px desktop, light and dark (`app/media/12-new-screens`) |
+| 9 | The real models (owner: "yes", 2026-11-15): base Kev answers, the production Kev decides, through TRL, per research's `docs/app_integration.md` | **Built and tested (2026-11-15)** against a fake Kev (tests) and the real models with research's real artefacts (`app/media/16-real-kev`). **Live needs:** research's `shared/artifacts/` on `app-track` (owner's call), the PC server and tunnel, and five Railway variables (README, "Deploy") |
 
 ## Next step (task 6: the owner tests on the iPhone)
 
@@ -100,6 +102,76 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
 - **app-track merged into main (owner, 2026-11-14 evening):** clean merge, only `app/` changed. Adds ~100 MB of
   `app/media` to main; the Kaggle runner shallow-clones the research branch, so only a later merge of main there
   would make its clones bigger (seconds, not breakage).
+- **New screens (owner, 2026-11-14), decisions made building them:**
+  - **Navigation:** the phone dock is Founders · Screen · **You** (was About). You holds the profile, the
+    settings that used to sit on How it works, links to How it works, the model card, calibration, Plans, Terms
+    and Privacy, and Delete all my data. The desktop sidebar adds Plans and an account chip, with Terms and
+    Privacy in its footer.
+  - **Profile on the device only (owner's decision):** localStorage key `screener.profile`; no server account,
+    no database. The "sign-in" asks for a name and an optional email and says plainly that nothing is sent. The
+    profile's default target, timeline and risk set Your bar on save, "Only my sectors" sets the bar's sector
+    filter, and the bar's Reset returns to the profile's defaults. Stage, cheque size and geography aren't used by
+    the model (the page says so). Delete all my data removes every `screener.`/`halomark.` key from local and
+    session storage and the push subscription, then reloads.
+  - **Intro:** shown once per device (`screener.onboarded`), skippable at every step, replayable from You, not
+    shown over `/share`, `/terms` or `/privacy`. Its last step starts a sample founder.
+  - **Calibration numbers are provisional and not Halomark's own model:** `b3-provisional`, TRL's standard model
+    (C1a, RRF elastic net) on the 400 validation founders, because the production Kev isn't scored yet. The page
+    says so. The research session publishes `results/summary/d1-final/` and the production model's calibration;
+    then rerun `app/frontend/scripts/calibration-from-results.py` on it (the JSON is the only thing that changes).
+  - **Model card** facts come from the research branch's `results/METHODS.md` and `results/data/README.md`
+    (read 2026-11-14). Update it if they change, especially once the production model is chosen (C3 or C4).
+  - **Terms and Privacy are drafts** ("not legal advice; to be reviewed"); still to decide: provider, contact,
+    legal basis for researching named founders, governing law. Building them showed the backend logged founder
+    names (research agent) and note values (sorter); both now log only keys, counts and costs, so "nothing kept
+    after the session" holds for our logs too.
+  - **Plans:** Free (5 a month), Pro ($29/month, $290/year: 100 a month, lists, voice notes, notifications),
+    Syndicate ($99/month for 5 members: shared founders, memos, bar). Illustrative, US dollars, "Coming soon",
+    no payment code. Everything stays free in the prototype.
+- **Light/dark toggle (owner, 2026-11-14):** System (default), Light or Dark, on You and in the desktop sidebar,
+  saved on the device as `screener.theme` (so Delete all my data resets it). The You page now shows Settings and its
+  links whether or not there's a profile: before, a phone without a profile couldn't reach How it works, Terms or
+  Privacy.
+- **Dashboard and Settings tabs (owner, 2026-11-14):** five tabs on phones (Dashboard, Founders, + Screen,
+  Settings, You), the same pages in the desktop sidebar. The Dashboard is the home page (`/`, also the installed
+  app's start page); the Founders list moved to `/founders`. Settings (appearance, your bar, notifications, session,
+  service, links, delete all data) moved off You, which is now just the profile.
+- **A little more colour (owner, 2026-11-14: "a bit of brand colours as well as accent colours"):** the accent
+  token is now the brand's stamp-pad blue (`#1f3bd0` light, `#8fa0ff` dark, with a pale tint for highlights) instead
+  of ink. It colours primary buttons, the active sidebar item, eyebrows, link underlines, focus rings, avatars, the
+  intro's dots and the featured plan. The dashboard tiles are tinted: Screened in the blue tint, each verdict in
+  its own verdict tint. Selections in segmented controls and chips stay ink, and the verdict slab is unchanged, so
+  colour still means "verdict" wherever it's large. The phone dock is dark in both themes, so its Screen button uses
+  separate `--dock-accent` tokens (the on-dark blue in both): the light-mode blue measured 2.4:1 on the dock, the
+  on-dark blue 7.9:1. Every text and icon pair checked at 4.5:1 or better. To go back to ink, set `--accent`,
+  `--accent-hover`, `--accent-ink` and `--accent-soft` in globals.css (both dark copies too).
+- **The real models (2026-11-15, owner: "yes for both", meaning wire Kev in and switch on real research):**
+  - Built to research's `docs/app_integration.md`: both Kev calls through TRL's `LLM`/`LLMSession` (the fork,
+    pinned to `d9d1380`, the commit research exported with), TRL's cache off (nothing kept), the decider's text
+    from TRL's `answers_text`, `model.json`'s questions word for word with option descriptions, temperatures
+    applied in the backend, `KEV_URL` overriding the placeholder endpoint.
+  - **Unknown answers:** a question base Kev leaves unanswered reads `unknown` (TRL's rule); the memo's `p_yes`
+    is `null` there (contract change) and drivers skip it.
+  - **Drivers in the background:** on the real Kev each decision takes about 5 s on a CPU, so 40 flips took
+    about 3 minutes before the memo could show. Now the memo comes back with the verdict (about 14 s) and
+    `drivers_status: "pending"`; the drivers fill in three at a time, largest elastic-net weight first, once the
+    memo is first opened, and the memo page polls. A list starts a founder's drivers only when that memo opens,
+    so a long list doesn't queue hours of Kev work. Contract: optional `drivers_status` and `drivers_total`.
+  - **Bar with no data:** $1B+ within 5 years has no validation successes, so no thresholds: the bar sheet says
+    "Not enough data", the verdict says there's no bar, the memo warns, every founder shows Look closer.
+  - **Retries:** `KEV_MAX_RETRIES=1`, so a PC that's off fails a screening in seconds, with a message naming the
+    host and asking whether the server and tunnel are running.
+  - **Calibration page:** now the final test numbers for C3 (the recipe behind the app's model: 600 test
+    founders, 1 point calibration gap, 3 in 10 of its top picks succeeded), marked Final. The model card says the
+    model is honest but cautious (never above about 40%) and not more accurate than TRL's standard model.
+  - **From research's `docs/app_integration.md` (owner pointed at it):** a Kev demo cache for the three example
+    founders (real Kev replies, committed; used only for the same model, questions and text), the example founders
+    keep canned research when `AGENT=claude` (matched by their `example.com/mock` addresses only), and the verdict
+    shows the base rate ("All founders: 20%"). Research's suggested risk presets were not adopted: some set Meet and
+    Pass at the same line, and the app's rule always leaves a Look closer band (the doc allows either).
+  - **Railway image:** TRL brings pandas, scikit-learn and scipy, about 300 MB more. It's installed from a GitHub
+    download link (no git in the slim image); this sandbox can't reach that link, so the first Railway build is
+    the real check. A failed build leaves the previous deployment running.
 - **Vercel free plan:** about 100 deployments a day. On 2026-11-14 the limit was hit (many were failed builds of
   the research branch, now skipped by the Ignored Build Step). Batch pushes to `app-track`.
 - **Voice (8b): speech-to-text only (owner, 2026-11-14).** No spoken memo briefing (E6) and no voice agent (E7):
@@ -150,14 +222,12 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
 
 ## Open items with the owner
 
-- **For the research session** (owner to relay; full list in `shared/README.md` and
-  `app/contract/README.md`, "For the research session"):
-  - confirm the proposed artefact formats in `app/contract/artifacts/`
-  - the full production request in `model.json`
-  - a TRL-faithful way to get Jev answers (for example the pickled RRF)
-  - 3 to 5 real rendered profiles from `data/raw/sample50.jsonl`
-  - counts in `thresholds.json`
-  - binary serialisation turns P(yes) = 0.5 for an unknown into "yes"
+- **For the research session:** answered on 2026-11-15 by research's real artefacts and
+  `docs/app_integration.md` (formats, the full `model.json`, Kev through TRL, `thresholds.json` counts, unknowns
+  as `unknown`). Still open: 3 to 5 real rendered profiles from `data/raw/sample50.jsonl`.
+- **Research's artefacts on `app-track`:** done (2026-11-15, the owner relayed research's "pull them in"). The three
+  files were copied unchanged from the research branch at `4cc539d` (byte-identical; checked). Nothing else from
+  that branch was brought over. If research exports new ones, copy them the same way and rebuild the demo cache.
 - **MASTER_PLAN follow-ups** the owner hasn't decided on, after the 8b voice section:
   - step E3 still says voice notes are a stretch goal
   - the cut-line list doesn't place the briefing or the voice agent
@@ -174,4 +244,8 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   2026-11-14; `/health` shows `transcriber: elevenlabs`, `note_sorter: claude`). Railway only applied them after
   the staged-changes Deploy. Next: the frontend deploy, then the first real note recorded on the iPhone. The
   onboarding's own test (a short text-to-speech clip) is optional; recommended to skip it.
-- **Later keys:** TypeSafe (Jev) and the Kev endpoint, when the research outputs land.
+- **Going live with the real models (Railway variables):** `ARTIFACTS_DIR=shared/artifacts`, `ANSWERER=kev`,
+  `DECIDER=kev`, `KEV_API_KEY=<the PC server's passcode>` can be set any time (with the PC off, the example founders
+  answer from the demo cache and real founders are stopped before research, at no cost); `KEV_URL=<tunnel
+  address>` whenever the PC runs. Real research: `AGENT=claude` (the Claude key is already there). TypeSafe isn't
+  needed any more.

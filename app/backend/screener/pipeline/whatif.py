@@ -1,7 +1,7 @@
 """What-if toggles: re-run only the decider with some inputs changed (no new research).
 
 Answer changes need only a decider call. Field changes re-render the profile and, in answers mode,
-re-run the answerer too (used_answerer: true), so they're slower and cost more with the real Jev.
+re-run the answerer too (used_answerer: true), so they're slower: 40 more questions for base Kev.
 """
 
 from __future__ import annotations
