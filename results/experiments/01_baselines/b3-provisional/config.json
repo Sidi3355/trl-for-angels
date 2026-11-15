@@ -1,0 +1,8 @@
+{
+  "stage": "b3-provisional",
+  "include_test": false,
+  "threshold_protocol": "tuned on val for F0.5 with TRL's best_threshold",
+  "bootstrap": 1000,
+  "seed": 42,
+  "ece_bins": 10
+}

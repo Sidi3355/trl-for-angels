@@ -1,0 +1,2 @@
+condition,name,split,threshold_protocol,threshold,n,positives,predicted_positive,f05,precision,recall,brier,ece,pr_auc,plain_reading
+C2,base Kev on TRL's answers,val,val-tuned F0.5,0.4489,400,80,171,0.3403141361256544,0.30409356725146197,0.65,0.21435583405000003,0.24737999999999996,0.33041310517494193,"flags 171 of 400; of every 10 it flags, about 3 succeed; finds 65% of the successes"

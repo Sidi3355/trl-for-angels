@@ -39,6 +39,21 @@ depend on the profile, but only weakly, as with real founders.
 | Industries | 113 distinct labels; at least 15 in every batch of 50 | |
 
 Full validator report: `results/data/validation_full.md` (`research/validate.py --profile full`).
+The questions TRL wrote about these founders, with their train scores: [questions.md](questions.md).
+
+## Splits
+
+Per-split counts are in `stats.md` (written by `research/splits.py`, step A6).
+
+| Split | Rows | Used for |
+|---|---|---|
+| train | 2,000 | everything the models learn from |
+| val | 400 | every choice: thresholds, temperatures, checkpoints, which model the app uses |
+| test | 600 | the final scores only, read once |
+
+Splits are stratified on outcome band (same mix in each) with seed 42, and near-duplicate
+profiles are kept in the same split, so no model is tested on a founder it has, in effect,
+already seen.
 
 ## Limits
 
@@ -47,3 +62,14 @@ Full validator report: `results/data/validation_full.md` (`research/validate.py 
 - The real-grounded 50 were written differently from the synthetic 2,950, so they may look
   slightly different to a model.
 - Kev-0.6B (the answerer) reads these profiles; its answers carry their own noise on top.
+- The scoring rule is mostly additive (one weight per field value), plus five small
+  interactions that the generator added on purpose (for example, a domain specialist with deep
+  industry experience in health or finance). Each interaction is worth 0.1–0.2, well below the
+  noise (sd 0.62). So any finding that a learn stage "finds interactions" describes this rule,
+  not real founders. XGBoost (CTRL) is there to show whether non-linearity alone helps.
+- **Years to outcome depend only on the outcome band** in the synthetic rows (drawn from fixed
+  odds per band), not on the profile. The production model's `years` question can therefore
+  only learn timing through the outcome, and the app's timeline control is an estimate built on
+  that.
+- Because the rule is known (`background_score` in `research/generate_dataset.py`), the
+  interp steps (F1, F2) can compare what each model relies on against the true weights.

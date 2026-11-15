@@ -1,0 +1,177 @@
+{
+  "started": "2026-11-14 17:09:12",
+  "rules": 40,
+  "splits": {
+    "train": {
+      "rows": 2000,
+      "shape": [
+        2000,
+        40
+      ],
+      "missing_answers": 0,
+      "seconds": 2.3
+    },
+    "val": {
+      "rows": 400,
+      "shape": [
+        400,
+        40
+      ],
+      "missing_answers": 0,
+      "seconds": 229.8
+    },
+    "test": {
+      "rows": 600,
+      "shape": [
+        600,
+        40
+      ],
+      "missing_answers": 0,
+      "seconds": 347.7
+    }
+  },
+  "predictions": {
+    "c1a_val": {
+      "rows": 400,
+      "seconds": 208.2
+    },
+    "c1a40_val": {
+      "rows": 400,
+      "seconds": 0.9
+    },
+    "c1b_val": {
+      "rows": 400,
+      "seconds": 0.5
+    },
+    "c2_val": {
+      "rows": 400,
+      "seconds": 118.5
+    },
+    "c1a_test": {
+      "rows": 600,
+      "seconds": 312.5
+    },
+    "c1a40_test": {
+      "rows": 600,
+      "seconds": 1.3
+    },
+    "c1b_test": {
+      "rows": 600,
+      "seconds": 0.7
+    },
+    "c2_test": {
+      "rows": 600,
+      "seconds": 175.0
+    }
+  },
+  "usage": {
+    "c1a": [
+      {
+        "role": "answerer",
+        "model": "kev-0.6b",
+        "calls": 5000,
+        "from_cache": 92000,
+        "input_tokens": 6964935,
+        "cache_read_tokens": 0,
+        "output_tokens": 5235798,
+        "reasoning_tokens": 0,
+        "cost_usd": 0.0
+      },
+      {
+        "role": "generator",
+        "model": "anthropic:claude-opus-5-5",
+        "calls": 11,
+        "from_cache": 0,
+        "input_tokens": 99737,
+        "cache_read_tokens": 0,
+        "output_tokens": 4501,
+        "reasoning_tokens": 0,
+        "cost_usd": 0.488968
+      }
+    ],
+    "c1a40": [
+      {
+        "role": "answerer",
+        "model": "kev-0.6b",
+        "calls": 0,
+        "from_cache": 262000,
+        "input_tokens": 0,
+        "cache_read_tokens": 0,
+        "output_tokens": 0,
+        "reasoning_tokens": 0,
+        "cost_usd": 0.0
+      },
+      {
+        "role": "generator",
+        "model": "anthropic:claude-opus-5-5",
+        "calls": 0,
+        "from_cache": 11,
+        "input_tokens": 0,
+        "cache_read_tokens": 0,
+        "output_tokens": 0,
+        "reasoning_tokens": 0,
+        "cost_usd": 0.0
+      }
+    ],
+    "c1b": [
+      {
+        "role": "answerer",
+        "model": "kev-0.6b",
+        "calls": 0,
+        "from_cache": 228000,
+        "input_tokens": 0,
+        "cache_read_tokens": 0,
+        "output_tokens": 0,
+        "reasoning_tokens": 0,
+        "cost_usd": 0.0
+      },
+      {
+        "role": "generator",
+        "model": "anthropic:claude-opus-5-5",
+        "calls": 0,
+        "from_cache": 11,
+        "input_tokens": 0,
+        "cache_read_tokens": 0,
+        "output_tokens": 0,
+        "reasoning_tokens": 0,
+        "cost_usd": 0.0
+      }
+    ],
+    "c2": [
+      {
+        "role": "answerer",
+        "model": "kev-0.6b",
+        "calls": 1000,
+        "from_cache": 346000,
+        "input_tokens": 1285927,
+        "cache_read_tokens": 0,
+        "output_tokens": 945664,
+        "reasoning_tokens": 0,
+        "cost_usd": 0.0
+      },
+      {
+        "role": "combiner",
+        "model": "kev-0.6b",
+        "calls": 2345,
+        "from_cache": 1274,
+        "input_tokens": 2110500,
+        "cache_read_tokens": 0,
+        "output_tokens": 51332,
+        "reasoning_tokens": 0,
+        "cost_usd": 0.0
+      },
+      {
+        "role": "generator",
+        "model": "anthropic:claude-opus-5-5",
+        "calls": 0,
+        "from_cache": 11,
+        "input_tokens": 0,
+        "cache_read_tokens": 0,
+        "output_tokens": 0,
+        "reasoning_tokens": 0,
+        "cost_usd": 0.0
+      }
+    ]
+  },
+  "finished": "2026-11-14 17:32:42"
+}

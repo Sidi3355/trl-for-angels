@@ -5,6 +5,17 @@
 # Called by kaggle/runner.ipynb with REPO_URL, RESULTS_BRANCH, AUTH (an HTTP header built
 # from the GITHUB_TOKEN secret) and the secrets in the environment. Never prints secrets.
 set -uo pipefail
+# Extra Kaggle Secrets, read here so the notebook never needs re-importing. Kaggle's own
+# Python needs Kaggle's PYTHONPATH, so this runs before it's unset. Values are never printed.
+for name in HF_TOKEN; do
+  if [ -z "${!name:-}" ]; then
+    value=$(python -c "from kaggle_secrets import UserSecretsClient as U; \
+print(U().get_secret('$name').strip())" 2>/dev/null) || value=""
+    if [ -n "$value" ]; then export "$name=$value"; echo "$name: attached"; else
+      echo "$name: not attached"; fi
+  fi
+done
+unset value
 unset PYTHONPATH  # Kaggle's sitecustomize hook needs packages our venvs don't have
 
 KEV_COMMIT="2074cc4"

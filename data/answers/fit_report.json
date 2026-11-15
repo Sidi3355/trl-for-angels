@@ -1,0 +1,184 @@
+{
+  "started": "2026-11-14 16:10:24",
+  "kev": "jaredpalmer/kev-0.6b",
+  "settings": {
+    "beta": 0.5,
+    "random_state": 42
+  },
+  "max_rules": {
+    "c1a40": 40,
+    "c2": 40
+  },
+  "fake_generator": false,
+  "fits": {
+    "c1a": {
+      "seconds": 2801.9,
+      "rules": 63,
+      "questions": 93,
+      "threshold": 0.37398784006665553,
+      "usage": [
+        {
+          "role": "answerer",
+          "model": "kev-0.6b",
+          "calls": 4000,
+          "from_cache": 0,
+          "input_tokens": 5825008,
+          "cache_read_tokens": 0,
+          "output_tokens": 4423565,
+          "reasoning_tokens": 0,
+          "cost_usd": 0.0
+        },
+        {
+          "role": "generator",
+          "model": "anthropic:claude-opus-5-5",
+          "calls": 11,
+          "from_cache": 0,
+          "input_tokens": 99737,
+          "cache_read_tokens": 0,
+          "output_tokens": 4501,
+          "reasoning_tokens": 0,
+          "cost_usd": 0.488968
+        }
+      ],
+      "cost_usd": 0.489
+    },
+    "c1a40": {
+      "seconds": 7.3,
+      "rules": 38,
+      "questions": 93,
+      "threshold": 0.2977343177120727,
+      "usage": [
+        {
+          "role": "answerer",
+          "model": "kev-0.6b",
+          "calls": 0,
+          "from_cache": 186000,
+          "input_tokens": 0,
+          "cache_read_tokens": 0,
+          "output_tokens": 0,
+          "reasoning_tokens": 0,
+          "cost_usd": 0.0
+        },
+        {
+          "role": "generator",
+          "model": "anthropic:claude-opus-5-5",
+          "calls": 0,
+          "from_cache": 11,
+          "input_tokens": 0,
+          "cache_read_tokens": 0,
+          "output_tokens": 0,
+          "reasoning_tokens": 0,
+          "cost_usd": 0.0
+        }
+      ],
+      "cost_usd": 0.0
+    },
+    "c1b": {
+      "seconds": 5.8,
+      "rules": 21,
+      "questions": 93,
+      "threshold": 0.6666666666666666,
+      "usage": [
+        {
+          "role": "answerer",
+          "model": "kev-0.6b",
+          "calls": 0,
+          "from_cache": 186000,
+          "input_tokens": 0,
+          "cache_read_tokens": 0,
+          "output_tokens": 0,
+          "reasoning_tokens": 0,
+          "cost_usd": 0.0
+        },
+        {
+          "role": "generator",
+          "model": "anthropic:claude-opus-5-5",
+          "calls": 0,
+          "from_cache": 11,
+          "input_tokens": 0,
+          "cache_read_tokens": 0,
+          "output_tokens": 0,
+          "reasoning_tokens": 0,
+          "cost_usd": 0.0
+        }
+      ],
+      "cost_usd": 0.0
+    },
+    "c2": {
+      "seconds": 673.5,
+      "rules": 40,
+      "questions": 93,
+      "threshold": 0.5774,
+      "usage": [
+        {
+          "role": "answerer",
+          "model": "kev-0.6b",
+          "calls": 0,
+          "from_cache": 186000,
+          "input_tokens": 0,
+          "cache_read_tokens": 0,
+          "output_tokens": 0,
+          "reasoning_tokens": 0,
+          "cost_usd": 0.0
+        },
+        {
+          "role": "combiner",
+          "model": "kev-0.6b",
+          "calls": 1634,
+          "from_cache": 0,
+          "input_tokens": 1470600,
+          "cache_read_tokens": 0,
+          "output_tokens": 35762,
+          "reasoning_tokens": 0,
+          "cost_usd": 0.0
+        },
+        {
+          "role": "generator",
+          "model": "anthropic:claude-opus-5-5",
+          "calls": 0,
+          "from_cache": 11,
+          "input_tokens": 0,
+          "cache_read_tokens": 0,
+          "output_tokens": 0,
+          "reasoning_tokens": 0,
+          "cost_usd": 0.0
+        }
+      ],
+      "cost_usd": 0.0
+    }
+  },
+  "train": {
+    "rows": 2000,
+    "successful": 400
+  },
+  "estimate_c1a": [
+    {
+      "role": "answerer",
+      "model": "kev-0.6b",
+      "calls": 4000,
+      "from_cache": 0,
+      "input_tokens": 5061604,
+      "cache_read_tokens": 0,
+      "output_tokens": 1600000,
+      "reasoning_tokens": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "role": "generator",
+      "model": "anthropic:claude-opus-5-5",
+      "calls": 11,
+      "from_cache": 0,
+      "input_tokens": 70743,
+      "cache_read_tokens": 0,
+      "output_tokens": 22000,
+      "reasoning_tokens": 0,
+      "cost_usd": 0.722972
+    }
+  ],
+  "checks": {
+    "same_questions_all_conditions": true,
+    "c1a40_rules_within_c2_rules": true,
+    "c2_rules": 40
+  },
+  "finished": "2026-11-14 17:09:09"
+}

@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-14",
+  "updated": "2026-11-15",
   "trl": {
     "upstream": "https://github.com/Vela-Research/think-reason-learn",
     "fork": "https://github.com/Sidi3355/think-reason-learn",
@@ -13,6 +13,11 @@
       "ruff_check": "all checks passed",
       "ruff_format": "84 files already formatted",
       "pyright": "0 errors, 0 warnings"
+    },
+    "branch_head": "d9d1380 (ChoiceQuestion descriptions, D3 fix); ddf3518 (decision combiner, B5b)",
+    "commits": {
+      "ddf3518": "RRF combiner='decision' (B5b)",
+      "d9d1380": "ChoiceQuestion: optional label descriptions, sent as System One criteria (D3)"
     }
   },
   "environment": {
@@ -29,7 +34,7 @@
     }
   },
   "models": {
-    "generator": "anthropic:claude-opus-5-5 (proposed, not yet confirmed or run)",
+    "generator": "anthropic:claude-opus-5-5 (confirmed at A4 through TRL, max_output_tokens 16000)",
     "answerer": "jaredpalmer/kev-0.6b (base, fp32; replaced Jev on 2026-11-14)",
     "compute": "Kaggle notebooks, free T4 GPU, fp32",
     "kev_checkpoint": "jaredpalmer/kev-0.6b",
@@ -44,7 +49,13 @@
   "rrf_settings": {
     "beta": 0.5,
     "random_state": 42,
-    "other": "library defaults"
+    "other": "library defaults",
+    "max_rules": {
+      "c1a40": 40,
+      "c2": 40,
+      "c3": "uses c2's 40",
+      "note": "user decision 2026-11-14; all other settings library defaults"
+    }
   },
   "seeds": {
     "global": 42
@@ -55,9 +66,31 @@
       "val": 400,
       "test": 600
     },
-    "actual": null
+    "actual": {
+      "train": 2000,
+      "val": 400,
+      "test": 600,
+      "seed": 42,
+      "input_file": "full.jsonl",
+      "input_sha256": "6861ba4172c6b5b4e8a306366dbece67905dabd917b3eef4296c9a8bc023da6c",
+      "rows_read": 3000,
+      "rows_kept": 3000,
+      "rows_dropped": 0,
+      "scaled_from_planned": false,
+      "stratified_on": "outcome band",
+      "duplicate_groups": 0
+    }
   },
-  "costs_usd": {},
+  "costs_usd": {
+    "a4_smoke_fit_20_rows": {
+      "actual": 0.1077,
+      "trl_estimate_before": 0.1749,
+      "role": "generator only; Kev is free"
+    },
+    "b1_fit_2000_rows_trl_estimate_upper_bound": 0.7125,
+    "b1_question_generation_actual": 0.488968,
+    "b1_trl_estimate_before": 0.722972
+  },
   "measurements": {
     "a3_kaggle_t4": {
       "run": "kaggle-results: runs/20261114-124358-a3",
@@ -82,6 +115,299 @@
         "projected_hours_2000x2epochs": 3.41,
         "note": "batch 8 without checkpointing ran out of memory"
       }
+    },
+    "a4_kaggle_t4": {
+      "run": "kaggle-results: runs/20261114-153153-a4",
+      "repo_commit": "df5a5aa",
+      "rows": 20,
+      "successful": 6,
+      "n_prompts": 2,
+      "questions_per_prompt": 5,
+      "questions_generated": 10,
+      "rules": 9,
+      "answers_shape": [
+        20,
+        9
+      ],
+      "answers_missing": 0,
+      "fit_seconds": 31.4,
+      "seconds_per_founder_incl_generation": 1.57,
+      "kev_load_seconds": 30.1,
+      "verdict": "PASS"
+    },
+    "kev_state_tokens": {
+      "tokenizer": "Qwen/Qwen3-0.6B-Base",
+      "c3": {
+        "mean": 872,
+        "max": 872
+      },
+      "c4": {
+        "mean_train": 173,
+        "max_train": 316
+      }
+    },
+    "c_kev_rerun": {
+      "run": "runs/20261114-192753-c_kev",
+      "repo_commit": "1fd795e",
+      "started_utc": "2026-11-14T19:27:53Z",
+      "finished_utc": "2026-11-14T21:40:23Z",
+      "c3": {
+        "epoch_seconds": [
+          2939.1,
+          2941.0
+        ],
+        "steps_per_epoch": 250,
+        "peak_device_mib": 4402,
+        "gradient_checkpointing": true,
+        "val_nll": {
+          "released": 0.6183,
+          "ep1": 0.4577,
+          "ep2": 0.4552
+        },
+        "chosen": "ep2",
+        "temperature": 1.0718,
+        "val_ece_raw_to_calibrated": [
+          0.0311,
+          0.0244
+        ],
+        "scoring_seconds": {
+          "val": 350,
+          "test": 518
+        },
+        "hf": "Sidi3355/trl-for-angels-kev-c3@840f3e90a7ba9844cf92ced296d7f9664d3c1839"
+      },
+      "c4": {
+        "epoch_seconds": [
+          504.3,
+          507.4
+        ],
+        "steps_per_epoch": 250,
+        "peak_device_mib": 13068,
+        "gradient_checkpointing": false,
+        "val_nll": {
+          "released": 1.0864,
+          "ep1": 0.4752,
+          "ep2": 0.4701
+        },
+        "chosen": "ep2",
+        "temperature": 1.2746,
+        "val_ece_raw_to_calibrated": [
+          0.0575,
+          0.0245
+        ],
+        "scoring_seconds": {
+          "val": 32,
+          "test": 52
+        },
+        "hf": "Sidi3355/trl-for-angels-kev-c4@704f8d4d4a42ed3f8991f75d18f643b4687b5463"
+      },
+      "extra": {
+        "scoring_seconds": {
+          "val": 29,
+          "test": 46
+        }
+      }
+    },
+    "d_prod": {
+      "run": "runs/20261114-224030-d_prod",
+      "repo_commit": "d5a461a",
+      "started_utc": "2026-11-14T22:40:30Z",
+      "finished_utc": "2026-11-15T01:56:49Z",
+      "input": "c3 (TRL's 40 answers as text), chosen at D2",
+      "questions": [
+        "outcome (5 bands)",
+        "years (3 bands)"
+      ],
+      "epoch_seconds": [
+        5238.8,
+        5238.2
+      ],
+      "steps_per_epoch": 250,
+      "peak_device_mib": 7723,
+      "gradient_checkpointing": true,
+      "val_nll_per_question_mean": {
+        "released": 2.0096,
+        "ep1": 1.1715,
+        "ep2": 1.163,
+        "ep2_calibrated": 1.1615
+      },
+      "val_top_choice_accuracy": {
+        "released": 0.125,
+        "ep2": 0.48875
+      },
+      "chosen": "ep2",
+      "temperatures": {
+        "global": 1.1096,
+        "outcome": 1.1487,
+        "years": 0.8706
+      },
+      "val_ece_raw_to_calibrated": [
+        0.0272,
+        0.0206
+      ],
+      "note_val_metrics": "Kev's own evaluation on 400 val founders x 2 questions (n=800), with the options' descriptions, as trained",
+      "hf": "Sidi3355/trl-for-angels-kev-prod@fc8409c7510dbd1fc360eee40fd1da2bfdce4f7b (weights); f1bb43f8f1939cf67179bc68ab3e82c759817918 (report.json added)",
+      "val_predictions_kaggle": "asked through TRL without the options' descriptions (TRL sent empty criteria); kept as data/predictions/prod_val_no_descriptions.csv, not used",
+      "val_rescored": {
+        "where": "development container, 4 CPU cores, kev.serve fp32 raw, from the Hugging Face snapshot f1bb43f",
+        "via": "TRL LLMSession, fork d9d1380 (ChoiceQuestion descriptions); research/kev_predict.py --condition prod --device cpu",
+        "started_utc": "2026-11-15T02:08:13Z",
+        "seconds": 1281,
+        "requests": 364,
+        "note": "364 requests for 400 founders: 36 val founders have the same 40 answers as another founder",
+        "check": "3 val founders asked directly from model.json match the file exactly; without descriptions they match Kaggle's file to 7e-5",
+        "mean_val_nll_both_questions": {
+          "with_descriptions": 1.1593,
+          "without_descriptions": 1.1865
+        }
+      }
+    }
+  },
+  "rrf_fit": {
+    "run": "kaggle-results: runs/20261114-160701-b1b2",
+    "repo_commit": "22f39d4",
+    "questions_generated": 93,
+    "rules": {
+      "c1a": 63,
+      "c1a40": 38,
+      "c1b": 21,
+      "c2": 40
+    },
+    "thresholds_trl_native": {
+      "c1a": 0.374,
+      "c1a40": 0.298,
+      "c1b": 0.667,
+      "c2": 0.577
+    },
+    "answer_matrices": {
+      "train": [
+        2000,
+        40
+      ],
+      "val": [
+        400,
+        40
+      ],
+      "test": [
+        600,
+        40
+      ],
+      "missing": 0
+    },
+    "minutes": {
+      "total_run": 86,
+      "c1a_fit": 46.7,
+      "c2_fit": 11.2,
+      "b2": 19
+    }
+  },
+  "ctrl": {
+    "chosen": {
+      "max_depth": 2,
+      "learning_rate": 0.1,
+      "min_child_weight": 5
+    },
+    "val_logloss": 0.4433,
+    "candidates": 12
+  },
+  "evaluation": {
+    "d2_val": {
+      "stage": "d2-val",
+      "splits": [
+        "val"
+      ],
+      "decision": "c3 (tie with c4 on val; see DECISIONS D2)",
+      "val_f05_c3_minus_c4": {
+        "diff": -0.007,
+        "ci95": [
+          -0.107,
+          0.101
+        ],
+        "bootstrap": 1000,
+        "seed": 42
+      }
+    },
+    "d1_final": {
+      "stage": "d1-final",
+      "splits": [
+        "val",
+        "test"
+      ],
+      "test_read_once": true,
+      "bootstrap": 1000,
+      "seed": 42,
+      "paired": "results/summary/d1-final/paired.md",
+      "script": [
+        "research/evaluate.py",
+        "research/paired.py"
+      ]
+    },
+    "d3_val": {
+      "folder": "results/experiments/04_production_model/d3-val/",
+      "script": "research/prod_report.py",
+      "p_500m_or_more": {
+        "f05": 0.391,
+        "pr_auc": 0.357,
+        "ece": 0.04,
+        "brier": 0.148,
+        "max": 0.371
+      },
+      "c3_val": {
+        "f05": 0.426,
+        "pr_auc": 0.403,
+        "ece": 0.024,
+        "brier": 0.146
+      },
+      "paired_prod_minus_c3": {
+        "pr_auc": [
+          -0.047,
+          -0.114,
+          0.026
+        ],
+        "ece": [
+          0.016,
+          -0.028,
+          0.033
+        ],
+        "f05": [
+          -0.035,
+          -0.157,
+          0.104
+        ]
+      },
+      "band_shares_predicted_vs_actual": {
+        "shut down": [
+          0.515,
+          0.5
+        ],
+        "under $50M": [
+          0.144,
+          0.15
+        ],
+        "$50M-$500M": [
+          0.136,
+          0.15
+        ],
+        "$500M-$1B": [
+          0.11,
+          0.1
+        ],
+        "over $1B": [
+          0.094,
+          0.1
+        ]
+      }
+    },
+    "d4_final": {
+      "folder": "results/experiments/04_production_model/d4-final/",
+      "script": "research/thresholds.py",
+      "app_files": [
+        "app/thresholds.json",
+        "shared/artifacts/rules.json",
+        "shared/artifacts/thresholds.json",
+        "shared/artifacts/model.json"
+      ],
+      "export": "research/export_artifacts.py --prod-input c3 --auth bearer --trl-commit d9d1380 (endpoint placeholder; KEV_URL overrides)"
     }
   }
 }
