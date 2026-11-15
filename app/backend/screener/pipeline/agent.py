@@ -306,6 +306,10 @@ class ClaudeAgent:
             post.append({"text": n["text"][:1000], "source_ids": [src["id"]] if src else []})
         for s in sources:
             s["used_for"] = sorted(set(s["used_for"]))
+            # The progress screen counts and lists these, as it does for the mock agent's.
+            after = s["before_founding"] is False
+            await emit("source", f"Found {s['title']}" + (": from after founding, so memo notes only." if after else "."),
+                       data={"source": dict(s)})
         await emit("stage", f"Research done: {len(fields)} of 9 fields found from {len(sources)} sources "
                             f"(${run_usd:.2f}).", stage="researching")
         return Findings(fields=fields, sources=sources, post_founding=post, founding_date=founding,

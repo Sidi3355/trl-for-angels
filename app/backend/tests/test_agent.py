@@ -139,6 +139,9 @@ def test_pause_turn_then_submit_maps_fields_and_enforces_rules():
     assert f.founding_date == ("2013", ["s2"]) and f.post_founding[0]["source_ids"] == ["s3"]
     assert {s["id"]: s["before_founding"] for s in f.sources} == {"s1": True, "s2": True, "s3": False}
     assert ("search", "Searching: Pat Example founder background") in events
+    # each source is reported to the progress screen (it counts them), the post-founding one marked as such
+    sources = [m for kind, m in events if kind == "source"]
+    assert len(sources) == 3 and sum("from after founding" in m for m in sources) == 1
     # after pause_turn the history ends with the assistant turn: no extra user message
     assert [m["role"] for m in client.calls[1]["messages"]] == ["user", "assistant"]
     expected = cost_of(usage(searches=4), "claude-opus-5-5") + cost_of(usage(searches=2), "claude-opus-5-5")

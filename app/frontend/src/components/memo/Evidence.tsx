@@ -1,10 +1,11 @@
 "use client";
 
 // The evidence behind the memo: what to watch out for, notes, sources and what the model read.
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { IconAlert, IconChevronDown, IconFlip } from "@/components/icons";
 import { SectionTitle, SourceRef, Tag, cx } from "@/components/ui";
+import { api } from "@/lib/api";
 import { answerLabel, hostOf, unknownPathLabel } from "@/lib/format";
 import type { Memo } from "@/lib/types";
 
@@ -123,7 +124,13 @@ export function Sources({ memo }: { memo: Memo }) {
 
 export function UnderTheHood({ memo }: { memo: Memo }) {
   const [open, setOpen] = useState(false);
-  const labels = new Map(memo.drivers.map((d) => [d.id, d.label]));
+  // The questions come from rules.json: the drivers carry them too, but they may still be filling in.
+  const [questions, setQuestions] = useState<Map<string, string> | null>(null);
+  useEffect(() => {
+    if (!open || questions || !memo.answers) return;
+    api.rules().then((r) => setQuestions(new Map(r.rules.map((q) => [q.id, q.question]))), () => undefined);
+  }, [open, questions, memo.answers]);
+  const labels = new Map([...memo.drivers.map((d) => [d.id, d.label] as const), ...(questions ?? [])]);
   return (
     <section>
       <div className="overflow-hidden rounded-[18px] border border-line-strong">

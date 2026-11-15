@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Halomark demo · s1_hook</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .hl { position: absolute; left: 96px; top: 168px; font-size: 172px; }
+  .hl .ln { display: block; }
+  .none { position: absolute; left: 96px; top: 716px; width: 800px; }
+  .none .row { display: flex; align-items: baseline; gap: 18px; padding: 15px 0 13px; border-top: 1px solid var(--line-strong); font-size: 36px; font-weight: 600; letter-spacing: -.01em; }
+  .none .row:last-child { border-bottom: 1px solid var(--line-strong); }
+  .none .row .dots { flex: 1; border-bottom: 3px dotted var(--line-strong); transform: translateY(-7px); }
+  .none .row .v { font-stretch: 125%; font-weight: 800; font-size: 19px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  /* the stack of names */
+  .stack { position: absolute; left: 1070px; top: 196px; width: 700px; height: 640px; }
+  .card { position: absolute; left: 0; width: 640px; height: 250px; background: var(--surface); border: 3px solid var(--ink); padding: 26px 30px; }
+  .card .label { display: block; margin-bottom: 12px; }
+  .card .nm { font-size: 58px; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+  .card .co { font-size: 26px; color: var(--muted); margin-top: 10px; }
+  .card .q { position: absolute; right: 26px; top: 24px; width: 64px; height: 64px; }
+  .card .q text { font-family: Archivo; font-weight: 800; font-size: 34px; fill: var(--faint); }
+  .gut { position: absolute; left: 1330px; top: 742px; font-size: 30px; padding: 20px 30px 18px; --c: 16px; color: #7f4d00; background: #7f4d00; }
+  .gut::before { --d: 14.4px; inset: 4px; background: var(--paper); }
+  .sheet { position: absolute; inset: 0; background: var(--paper); }
+  /* the lockup */
+  .lock { position: absolute; left: 96px; top: 190px; }
+  .lock .mk { width: 230px; height: 230px; display: block; }
+  .lock .wm { font-size: 196px; margin-top: 64px; margin-left: -8px; }
+  .lock .tg { font-size: 62px; font-weight: 700; letter-spacing: -.025em; margin-top: 54px; }
+  .lock .tg span { display: inline-block; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div id="partA">
+    <div class="head"><span class="label" style="color:var(--ink)">Screening founders</span><span class="folio"><b>01</b> &nbsp;The problem</span></div>
+    <h1 class="headline hl"><span class="ln"><span class="w">Angels</span></span><span class="ln"><span class="w">screen</span></span><span class="ln"><span class="w">alone.</span></span></h1>
+    <div class="none">
+      <div class="row"><span>Analyst</span><span class="dots"></span><span class="v">None</span></div>
+      <div class="row"><span>Second opinion</span><span class="dots"></span><span class="v">None</span></div>
+    </div>
+    <div class="stack">
+      <div class="card" style="top:0;left:36px;transform:rotate(-2.2deg)"><span class="label">Founder</span><div class="nm">Jordan Pike</div><div class="co">E-commerce</div></div>
+      <div class="card" style="top:118px;left:0;transform:rotate(1.4deg)"><span class="label">Founder</span><div class="nm">Samir Haddad</div><div class="co">Healthtech</div></div>
+      <div class="card" style="top:236px;left:52px;transform:rotate(-1deg)"><span class="label">Founder</span><div class="nm">Ada Moreno</div><div class="co">Developer tools</div></div>
+      <div class="card" style="top:354px;left:14px;transform:rotate(.8deg)"><span class="label">Founder</span><div class="nm">Tope Awotona</div><div class="co">Scheduling software</div>
+        <svg class="q" viewBox="0 0 64 64"><path id="qp" fill="none" stroke="#9c9e98" stroke-width="2.5" stroke-dasharray="5 4"/><text x="32" y="44" text-anchor="middle">?</text></svg></div>
+    </div>
+    <div class="tag gut" id="gut">Gut feeling</div>
+  </div>
+  <div class="sheet" id="sheet"></div>
+  <div class="lock">
+    <svg class="mk" id="mk" data-mark></svg>
+    <div class="wm" data-wordmark></div>
+    <div class="tg"><span>A first pass</span> <span>you can trust.</span></div>
+  </div>
+</div>
+<script src="data.js"></script>
+<script src="seek.js"></script>
+<script>
+HM.scene({
+  id: 's1_hook', duration: 12.7, voiceAt: 0.5,
+  build: function (HM) {
+    document.getElementById('qp').setAttribute('d', HM.PUNCH.replace(/^M/, 'M'));
+    document.getElementById('qp').setAttribute('transform', 'translate(2 2) scale(.9375)');
+    HM.fade('.head', 0.1, { dur: 0.3 });
+    // "Angel investors / screen founders / alone."
+    [0.55, 1.5, 2.32].forEach(function (t, i) { HM.set(document.querySelectorAll('.hl .w')[i], t, { dy: 60, dur: 0.45 }); });
+    HM.wipe(document.querySelectorAll('.none .row')[0], 3.25, { dur: 0.4 });   // "No analyst"
+    HM.wipe(document.querySelectorAll('.none .row')[1], 4.3, { dur: 0.4 });    // "no second opinion"
+    // "a stack of names": cards dealt one on another
+    var cards = document.querySelectorAll('.card');
+    var rots = [-2.2, 1.4, -1, 0.8];
+    cards.forEach(function (c, i) {
+      var t = 5.45 + i * 0.26, r = 'rotate(' + rots[i] + 'deg)';
+      HM.tl(c, [[t, { opacity: 0, transform: 'translate(120px,-70px) rotate(' + (rots[i] + 7) + 'deg)' }, 'set'],
+                [t + 0.1, { opacity: 1, transform: 'translate(80px,-46px) rotate(' + (rots[i] + 5) + 'deg)' }, 'set'],
+                [t + 0.42, { opacity: 1, transform: 'translate(0px,0px) ' + r }]]);
+    });
+    HM.strike('#gut', 7.45, { rot: -7, from: 1.8 });  // "a gut feeling"
+    HM.jolt('#partA', 7.45, 4);
+    // a clean sheet, then the mark is struck
+    HM.wipe('#sheet', 8.0, { dir: 'up', dur: 0.42 });
+    HM.strike('#mk', 8.62, { from: 1.9, dur: 0.18 });
+    HM.jolt('#stage', 8.62, 7);
+    HM.set('.lock .wl', 8.8, { dy: 70, dur: 0.4, stagger: 0.045 });
+    HM.set('.lock .tg span', 10.3, { dy: 30, dur: 0.45, stagger: 0.55 });  // "a first pass / they can trust"
+  }
+});
+</script>
+</body>
+</html>
