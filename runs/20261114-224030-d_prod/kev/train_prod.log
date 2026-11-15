@@ -1,0 +1,53 @@
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Fetching 13 files:  38%|███▊      | 5/13 [00:00<00:00, 37.09it/s]Fetching 13 files:  85%|████████▍ | 11/13 [00:00<00:00, 20.37it/s]Fetching 13 files: 100%|██████████| 13/13 [00:00<00:00, 15.48it/s]
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Fetching 13 files: 100%|██████████| 13/13 [00:00<00:00, 1543.11it/s]
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:   0%|          | 1/310 [00:00<01:28,  3.49it/s]Loading weights:  58%|█████▊    | 181/310 [00:00<00:00, 600.46it/s]Loading weights:  93%|█████████▎| 287/310 [00:00<00:00, 568.69it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 492.86it/s]
+evaluated 50/400
+evaluated 100/400
+evaluated 150/400
+evaluated 200/400
+evaluated 250/400
+evaluated 300/400
+evaluated 350/400
+evaluated 400/400
+base: val nll 2.0096, brier 1.0185
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:   0%|          | 1/310 [00:00<02:24,  2.14it/s]Loading weights:  94%|█████████▍| 291/310 [00:00<00:00, 680.06it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 528.42it/s]
+evaluated 50/400
+evaluated 100/400
+evaluated 150/400
+evaluated 200/400
+evaluated 250/400
+evaluated 300/400
+evaluated 350/400
+evaluated 400/400
+ep1: val nll 1.1715, brier 0.6352
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:   0%|          | 1/310 [00:00<02:04,  2.48it/s]Loading weights:  95%|█████████▌| 295/310 [00:00<00:00, 771.91it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 592.77it/s]
+evaluated 50/400
+evaluated 100/400
+evaluated 150/400
+evaluated 200/400
+evaluated 250/400
+evaluated 300/400
+evaluated 350/400
+evaluated 400/400
+ep2: val nll 1.1630, brier 0.6305
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:   0%|          | 1/310 [00:00<02:04,  2.48it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 655.98it/s]
+evaluated 50/400
+evaluated 100/400
+evaluated 150/400
+evaluated 200/400
+evaluated 250/400
+evaluated 300/400
+evaluated 350/400
+evaluated 400/400
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:   0%|          | 1/310 [00:00<02:02,  2.53it/s]Loading weights:  85%|████████▍ | 262/310 [00:00<00:00, 693.28it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 537.38it/s]
+evaluated 50/400
+evaluated 100/400
+evaluated 150/400
+evaluated 200/400
+evaluated 250/400
+evaluated 300/400
+evaluated 350/400
+evaluated 400/400
+prod: chose ep2, temperature 1.110; val ECE raw 0.0272 -> calibrated 0.0206

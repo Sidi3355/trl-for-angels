@@ -1,0 +1,28 @@
+repo commit: d5a461a
+== setup
+name, memory.total [MiB], driver_version
+Tesla T4, 15360 MiB, 580.178.04
+Tesla T4, 15360 MiB, 580.178.04
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+TRL 0.3.0
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+torch 2.8.0+cu128 CUDA available: True
+== run.sh
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+prod (c3): train 2000, val 400, test 600
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+{
+  "user": "Sidi3355",
+  "model": "Sidi3355/trl-for-angels-kev-prod",
+  "model_url": "https://huggingface.co/Sidi3355/trl-for-angels-kev-prod",
+  "model_commit": "fc8409c7510dbd1fc360eee40fd1da2bfdce4f7b"
+}
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+Model replies are cached at /root/.cache/think_reason_learn/llm-cache-v2.sqlite, so a rerun reuses them instead of calling again. set_config(cache=False) turns it off.
+prod val: 400 founders
+run.sh exit: 0
