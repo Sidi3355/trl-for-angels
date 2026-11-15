@@ -247,7 +247,20 @@
       ],
       "note_val_metrics": "Kev's own evaluation on 400 val founders x 2 questions (n=800), with the options' descriptions, as trained",
       "hf": "Sidi3355/trl-for-angels-kev-prod@fc8409c7510dbd1fc360eee40fd1da2bfdce4f7b (weights); f1bb43f8f1939cf67179bc68ab3e82c759817918 (report.json added)",
-      "val_predictions_kaggle": "asked through TRL without the options' descriptions (TRL sent empty criteria); kept as data/predictions/prod_val_no_descriptions.csv, not used"
+      "val_predictions_kaggle": "asked through TRL without the options' descriptions (TRL sent empty criteria); kept as data/predictions/prod_val_no_descriptions.csv, not used",
+      "val_rescored": {
+        "where": "development container, 4 CPU cores, kev.serve fp32 raw, from the Hugging Face snapshot f1bb43f",
+        "via": "TRL LLMSession, fork d9d1380 (ChoiceQuestion descriptions); research/kev_predict.py --condition prod --device cpu",
+        "started_utc": "2026-11-15T02:08:13Z",
+        "seconds": 1281,
+        "requests": 364,
+        "note": "364 requests for 400 founders: 36 val founders have the same 40 answers as another founder",
+        "check": "3 val founders asked directly from model.json match the file exactly; without descriptions they match Kaggle's file to 7e-5",
+        "mean_val_nll_both_questions": {
+          "with_descriptions": 1.1593,
+          "without_descriptions": 1.1865
+        }
+      }
     }
   },
   "rrf_fit": {
@@ -328,6 +341,73 @@
         "research/evaluate.py",
         "research/paired.py"
       ]
+    },
+    "d3_val": {
+      "folder": "results/experiments/04_production_model/d3-val/",
+      "script": "research/prod_report.py",
+      "p_500m_or_more": {
+        "f05": 0.391,
+        "pr_auc": 0.357,
+        "ece": 0.04,
+        "brier": 0.148,
+        "max": 0.371
+      },
+      "c3_val": {
+        "f05": 0.426,
+        "pr_auc": 0.403,
+        "ece": 0.024,
+        "brier": 0.146
+      },
+      "paired_prod_minus_c3": {
+        "pr_auc": [
+          -0.047,
+          -0.114,
+          0.026
+        ],
+        "ece": [
+          0.016,
+          -0.028,
+          0.033
+        ],
+        "f05": [
+          -0.035,
+          -0.157,
+          0.104
+        ]
+      },
+      "band_shares_predicted_vs_actual": {
+        "shut down": [
+          0.515,
+          0.5
+        ],
+        "under $50M": [
+          0.144,
+          0.15
+        ],
+        "$50M-$500M": [
+          0.136,
+          0.15
+        ],
+        "$500M-$1B": [
+          0.11,
+          0.1
+        ],
+        "over $1B": [
+          0.094,
+          0.1
+        ]
+      }
+    },
+    "d4_final": {
+      "folder": "results/experiments/04_production_model/d4-final/",
+      "script": "research/thresholds.py",
+      "app_files": [
+        "app/thresholds.json",
+        "shared/artifacts/rules.json",
+        "shared/artifacts/thresholds.json",
+        "shared/artifacts/model.json"
+      ],
+      "export": "research/export_artifacts.py --prod-input c3 --auth bearer --trl-commit d9d1380 (endpoint placeholder; KEV_URL overrides)"
     }
   }
 }

@@ -14,7 +14,7 @@ and finds only 10% of the successes at a precision-favouring threshold. Kev read
 profile directly (C4, no questions) did as well as Kev reading TRL's answers (C3), and the
 paper's vote is far worse calibrated than the elastic net (ECE 0.251 against 0.045).
 
-**Progress (2026-11-14):**
+**Progress (2026-11-15):**
 
 | Step | Status | Where |
 |---|---|---|
@@ -24,7 +24,7 @@ paper's vote is far worse calibrated than the elastic net (ECE 0.251 against 0.0
 | Fine-tuning Kev (C3, C4) on Kaggle | done | [experiments/03_kev_finetuned/](experiments/03_kev_finetuned/README.md) |
 | The app's input chosen on val: C3 and C4 tied, C3 chosen (D2) | done | [DECISIONS.md](DECISIONS.md), [summary/d2-val/](summary/d2-val/metrics.md) |
 | Final scores on test, with confidence intervals and paired comparisons (D1) | done | [summary/d1-final/](summary/d1-final/metrics.md), [paired](summary/d1-final/paired.md) |
-| The app's model and risk table (D3, D4) | running on Kaggle | [RUNS.md](RUNS.md) |
+| The app's model (D3) and risk table (D4), built on val; the app's three files exported | done | [experiments/04_production_model/](experiments/04_production_model/README.md) |
 
 **Final test scores** (95% CIs; threshold tuned on val; full table with precision, recall,
 Brier and PR-AUC in [summary/d1-final/metrics.md](summary/d1-final/metrics.md)):

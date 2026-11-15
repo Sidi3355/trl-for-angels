@@ -97,6 +97,17 @@ over-tuned.
 - **Keeping 40 of 93 questions costs the elastic net a little ranking** (PR-AUC −0.033, CI
   −0.071 to −0.000) but no F0.5 (−0.014, CI −0.079 to +0.057).
 
+- **A decision model must be asked exactly as it was trained.** The app's model (five outcome
+  bands and three timelines, trained with a one-line description of each option) put 35% on
+  "shut down" on average when the options were sent without their descriptions, and 52% (the
+  real share is 50%) when sent with them; single founders moved by up to 0.18. TRL used to send
+  no descriptions; our fork now does. Plot:
+  `experiments/04_production_model/d3-val/plots/band_shares_val.png`.
+- **Asking for the whole distribution costs nothing measurable.** The app's model, read as
+  P($500M or more), ranks val founders about as well as C3's single yes/no answer (PR-AUC 0.357
+  vs 0.403, paired difference CI −0.114 to +0.026), and its band shares match the real ones
+  within 2 points (val only; folder 04).
+
 ## 6. What does each model pay attention to? (after the app works)
 
 Flipping one answer at a time shows which questions move Kev's prediction most, compared with

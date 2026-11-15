@@ -1,0 +1,262 @@
+{
+  "schema_version": "0.1.0",
+  "mock": false,
+  "source": {
+    "trl_version": "0.3.0",
+    "trl_commit": "d9d1380",
+    "generator": "anthropic:claude-opus-5-5",
+    "answerer": "LLM(\"kev-0.6b\", base_url=\"https://replace-with-tunnel.trycloudflare.com/answerer/v1/systemone\", kind=\"decision\") (TRL; jaredpalmer/kev-0.6b, served in fp32)",
+    "rrf_params": {
+      "beta": 0.5,
+      "random_state": 42,
+      "combiner": "decision",
+      "max_rules": 40,
+      "rules": "C2's rules_: TRL's best 40 questions by F0.5 on train, best first"
+    },
+    "created_at": "2026-11-15T02:41:59Z",
+    "n_train": 2000
+  },
+  "task": "Predict whether this startup founder's company will succeed (exit, IPO or funding over $500M).",
+  "rules": [
+    {
+      "id": "r001",
+      "index": 0,
+      "question": "Is the startup's industry in enterprise/B2B infrastructure (e.g., cybersecurity, cloud infrastructure, logistics, banking technology, energy storage, drug discovery)?",
+      "elastic_net_coef": 0.6630636482753974
+    },
+    {
+      "id": "r002",
+      "index": 1,
+      "question": "Did the founder spend 5+ years at a single employer in the same industry as the current startup?",
+      "elastic_net_coef": 1.1830978534880408
+    },
+    {
+      "id": "r003",
+      "index": 2,
+      "question": "Does the text list at least one prior startup founded by the founder that was acquired?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r004",
+      "index": 3,
+      "question": "Does the profile list a prior startup that the founder founded which was acquired or went public?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r005",
+      "index": 4,
+      "question": "Does the profile list a prior startup founded by the founder that was acquired?",
+      "elastic_net_coef": -0.18941969954164298
+    },
+    {
+      "id": "r006",
+      "index": 5,
+      "question": "Does the founder's job history include a title of Manager, Director, Vice President, or C-level (e.g., CSO, CTO, General Manager)?",
+      "elastic_net_coef": 0.42971094263191995
+    },
+    {
+      "id": "r007",
+      "index": 6,
+      "question": "Does the founder hold a master's degree (MSc) or PhD, as opposed to only a bachelor's or MBA?",
+      "elastic_net_coef": 0.3814111428991885
+    },
+    {
+      "id": "r008",
+      "index": 7,
+      "question": "Does the text state the founder's prior experience in the startup's industry is \"deep\"?",
+      "elastic_net_coef": 0.42974408886381105
+    },
+    {
+      "id": "r009",
+      "index": 8,
+      "question": "Does the founder hold a PhD, MSc, or other graduate science/engineering degree (not counting an MBA)?",
+      "elastic_net_coef": -0.2992512488575387
+    },
+    {
+      "id": "r010",
+      "index": 9,
+      "question": "Did the founder's most recent listed job last 5+ years?",
+      "elastic_net_coef": 0.06387306754617551
+    },
+    {
+      "id": "r011",
+      "index": 10,
+      "question": "Does the profile describe the founder's background as 'domain specialist' or 'mixed'?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r012",
+      "index": 11,
+      "question": "Does the founder background field describe the founder as 'technical' or 'domain specialist'?",
+      "elastic_net_coef": 0.24222856002290247
+    },
+    {
+      "id": "r013",
+      "index": 12,
+      "question": "Does the founder's job history include a title of Vice President, Chief (C-level), Head of, or Director?",
+      "elastic_net_coef": -0.15378913405701403
+    },
+    {
+      "id": "r014",
+      "index": 13,
+      "question": "Has the founder held a title of General Manager, Head of Product, Chief Technology Officer, or Manager at a technology or software company?",
+      "elastic_net_coef": -0.37555066533674286
+    },
+    {
+      "id": "r015",
+      "index": 14,
+      "question": "Did the founder's most recent listed job last 5 or more years?",
+      "elastic_net_coef": -0.6648871358489827
+    },
+    {
+      "id": "r016",
+      "index": 15,
+      "question": "Is the founder's background labeled as \"domain specialist\"?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r017",
+      "index": 16,
+      "question": "Is the founder's background described as 'domain specialist'?",
+      "elastic_net_coef": 0.004093348502270383
+    },
+    {
+      "id": "r018",
+      "index": 17,
+      "question": "Did the founder work at least 5+ years at a single company with 5,000+ employees?",
+      "elastic_net_coef": 0.20894881845118604
+    },
+    {
+      "id": "r019",
+      "index": 18,
+      "question": "Does the text state the founder has deep prior experience in the startup's industry?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r020",
+      "index": 19,
+      "question": "Is the founder described as a \"domain specialist\" with \"deep prior experience\" in the startup's industry?",
+      "elastic_net_coef": -0.649078028556134
+    },
+    {
+      "id": "r021",
+      "index": 20,
+      "question": "Did the founder's most recent job listed fall in the same industry as the startup?",
+      "elastic_net_coef": -0.009747592641518145
+    },
+    {
+      "id": "r022",
+      "index": 21,
+      "question": "Is the startup in an enterprise/B2B technology sector such as SaaS, developer tools, data or cloud infrastructure, cybersecurity, or semiconductors?",
+      "elastic_net_coef": 0.46243312020272065
+    },
+    {
+      "id": "r023",
+      "index": 22,
+      "question": "Does the text state a prior startup founded by this founder was acquired?",
+      "elastic_net_coef": 0.16206731066224844
+    },
+    {
+      "id": "r024",
+      "index": 23,
+      "question": "Does the profile state the founder has 'deep' prior experience in the startup's industry?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r025",
+      "index": 24,
+      "question": "Does the text state the founder has founded at least one prior startup?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r026",
+      "index": 25,
+      "question": "Is the founder's total work experience listed as 15+ years?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r027",
+      "index": 26,
+      "question": "Does the text state the founder has 'deep' prior experience in the startup's industry?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r028",
+      "index": 27,
+      "question": "Does the profile state the founder has 15+ years of work experience?",
+      "elastic_net_coef": -0.0009142989793274578
+    },
+    {
+      "id": "r029",
+      "index": 28,
+      "question": "Does the text list at least one prior startup founded by the founder (prior startups not \"none\")?",
+      "elastic_net_coef": 0.7739060758361959
+    },
+    {
+      "id": "r030",
+      "index": 29,
+      "question": "Does the founder's job history include a role whose title contains 'Scientist', 'Engineer', or 'Researcher'?",
+      "elastic_net_coef": 0.15788244074586996
+    },
+    {
+      "id": "r031",
+      "index": 30,
+      "question": "Has the founder held a job title containing \"Engineer,\" \"Developer,\" \"Data Scientist,\" or \"Architect\"?",
+      "elastic_net_coef": 0.05619560291490958
+    },
+    {
+      "id": "r032",
+      "index": 31,
+      "question": "Is the startup's industry described as B2B SaaS, developer tools, or cloud infrastructure?",
+      "elastic_net_coef": 0.17064027158452338
+    },
+    {
+      "id": "r033",
+      "index": 32,
+      "question": "Does the founder's background category say \"technical\" or \"mixed\" (rather than \"business\" or \"domain specialist\")?",
+      "elastic_net_coef": 1.1114695392794394
+    },
+    {
+      "id": "r034",
+      "index": 33,
+      "question": "Did the founder hold any job with a title of Vice President, Director, Head, C-level (e.g., CEO, COO, CTO), or Partner?",
+      "elastic_net_coef": 0.6920716309601814
+    },
+    {
+      "id": "r035",
+      "index": 34,
+      "question": "Is the founder's background described as 'technical'?",
+      "elastic_net_coef": -0.08238174921874382
+    },
+    {
+      "id": "r036",
+      "index": 35,
+      "question": "Has the founder previously founded at least one startup that was acquired?",
+      "elastic_net_coef": -0.31532114715700926
+    },
+    {
+      "id": "r037",
+      "index": 36,
+      "question": "Is the startup founded with 2 or more co-founders (i.e., 3+ total founders)?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r038",
+      "index": 37,
+      "question": "Did the founder hold a job at a company with 5,000+ employees for 5+ years?",
+      "elastic_net_coef": 0.04528380852123866
+    },
+    {
+      "id": "r039",
+      "index": 38,
+      "question": "Does the founder have a degree in a natural science, engineering, or computer science field?",
+      "elastic_net_coef": null
+    },
+    {
+      "id": "r040",
+      "index": 39,
+      "question": "Does the founder hold an MD, JD, or PhD degree?",
+      "elastic_net_coef": 0.5921790505279749
+    }
+  ]
+}

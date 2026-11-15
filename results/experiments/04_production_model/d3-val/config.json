@@ -1,0 +1,17 @@
+{
+  "stage": "d3-val",
+  "split": "val",
+  "n": 400,
+  "model": "Sidi3355/trl-for-angels-kev-prod@fc8409c7510dbd1fc360eee40fd1da2bfdce4f7b",
+  "input": "c3 (TRL's 40 answers as text; D2)",
+  "questions": "outcome (5 bands) and years (3 bands), with the options' descriptions (research/common.py PROD_QUESTIONS)",
+  "temperatures": {
+    "outcome": 1.148698354997035,
+    "years": 0.8705505632961241
+  },
+  "scored": "through TRL (fork d9d1380, ChoiceQuestion descriptions) against kev.serve on CPU, fp32, raw; temperatures applied by research/kev_predict.py",
+  "threshold_protocol": "tuned on these val founders for F0.5 (TRL's best_threshold)",
+  "bootstrap": 1000,
+  "seed": 42,
+  "ece_bins": 10
+}

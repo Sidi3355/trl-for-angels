@@ -1,4 +1,4 @@
-# Research → app: what changed and what the app needs (2026-11-14)
+# Research → app: what changed and what the app needs (2026-11-14, updated 2026-11-15)
 
 For the app session (`app-track`), passed on by the owner. Checked against `app-track` at
 `f7b828b`. Plan changes behind this are in `MASTER_PLAN.md` section 0.
@@ -10,8 +10,9 @@ For the app session (`app-track`), passed on by the owner. Checked against `app-
   validator (`research/validate.py`). No change needed.
 - **The three artefacts.** `research/export_artifacts.py` writes `rules.json`, `thresholds.json`
   and `model.json` to `shared/artifacts/` and validates each against the app contract's schemas
-  before writing (tested for both decider inputs). They appear once the real runs finish.
-  `rules.json` holds **40 questions** (the best by F0.5 on train, best first; TRL's
+  before writing. **The real files are there now (2026-11-15)**: set
+  `ARTIFACTS_DIR=shared/artifacts`. The decider reads TRL's answers (`decider_input:
+  "answers"`, D2). `rules.json` holds **40 questions** (the best by F0.5 on train, best first; TRL's
   `max_rules=40`, decided 2026-11-14), so the app's answerer asks Kev 40 questions per founder.
   If the D2 winner is C4 (Kev reads the profile directly), the app doesn't answer questions at
   all: `model.json → decider_input` (`"answers"` or `"profile"`) says which.
@@ -41,9 +42,12 @@ For the app session (`app-track`), passed on by the owner. Checked against `app-
    `"client"`, with one temperature for `outcome` and one for `years`. Serve the production
    model raw (`KEV_TEMPERATURE=1.0`), then per question: `p_i ← p_i^(1/T) / Σ_j p_j^(1/T)`. This is
    the same as dividing the logits by T.
-4. **Send the questions from `model.json`, word for word.** `request.questions` holds the real
-   instructions and option descriptions the production model was trained with. They differ from
-   the mock's ("What final outcome will this founder's company reach?", ...).
+4. **Send the questions from `model.json`, word for word, descriptions included.**
+   `request.questions` holds the real instructions and each option's description (the
+   `criteria` values) that the production model was trained with. Send `criteria` as given, not
+   with `null` values: without the descriptions the same model's answers move by up to 0.18
+   (on val it put 35% on "shut down" instead of 52%). Through TRL, use our fork at `d9d1380` or
+   later and `ChoiceQuestion(text, labels, descriptions)`; older TRL sends empty criteria.
 5. **kev.serve's response** (what `KevDecider` was waiting on), from `/v1/systemone`:
 
    ```json
@@ -65,7 +69,17 @@ For the app session (`app-track`), passed on by the owner. Checked against `app-
    (the bare tunnel address), which, when set, overrides `model.json → endpoint` for both
    paths. A restart is then one Railway variable to paste, with no new artefact. `GET /health` reports
    readiness, and whether the decider is still base Kev standing in. Expect a few seconds per
-   founder on CPU; keep the demo cache as the backup.
+   founder on CPU; keep the demo cache as the backup. `model.json → endpoint.base_url` is a
+   placeholder (`https://replace-with-tunnel.trycloudflare.com/decider`), so `KEV_URL` is
+   needed. The PC server loads the production model with
+   `DECIDER_MODEL=Sidi3355/trl-for-angels-kev-prod` (`kev_server/README.md`).
+7. **Show each target's probability, never a single "predicted outcome".** Half of all founders
+   shut down, so "shut down" is the most likely band for every val founder; the information is
+   in P(outcome ≥ target). The probabilities are timid: on val, P($500M or more) ranges from
+   0.10 to 0.37 (20% got there), so present them against the base rate.
+8. **One empty combination:** no val founder reached $1B within 5 years. Its table in
+   `thresholds.json` has `n_positive: 0`, so its precision and recall are all 0 and mean
+   nothing. Show "not enough data" whenever `n_positive` is 0.
 
 ## Optional
 

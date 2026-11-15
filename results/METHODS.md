@@ -157,6 +157,16 @@ It is trained with two `choice` questions instead of one: outcome (five bands) a
 (precision and recall at each threshold, per target outcome and timeline) comes from val
 (`research/thresholds.py`).
 
+Each option carries a one-line description (`research/common.py`, `PROD_QUESTIONS`), in
+training and whenever the model is asked: TRL's `ChoiceQuestion` sends them as System One
+criteria (fork commit `d9d1380`). Before that change TRL sent the options without their
+descriptions, and the model's val distributions moved by up to 0.18 (mean "shut down" 35%
+instead of 52%; `results/DECISIONS.md`, D3), so val was rescored with them, on CPU, from the
+published checkpoint. On val the production model's P($500M or more) is not distinguishable
+from C3's P(success) (PR-AUC 0.357 vs 0.403, paired CI for the difference −0.114 to +0.026),
+and its mean band shares are within 2 points of the real ones
+(`results/experiments/04_production_model/`).
+
 ## 10. Interpretability (after the app works)
 
 Answer flips (single and paired, against C1a's coefficients and CTRL's importances),
@@ -198,4 +208,4 @@ model relies on can be compared with the true weights.
 |---|---|
 | A4 smoke test (20 founders) | $0.11 (Claude) |
 | B1 question writing (2,000 founders) | $0.49 (Claude; TRL's estimate was at most $0.71) |
-| All Kev work (answering, fine-tuning, scoring) | $0: free Kaggle GPUs (about 6 hours of Kaggle runs before the production model, including one failed run) |
+| All Kev work (answering, fine-tuning, scoring) | $0: free Kaggle GPUs (about 6 hours of Kaggle runs before the production model, including one failed run; 3 h 16 min for the production model) and 33 min of CPU in the development container to rescore its val founders |

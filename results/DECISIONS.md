@@ -546,3 +546,37 @@ while doing the work: date, decision, reason, evidence. Newest last.
   checkpoint (fp32, the same numbers as the T4 to 0.0001). Kaggle's file is kept as
   `data/predictions/prod_val_no_descriptions.csv` (not used), and the D4 table, built from it
   first and never published, was deleted.
+- **Rescored** (02:08–02:41 UTC, 33 min on 4 CPU cores; 364 requests, because 36 of the 400 val
+  founders have exactly the same 40 answers as another founder): no missing answers, and the
+  first three founders match the direct requests exactly. With the descriptions the band
+  shares match the real ones: shut down 52% predicted against 50% actual, every other outcome
+  band and every years band within 2 points (`results/experiments/04_production_model/d3-val/`).
+  The mean log-loss over both questions is 1.159, close to Kev's own calibrated 1.161, against
+  1.187 without descriptions.
+- **Done when (D3):** "val predictions give sensible band distributions": yes, as above. As a
+  success score, P($500M or more) is not distinguishable from C3 on val (PR-AUC 0.357 vs 0.403,
+  paired difference −0.047, CI −0.114 to +0.026; ECE 0.040 vs 0.024, CI −0.028 to +0.033).
+
+## 2026-11-15 · D4 · Risk-threshold table and the app's three files
+
+- **Built from** the rescored val predictions (`research/thresholds.py --stage d4-final`):
+  precision and recall at every threshold (0.00–0.99) for each target ($50M, $500M, $1B) and
+  timeline (any, 5 years, 8 years). Three presets per row: advance at TRL's F0.5-, F1- or
+  F2-best threshold (conservative, balanced, aggressive), and pass below the point that turns
+  away at most 5%, 10% or 20% of the founders who got there.
+- **Reading it ($500M, any timeline, 20% base rate):** conservative advances 28% of founders,
+  35% of whom got there; balanced 40% (32%); aggressive 64% (28%).
+- **No data for $1B within 5 years:** no val founder reached it, so the table advances nobody
+  there; the app should say "not enough data" rather than show a probability.
+- **The most likely band is "shut down" for every val founder** (half of all founders shut
+  down), so the app should show each target's probability, never a single predicted outcome.
+- **Exported** with `research/export_artifacts.py --prod-input c3 --auth bearer
+  --trl-commit d9d1380` to `shared/artifacts/` (`rules.json`, `thresholds.json`, `model.json`),
+  each checked against the app contract's schema. The endpoint in `model.json` is a placeholder
+  (`https://replace-with-tunnel.trycloudflare.com/...`): the Cloudflare tunnel's address
+  changes every time it starts, so the backend reads it from `KEV_URL`
+  (`docs/app_integration.md`).
+- **Checked end to end:** the published checkpoint, served by `kev.serve` and asked exactly
+  as `model.json` describes (questions, descriptions, raw server, temperatures applied by the
+  client), reproduces `data/predictions/prod_val.csv` exactly for the three val founders
+  checked.

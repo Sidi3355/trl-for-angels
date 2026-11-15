@@ -1,0 +1,50 @@
+[
+  {
+    "question": "outcome",
+    "band": "shut down",
+    "mean_predicted": 0.515309895,
+    "actual_share": 0.5
+  },
+  {
+    "question": "outcome",
+    "band": "under $50M",
+    "mean_predicted": 0.1439797525,
+    "actual_share": 0.15
+  },
+  {
+    "question": "outcome",
+    "band": "$50M-$500M",
+    "mean_predicted": 0.13634511800000002,
+    "actual_share": 0.15
+  },
+  {
+    "question": "outcome",
+    "band": "$500M-$1B",
+    "mean_predicted": 0.10998574925,
+    "actual_share": 0.1
+  },
+  {
+    "question": "outcome",
+    "band": "over $1B",
+    "mean_predicted": 0.09437947,
+    "actual_share": 0.1
+  },
+  {
+    "question": "years",
+    "band": "under 5",
+    "mean_predicted": 0.47003058,
+    "actual_share": 0.465
+  },
+  {
+    "question": "years",
+    "band": "5-8",
+    "mean_predicted": 0.3753629,
+    "actual_share": 0.385
+  },
+  {
+    "question": "years",
+    "band": "over 8",
+    "mean_predicted": 0.1546065275,
+    "actual_share": 0.15
+  }
+]
