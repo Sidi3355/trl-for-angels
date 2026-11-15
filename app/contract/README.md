@@ -103,7 +103,7 @@ threshold, and the share of winners lost by auto-passing. Tables with under 20 p
 distributions, so the client can re-rank drivers for any target. In profile mode drivers are field changes.
 
 **What-if.** Answer changes only re-run Kev. Field changes re-render the profile, and in answers mode
-they also need new Jev answers (`field_changes: "needs_answerer"`), so they're slower and cost more.
+they also need new answers from base Kev (`field_changes: "needs_answerer"`), so they're slower and cost more.
 
 **Filters** use `facets`: `sector` (industry), `team` (solo or team), `technical` (background technical
 or mixed), `repeat_founder` (has prior startups). An unknown value fails an active filter.
@@ -138,7 +138,7 @@ the app's mocks will be changed to match. Open questions:
   `kev.serve` response shape, who applies the temperature, the answerer, the answer serialisation, and
   endpoint auth.
 - **Ties in binary serialisation:** with "yes when P(yes) ≥ 0.5", an answerer that returns exactly 0.5
-  for an unknown field turns unknowns into "yes". Worth checking how Jev answers questions about
+  for an unknown field turns unknowns into "yes". Worth checking how the answerer (base Kev) answers questions about
   unknown fields.
 - **`thresholds.json`:** the score must be computed exactly as the app does (the product above) and the
   labels from the true joint outcome and years. The mock shows the sparsity problem: in 400 simulated

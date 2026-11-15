@@ -14,7 +14,7 @@ import { Card, Disclaimer, Notice, Page, SectionTitle, Tag, VerdictTile, cx, lin
 import calibration from "@/data/calibration.json";
 import { API_URL } from "@/lib/api";
 import { quickVerdict } from "@/lib/bar";
-import { DECISION_LABELS, percent, relativeTime, sectorLabel } from "@/lib/format";
+import { DECISION_LABELS, gapPoints, percent, relativeTime, sectorLabel } from "@/lib/format";
 import type { Decision } from "@/lib/types";
 import { useStartScreening } from "@/lib/useScreening";
 
@@ -145,7 +145,7 @@ export default function Dashboard() {
               <span className="eyebrow text-muted">Odds check</span>
               {calibration.status !== "final" && <Tag tone="warn">Provisional</Tag>}
             </span>
-            <span className="cond mt-2 block whitespace-nowrap text-[44px] font-black leading-none">{Math.round(calibration.ece * 100)} pts</span>
+            <span className="cond mt-2 block whitespace-nowrap text-[44px] font-black leading-none">{gapPoints(calibration.ece)}</span>
             <span className="mt-1 block text-[13.5px] leading-snug text-muted">Typical gap between the odds it gives and what happened.</span>
             <span className="mt-2 inline-flex items-center gap-1 text-[14px] font-semibold">
               See the check <IconArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />

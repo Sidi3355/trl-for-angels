@@ -250,6 +250,19 @@ Both themes with a little more brand colour (the accent is now the stamp-pad blu
 - No bad first tries this round: the one problem (the light blue was too dim on the dark phone dock) was caught by a contrast check before any screenshot.
 - **Sent:** `phone-light-1-dashboard`, `phone-dark-1-dashboard`, `desktop-light-1-dashboard`, `phone-light-0-intro-odds`
 
+## 16-real-kev (2026-11-15, 08:20–08:45) · Check
+
+The app on the **real models** for the first time: research's real `rules.json`, `thresholds.json` and `model.json`, base Kev answering the 40 questions and the trained production Kev deciding, both served by research's `kev_server` in this sandbox (CPU). The research agent was still the mock, so the founders are the made-up examples. Phones shot at 2×.
+- `phone-light-1-memo-verdict`: Ada Moreno, Meet at 32% (the memo appeared 14 s after the tap)
+- `phone-light-2-factors-pending`, `-3-factors-partial`, `-4-factors-complete`: "What moves the score" filling in after the memo opens (0 of 40, then 5 of 40 at 38 s, then all at about 3.5 minutes)
+- `phone-light-5-what-if`: Samir Haddad's top factor flipped: Look closer at 21%, was 27%
+- `phone-light-6-questions`: the 40 real screening questions with base Kev's answers
+- `phone-light-7-bar-no-data`, `-8-verdict-no-bar`: $1B+ within 5 years, where no validation founder got there: "Not enough data", and the verdict says there's no bar
+- `phone-light-9-calibration`, `desktop-*-calibration`: the calibration page on the final test numbers (C3, 600 founders, 1 pt)
+- `desktop-*-model-card`: the model card's new status and limits
+- `first-try-mid-load/`: **bad**. The first what-if shot, taken before the answer arrived (it still showed 32%), and a bar-sheet shot with the "Not enough data" note below the fold.
+- **Sent:** `phone-light-1-memo-verdict`, `phone-light-2-factors-pending`, `phone-light-5-what-if`, `phone-light-9-calibration`
+
 ## tools
 
 - `record-walkthrough.cjs`: the script that recorded v3 and v4, with the ffmpeg command in its header, so the video can be re-shot after design changes

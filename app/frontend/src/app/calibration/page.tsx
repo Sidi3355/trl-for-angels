@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ReliabilityChart, type Bin } from "@/components/ReliabilityChart";
 import { Disclaimer, Page, PageHeader, SectionTitle, Tag, linkClass } from "@/components/ui";
 import data from "@/data/calibration.json";
+import { gapPoints } from "@/lib/format";
 
 export const metadata: Metadata = { title: "How accurate are the odds?" };
 
@@ -19,12 +20,13 @@ export default function CalibrationPage() {
   const hits = Math.round(data.precision * data.flagged);
   const found = Math.round(data.recall * data.successes);
   const high = bins.filter((b) => b.low >= 0.5).reduce((n, b) => n + b.count, 0);
+  const top = Math.max(...bins.filter((b) => b.count > 0).map((b) => b.high));
   const splitName = data.split === "test" ? "test" : "validation";
   const headline = [
     {
-      value: `${Math.round(data.ece * 100)} pts`,
+      value: gapPoints(data.ece),
       label: "Typical gap between the odds and what happened",
-      detail: `On average, the chance it gave was within about ${Math.round(data.ece * 100)} percentage points of the share who actually succeeded.`,
+      detail: `On average, the chance it gave was within about ${gapPoints(data.ece).replace("pts", "percentage points").replace("pt", "percentage point")} of the share who actually succeeded.`,
     },
     {
       value: `${Math.round(data.precision * 10)} in 10`,
@@ -78,7 +80,10 @@ export default function CalibrationPage() {
 
       <p className="mt-8 max-w-[66ch] rounded-[14px] bg-surface-2 px-4 py-3 text-[14px] leading-relaxed text-ink-2">
         <strong className="font-bold">The honest limit:</strong> these are {data.founders} founders from a mostly generated dataset (2,950 of 3,000 profiles are synthetic), so they show how honest the odds
-        are on that data, not on real founders. Few founders got odds of {pct(0.5)} or more ({high}), so the top of the chart rests on little data.
+        are on that data, not on real founders.{" "}
+        {high === 0
+          ? `It never gave a founder odds above ${pct(top)}: it is cautious, so it rarely singles anyone out, and the right of the chart is empty.`
+          : `Few founders got odds of ${pct(0.5)} or more (${high}), so the top of the chart rests on little data.`}
       </p>
 
       <p className="mt-6 text-[14px] text-muted">

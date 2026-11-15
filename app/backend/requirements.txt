@@ -7,3 +7,7 @@ jsonschema[format-nongpl]==4.26.0
 anthropic==2.8.0
 pywebpush==2.5.0
 elevenlabs==2.78.0
+# TRL (Vela Research), from the project's fork at the commit research exported the artefacts with
+# (rules.json source.trl_commit). All Kev calls go through it (pipeline/kev.py). A tarball, not git+, so the
+# slim Docker image needs no git.
+think-reason-learn @ https://github.com/Sidi3355/think-reason-learn/archive/d9d1380a6e4dcacae3c9c8414c6b6f8f2283feb9.tar.gz

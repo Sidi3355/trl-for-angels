@@ -177,6 +177,8 @@ export function verdict(
   let summary = `${cap}: ${estimate}${pct(prob)} chance of reaching ${pol.target} or more${horizon}.`;
   if (pol.advance_threshold !== null && pol.pass_threshold !== null) {
     summary += ` At ${pol.risk} risk, founders advance from ${pct(pol.advance_threshold)} and pass below ${pct(pol.pass_threshold)}.`;
+  } else if (pol.advance_threshold === null && pol.pass_threshold === null) {
+    summary += " Too few validation founders reached this target and timeline to set a bar.";
   }
   if (failed.length) summary += " Filtered out by: " + failed.join(", ") + ".";
   return {

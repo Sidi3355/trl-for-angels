@@ -21,7 +21,7 @@ def test_artifacts_dir_swap_with_real_style_rules(tmp_path, contract):
         contract.check("memo", memo)
         assert [a["rule_id"] for a in memo["answers"]] == [f"q{i:03d}" for i in range(100)]
         mock_note = next(w for w in memo["warnings"] if w["code"] == "mock_artifacts")["message"]
-        assert "rules.json" not in mock_note and "answerer (Jev)" in mock_note
+        assert "rules.json" not in mock_note and "answerer (base Kev)" in mock_note
 
 
 def test_profile_mode_from_model_json(tmp_path, contract):

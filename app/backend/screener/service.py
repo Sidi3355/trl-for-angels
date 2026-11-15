@@ -16,7 +16,7 @@ from . import policy, push
 from .contract import Contract
 from .pipeline import batch as batchmod
 from .pipeline.context import NotConfigured, Pipeline
-from .pipeline.memo import DISCLAIMER
+from .pipeline.memo import DISCLAIMER, fill_drivers
 from .pipeline.screening import screen
 from .pipeline.whatif import what_if
 
@@ -114,6 +114,7 @@ class Service:
         self.memos: dict[str, tuple[dict, object]] = {}
         self.batches: dict[str, Batch] = {}
         self._tasks: set[asyncio.Task] = set()
+        self._drivers: dict[str, asyncio.Task] = {}  # memo id -> its background drivers task
 
     # ------------------------------------------------------------------ helpers
 
@@ -157,6 +158,9 @@ class Service:
         stale = [m for m, (_, t) in self.memos.items() if t < cutoff]
         for m in stale:
             self.memos.pop(m, None)
+            task = self._drivers.pop(m, None)
+            if task is not None:
+                task.cancel()
         return len(old) + len(stale)
 
     def stats(self) -> dict:
@@ -222,7 +226,15 @@ class Service:
     def memo(self, memo_id: str) -> dict:
         if memo_id not in self.memos:
             raise NotFound(memo_id)
-        return self.memos[memo_id][0]
+        memo = self.memos[memo_id][0]
+        if memo.get("drivers_status") == "pending" and memo_id not in self._drivers:
+            # Started when the memo is first opened, so a long list doesn't queue hours of Kev work for founders
+            # nobody looks at. A single screening's memo is opened as soon as it's ready.
+            try:
+                self._drivers[memo_id] = asyncio.get_running_loop().create_task(fill_drivers(memo, self.pipeline))
+            except RuntimeError:  # no running loop (a sync caller): leave it pending
+                pass
+        return memo
 
     async def what_if(self, memo_id: str, req: dict) -> dict:
         self._check_request("what_if_request", req)

@@ -52,7 +52,15 @@ function BarSheetBody({ bar, setBar, thresholdsReady, onClose, resetTo }: { bar:
   if (thresholdsReady) {
     const r = resolve(thresholdsReady, bar);
     const table = tableFor(thresholdsReady, bar.target, bar.timeline_years);
-    readout = (
+    readout = table.n_positive === 0 ? (
+      <div className="rounded-[14px] bg-surface-2 px-4 py-3 text-[14px] leading-snug text-ink-2">
+        <p className="font-bold">Not enough data for this bar</p>
+        <p className="mt-1 text-muted">
+          None of the {table.n} validation founders reached {target}
+          {horizon}, so Halomark can&apos;t say how picky to be. Every founder shows Look closer. Try a longer timeline or a lower target.
+        </p>
+      </div>
+    ) : (
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-5">
           <div>
@@ -70,7 +78,7 @@ function BarSheetBody({ bar, setBar, thresholdsReady, onClose, resetTo }: { bar:
           {r.sparse && (
             <>
               {" "}
-              <Tag tone="warn">Rough</Tag> only {r.n_positive} test founders reached this target, so these rates are noisy.
+              <Tag tone="warn">Rough</Tag> only {r.n_positive} validation founders reached this target, so these rates are noisy.
             </>
           )}
         </p>

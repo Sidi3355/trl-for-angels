@@ -208,7 +208,7 @@ export interface Conflict {
 
 export interface Answer {
   rule_id: string;
-  p_yes: number;
+  p_yes: number | null; // null: the answerer gave no answer, so the answer reads "unknown"
   answer: string;
 }
 
@@ -251,6 +251,10 @@ export interface Memo {
   decider: { input_type: "answers" | "profile"; model_id: string; artifacts_dir: string };
   answers: Answer[] | null;
   drivers: Driver[];
+  /** complete (or absent): every driver is here. pending: the real model fills them in after the memo opens;
+   *  poll the memo. failed: the model stopped answering; drivers holds what finished. */
+  drivers_status?: "complete" | "pending" | "failed";
+  drivers_total?: number | null;
   what_if: { answer_changes: "supported" | "unsupported"; field_changes: "supported" | "needs_answerer" | "unsupported" };
   facets: Facets;
   sources: Source[];

@@ -144,6 +144,8 @@ def verdict(distributions: dict, thresholds: dict, policy: dict | None, fields: 
             f" At {pol['risk']} risk, founders advance from {_pct(pol['advance_threshold'])}"
             f" and pass below {_pct(pol['pass_threshold'])}."
         )
+    elif pol["advance_threshold"] is None and pol["pass_threshold"] is None:
+        summary += " Too few validation founders reached this target and timeline to set a bar."
     if failed:
         summary += " Filtered out by: " + ", ".join(failed) + "."
     return {

@@ -76,6 +76,8 @@ export function VerdictCard({ verdict, baseline, whatIf, loading, onReset }: { v
   const { bar, openBarSheet } = useApp();
   const copy = DECISION_COPY[verdict.decision];
   const pol = verdict.policy;
+  // No validation founder reached this target and timeline (e.g. $1B+ within 5 years), so there are no thresholds.
+  const noBar = pol.advance_threshold === null && pol.pass_threshold === null;
   const changed = whatIf && baseline.probability !== verdict.probability;
   const shown = useCountTo(verdict.probability);
   const figure = percent(shown).replace("%", "");
@@ -100,7 +102,9 @@ export function VerdictCard({ verdict, baseline, whatIf, loading, onReset }: { v
         </div>
 
         <p className="mt-2 text-[50px] font-black leading-[0.9] tracking-[-0.05em] sm:text-[58px]">{copy.title}</p>
-        <p className="mt-2.5 text-[15.5px] font-medium leading-snug opacity-85">{copy.line}</p>
+        <p className="mt-2.5 text-[15.5px] font-medium leading-snug opacity-85">
+          {noBar ? "No bar for this target and timeline: too few founders got there to judge. Try a longer timeline." : copy.line}
+        </p>
 
         <div className="mt-6 flex items-end gap-4 sm:mt-7">
           <p className="cond text-[136px] font-black leading-[0.74] tracking-[-0.02em] sm:text-[150px]">

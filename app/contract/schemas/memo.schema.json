@@ -59,7 +59,10 @@
       "additionalProperties": false,
       "properties": {
         "rule_id": { "$ref": "common.schema.json#/$defs/id" },
-        "p_yes": { "$ref": "common.schema.json#/$defs/probability" },
+        "p_yes": {
+          "description": "P(yes) from the answerer; null where it gave no answer (the answer then reads \"unknown\").",
+          "oneOf": [{ "$ref": "common.schema.json#/$defs/probability" }, { "type": "null" }]
+        },
         "answer": {
           "description": "The answer as serialised for Kev (per model.json answer_serialisation).",
           "type": "string"
@@ -171,6 +174,15 @@
       "description": "Every flippable input, sorted by |delta| at the memo's policy. The UI shows the top few.",
       "type": "array",
       "items": { "$ref": "#/$defs/driver" }
+    },
+    "drivers_status": {
+      "description": "complete: drivers holds every flip. pending: the decider is slow (the real Kev on a CPU), so drivers fill in after the memo is first opened; poll the memo. failed: the decider stopped answering; drivers holds what finished. Absent means complete.",
+      "enum": ["complete", "pending", "failed"]
+    },
+    "drivers_total": {
+      "description": "How many flips drivers will hold when complete (answers mode), or null.",
+      "type": ["integer", "null"],
+      "minimum": 0
     },
     "what_if": {
       "description": "Which what-if changes the backend supports for this memo (POST /v1/memos/{memo_id}/what-if).",

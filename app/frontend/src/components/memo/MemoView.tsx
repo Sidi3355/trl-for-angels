@@ -72,6 +72,26 @@ export function MemoView({ memoId }: { memoId: string }) {
     );
   }, [memoId]);
 
+  // With the real model, "what moves it" fills in after the memo opens (a few seconds per question on the
+  // demo machine). Poll for it, updating only the drivers so a what-if in progress isn't disturbed.
+  const driversPending = memo?.drivers_status === "pending";
+  useEffect(() => {
+    if (!driversPending) return;
+    let stop = false;
+    const id = window.setInterval(() => {
+      api.memo(memoId).then(
+        (m) => {
+          if (!stop) setMemo((cur) => (cur ? { ...cur, drivers: m.drivers, drivers_status: m.drivers_status, drivers_total: m.drivers_total } : m));
+        },
+        () => undefined, // a missed poll just waits for the next one
+      );
+    }, 4000);
+    return () => {
+      stop = true;
+      window.clearInterval(id);
+    };
+  }, [driversPending, memoId]);
+
   const fields = useMemo(() => (memo ? plainFields(memo) : null), [memo]);
 
   const runWhatIf = useCallback(
@@ -184,13 +204,13 @@ export function MemoView({ memoId }: { memoId: string }) {
           <VerdictCard verdict={current} baseline={baseline} whatIf={whatIfOn} loading={loading} onReset={reset} />
           {memo.mock && (
             <p className="px-1 text-[12.5px] leading-snug text-faint">
-              Prototype: the score comes from a placeholder model until the real one is trained, so treat every number as an example.
+              Prototype: parts of this screening use stand-ins (listed under Worth knowing), so treat it as an example.
             </p>
           )}
         </div>
 
         <div className="stagger min-w-0 space-y-12">
-          <Factors drivers={memo.drivers} base={memo.distributions} bar={bar} flipped={new Set(flipped.keys())} onToggle={toggle} loading={loading} enabled={enabled} error={whatIfError} />
+          <Factors drivers={memo.drivers} status={memo.drivers_status ?? "complete"} total={memo.drivers_total ?? null} base={memo.distributions} bar={bar} flipped={new Set(flipped.keys())} onToggle={toggle} loading={loading} enabled={enabled} error={whatIfError} />
           <Outcome d={whatIf ? whatIf.distributions : memo.distributions} bar={bar} />
           <Profile memo={memo} />
           <WorthKnowing memo={memo} />

@@ -214,12 +214,13 @@ All settings are environment variables (or `app/backend/.env` locally; see `app/
 |---|---|---|---|
 | `ARTIFACTS_DIR` | `app/contract/mocks` | `shared/artifacts` | `rules.json`, `thresholds.json`, `model.json` |
 | `AGENT` | `mock` | `claude` (needs `SCREENER_ANTHROPIC_API_KEY` or `ANTHROPIC_API_KEY`) | The research agent |
-| `ANSWERER` | `mock` | `jev` (needs `TYPESAFE_API_KEY`) | Answers to the rules (answers mode only) |
-| `DECIDER` | `mock` | `kev` (endpoint from `model.json`) | Outcome and years distributions |
+| `ANSWERER` | `mock` | `kev` (base Kev at `KEV_URL`/answerer; `KEV_API_KEY`) | Answers to the rules (answers mode only) |
+| `DECIDER` | `mock` | `kev` (the production Kev at `KEV_URL`/decider; `KEV_API_KEY`) | Outcome and years distributions |
+| `KEV_URL` | unset | `https://<words>.trycloudflare.com` | The Kev server's address (changes each time its tunnel starts) |
 | `TRANSCRIBER` | `auto`: `elevenlabs` if `ELEVENLABS_API_KEY` is set, else `mock` | `elevenlabs` | Voice notes' speech-to-text (`scribe_v3`) |
 | `NOTE_SORTER` | `auto`: `claude` if the Claude key is set, else `off` | `claude` | Notes -> form fields (`mock`: keyword stand-in) |
 
-Each swap is independent. For example, the real artefacts work while Jev and Kev are still mocked, and
+Each swap is independent. For example, the real artefacts work while Kev is still mocked, and
 `model.json`'s `decider_input` switches between answers mode and profile mode with no code change.
 Before switching `ARTIFACTS_DIR`, run `python app/contract/tools/validate.py --artifacts shared/artifacts`.
 If a real component is selected but can't run (a missing key, or not built yet), the server still starts:
@@ -227,7 +228,38 @@ If a real component is selected but can't run (a missing key, or not built yet),
 
 Other settings: `CORS_ORIGINS` and `CORS_ORIGIN_REGEX` (the frontend's address), `ACCESS_TOKEN`
 (optional shared passcode for `/v1`), `RETENTION_MINUTES` (default 120), `MAX_CONCURRENT_SCREENINGS`,
-`BATCH_MAX_CONCURRENCY`, `MOCK_PACE` and `VALIDATE_RESPONSES`.
+`BATCH_MAX_CONCURRENCY`, `MOCK_PACE`, `VALIDATE_RESPONSES`, and for Kev `KEV_TIMEOUT_S` (default: `model.json`'s
+`timeout_s`) and `KEV_MAX_RETRIES` (default 1, so a PC that's off fails a screening quickly).
+
+## The real models (`ANSWERER=kev`, `DECIDER=kev`)
+
+`backend/screener/pipeline/kev.py`, following research's `docs/app_integration.md`. Both models run on research's
+`kev_server` (on the owner's PC, behind a free Cloudflare tunnel; setup in `kev_server/README.md` on the research
+branch): base `jaredpalmer/kev-0.6b` at `/answerer/v1/systemone`, the production model at `/decider/v1/systemone`.
+
+- **Through TRL.** Every Kev call goes through TRL's `LLM` and `LLMSession` (the project's fork, pinned in
+  `requirements.txt` at the commit research exported with), with TRL's reply cache off, so nothing is kept.
+- **The answerer** asks base Kev the 40 questions in `rules.json` about the anonymised profile. A question it
+  leaves unanswered reads `unknown` (and the memo's `p_yes` is `null`).
+- **The decider** reads TRL's `answers_text` (the exact text Kev was trained on: `<question> yes|no|unknown`, one
+  line per rule) and gets `model.json`'s two choice questions word for word, option descriptions included. The
+  server runs raw; the backend applies `model.json`'s temperature per question (`p^(1/T)`, renormalised).
+- **Drivers** (what moves the verdict) flip each answered question once and ask the decider again. The real Kev
+  takes about 5 s per decision on a CPU, so the memo comes back with `drivers_status: "pending"` as soon as the
+  verdict is ready, and the drivers fill in afterwards (three per round trip, by the size of the rule's
+  elastic-net weight in `rules.json`, largest first) once the memo is first opened. The memo page polls and shows
+  "N of 40 done". A list (batch) only starts a founder's drivers when that memo is opened.
+- **Measured (2026-11-15, the real models on this sandbox's 4 CPUs, research's real artefacts):** answering 40
+  questions about 7 s, the verdict about 5 s, memo on screen 14 s after tapping a founder, the first five drivers
+  at 38 s, all 40 at about 3.5 minutes. A what-if waits behind at most one round trip of drivers. The owner's PC
+  may be faster or slower.
+- **`KEV_URL`** overrides `model.json`'s placeholder endpoint for both models: after restarting the tunnel, paste
+  the new address into Railway. `/health` shows `kev: {reachable, ready, decider_stand_in}` from the Kev
+  server's own health check (cached for 30 seconds).
+- **If Kev is down,** a screening fails with a message that names the host and asks whether the PC server and
+  its tunnel are running. It never shows the key.
+- **Bar with no data:** no validation founder reached $1B within 5 years, so that combination has no thresholds.
+  The bar sheet says "Not enough data", the verdict says there's no bar, and every founder shows Look closer.
 
 ## What's mocked, and how to switch to the real artefacts
 
@@ -236,12 +268,13 @@ exist, the app uses mocks with the same file names and structure:
 
 | Artefact | Mock | Real (when ready) | What the mock stands in for |
 |---|---|---|---|
-| `rules.json` | `app/contract/mocks/rules.json` (20 questions) | `shared/artifacts/rules.json` (about 100) | RRF's question list (step B1) |
+| `rules.json` | `app/contract/mocks/rules.json` (20 questions) | `shared/artifacts/rules.json` (40) | RRF's question list (step B1) |
 | `thresholds.json` | `app/contract/mocks/thresholds.json` | `shared/artifacts/thresholds.json` | The val precision and recall table (step D4) |
 | `model.json` | `app/contract/mocks/model.json` | `shared/artifacts/model.json` | The production Kev endpoint and input type (steps D2, D3) |
 
-The answerer (Jev), decider (Kev) and research agent are mocked by `backend/screener/mocks/` until their
-keys and endpoint exist. Every memo made with any mock carries `"mock": true` and a visible warning
+The real files exist on the research branch (2026-11-15) and pass `validate.py --artifacts`. The answerer
+(base Kev), decider (production Kev) and research agent are mocked by `backend/screener/mocks/` until they're
+switched on. Every memo made with any mock carries `"mock": true` and a visible warning
 saying which parts are mocked.
 
 ## Privacy and storage
@@ -253,7 +286,7 @@ backend runs as a single instance. Logs never contain keys; `/health` shows only
 ## Secrets
 
 Keys come from environment variables only, never from the repo: `ANTHROPIC_API_KEY` (research agent),
-`TYPESAFE_API_KEY` (Jev), `KEV_API_KEY` if the Kev endpoint needs one, `ELEVENLABS_API_KEY` (voice
+`KEV_API_KEY` (the Kev server's passcode, the same value as on the PC), `ELEVENLABS_API_KEY` (voice
 features), and the `VAPID_*` push-notification keys. `app/backend/.env.example` lists every setting.
 
 ## Deploy
@@ -273,7 +306,8 @@ way to point Railway at the Dockerfile. Leave Root Directory empty.
 | `RAILWAY_DOCKERFILE_PATH` | `app/backend/Dockerfile` |
 | `ACCESS_TOKEN` | A passcode of your choice. The app asks for it once per session. |
 | `CORS_ORIGIN_REGEX` | `https://trl-for-angels[a-z0-9-]*\.vercel\.app` (production and preview URLs) |
-| `AGENT`, `SCREENER_ANTHROPIC_API_KEY` | Only for real research: `AGENT=claude` and the key. Leave out to stay on mocks. |
+| `AGENT` | `claude` for real web research (uses `ANTHROPIC_API_KEY`, about $0.25 a founder; caps: `AGENT_BUDGET_USD`, default $5 per restart, and `AGENT_MAX_COST_PER_FOUNDER_USD`, default $1). Leave out to stay on mocks. |
+| `ARTIFACTS_DIR`, `ANSWERER`, `DECIDER`, `KEV_URL`, `KEV_API_KEY` | The real models: `shared/artifacts`, `kev`, `kev`, the tunnel address, and the Kev server's passcode. |
 | `ELEVENLABS_API_KEY` | Voice notes' speech-to-text. Without it a recording returns a marked example transcript. |
 | `ANTHROPIC_API_KEY` | Also turns on filling the form from notes (about 1–2 cents a note on Claude Opus 5.5), even while `AGENT` stays `mock`. |
 

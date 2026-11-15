@@ -44,6 +44,7 @@ video versions that matter. `app/backend/Dockerfile.dockerignore` keeps `app/med
 | 7 | Batch mode UI: CSV upload, triage view | **Done (2026-11-14):** `/batch`, checked end to end on phone and desktop |
 | E5 | Voice notes (speech-to-text; MASTER_PLAN 8b) | **Done (2026-11-14), on example transcripts until the key is on Railway.** Record, transcribe (ElevenLabs), fill the form (Claude); typed notes too. Checked end to end in a browser with a fake microphone and the mock services. No real ElevenLabs call made yet: the onboarding's test waits for the owner's yes |
 | 8 | New screens (owner's request, 2026-11-14): first-run intro, How it works plus model card, calibration page, on-device profile ("You"), Terms and Privacy drafts, Plans mockup | **Done (2026-11-14)**, on mocks. Checked on an emulated iPhone 17 and a 1440px desktop, light and dark (`app/media/12-new-screens`) |
+| 9 | The real models (owner: "yes", 2026-11-15): base Kev answers, the production Kev decides, through TRL, per research's `docs/app_integration.md` | **Built and tested (2026-11-15)** against a fake Kev (tests) and the real models with research's real artefacts (`app/media/16-real-kev`). **Live needs:** research's `shared/artifacts/` on `app-track` (owner's call), the PC server and tunnel, and five Railway variables (README, "Deploy") |
 
 ## Next step (task 6: the owner tests on the iPhone)
 
@@ -144,6 +145,28 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   separate `--dock-accent` tokens (the on-dark blue in both): the light-mode blue measured 2.4:1 on the dock, the
   on-dark blue 7.9:1. Every text and icon pair checked at 4.5:1 or better. To go back to ink, set `--accent`,
   `--accent-hover`, `--accent-ink` and `--accent-soft` in globals.css (both dark copies too).
+- **The real models (2026-11-15, owner: "yes for both", meaning wire Kev in and switch on real research):**
+  - Built to research's `docs/app_integration.md`: both Kev calls through TRL's `LLM`/`LLMSession` (the fork,
+    pinned to `d9d1380`, the commit research exported with), TRL's cache off (nothing kept), the decider's text
+    from TRL's `answers_text`, `model.json`'s questions word for word with option descriptions, temperatures
+    applied in the backend, `KEV_URL` overriding the placeholder endpoint.
+  - **Unknown answers:** a question base Kev leaves unanswered reads `unknown` (TRL's rule); the memo's `p_yes`
+    is `null` there (contract change) and drivers skip it.
+  - **Drivers in the background:** on the real Kev each decision takes about 5 s on a CPU, so 40 flips took
+    about 3 minutes before the memo could show. Now the memo comes back with the verdict (about 14 s) and
+    `drivers_status: "pending"`; the drivers fill in three at a time, largest elastic-net weight first, once the
+    memo is first opened, and the memo page polls. A list starts a founder's drivers only when that memo opens,
+    so a long list doesn't queue hours of Kev work. Contract: optional `drivers_status` and `drivers_total`.
+  - **Bar with no data:** $1B+ within 5 years has no validation successes, so no thresholds: the bar sheet says
+    "Not enough data", the verdict says there's no bar, the memo warns, every founder shows Look closer.
+  - **Retries:** `KEV_MAX_RETRIES=1`, so a PC that's off fails a screening in seconds, with a message naming the
+    host and asking whether the server and tunnel are running.
+  - **Calibration page:** now the final test numbers for C3 (the recipe behind the app's model: 600 test
+    founders, 1 point calibration gap, 3 in 10 of its top picks succeeded), marked Final. The model card says the
+    model is honest but cautious (never above about 40%) and not more accurate than TRL's standard model.
+  - **Railway image:** TRL brings pandas, scikit-learn and scipy, about 300 MB more. It's installed from a GitHub
+    download link (no git in the slim image); this sandbox can't reach that link, so the first Railway build is
+    the real check. A failed build leaves the previous deployment running.
 - **Vercel free plan:** about 100 deployments a day. On 2026-11-14 the limit was hit (many were failed builds of
   the research branch, now skipped by the Ignored Build Step). Batch pushes to `app-track`.
 - **Voice (8b): speech-to-text only (owner, 2026-11-14).** No spoken memo briefing (E6) and no voice agent (E7):
@@ -194,14 +217,14 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
 
 ## Open items with the owner
 
-- **For the research session** (owner to relay; full list in `shared/README.md` and
-  `app/contract/README.md`, "For the research session"):
-  - confirm the proposed artefact formats in `app/contract/artifacts/`
-  - the full production request in `model.json`
-  - a TRL-faithful way to get Jev answers (for example the pickled RRF)
-  - 3 to 5 real rendered profiles from `data/raw/sample50.jsonl`
-  - counts in `thresholds.json`
-  - binary serialisation turns P(yes) = 0.5 for an unknown into "yes"
+- **For the research session:** answered on 2026-11-15 by research's real artefacts and
+  `docs/app_integration.md` (formats, the full `model.json`, Kev through TRL, `thresholds.json` counts, unknowns
+  as `unknown`). Still open: 3 to 5 real rendered profiles from `data/raw/sample50.jsonl`.
+- **Research's artefacts on `app-track`:** they're in `shared/artifacts/` on the research branch
+  (`claude/determined-albattani-dl2cyy`), which the app may not write. The owner decides how they arrive: merge the
+  research branch (into `main`, then `main` into `app-track`), or let the app session merge it into `app-track`.
+  It touches no app file (it adds `app/thresholds.json`, the three artefacts, research files and a 3-line
+  MASTER_PLAN note).
 - **MASTER_PLAN follow-ups** the owner hasn't decided on, after the 8b voice section:
   - step E3 still says voice notes are a stretch goal
   - the cut-line list doesn't place the briefing or the voice agent
@@ -218,4 +241,6 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   2026-11-14; `/health` shows `transcriber: elevenlabs`, `note_sorter: claude`). Railway only applied them after
   the staged-changes Deploy. Next: the frontend deploy, then the first real note recorded on the iPhone. The
   onboarding's own test (a short text-to-speech clip) is optional; recommended to skip it.
-- **Later keys:** TypeSafe (Jev) and the Kev endpoint, when the research outputs land.
+- **Going live with the real models (Railway variables):** `ARTIFACTS_DIR=shared/artifacts`, `ANSWERER=kev`,
+  `DECIDER=kev`, `KEV_URL=<tunnel address>`, `KEV_API_KEY=<the PC server's passcode>`. Real research:
+  `AGENT=claude` (the Claude key is already there). TypeSafe isn't needed any more.

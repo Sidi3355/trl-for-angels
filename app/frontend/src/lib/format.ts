@@ -51,6 +51,12 @@ export function percent(x: number | null | undefined, digits = 0): string {
   return `${(x * 100).toFixed(digits)}%`;
 }
 
+/** A calibration gap (0.0121 -> "1 pt", 0.03 -> "3 pts", 0.002 -> "under 1 pt"). */
+export function gapPoints(ece: number): string {
+  const v = Math.round(ece * 100);
+  return v < 1 ? "under 1 pt" : v === 1 ? "1 pt" : `${v} pts`;
+}
+
 export function points(delta: number): string {
   const v = Math.round(delta * 100);
   return `${v > 0 ? "+" : v < 0 ? "−" : "±"}${Math.abs(v)} pts`;

@@ -1,6 +1,14 @@
-"""Assemble the memo (MASTER_PLAN section 8, step 7) and compute drivers."""
+"""Assemble the memo (MASTER_PLAN section 8, step 7) and compute drivers.
+
+Drivers flip each answered question and ask the decider again. With the mock that's instant, so the memo
+carries them. With the real Kev on a CPU each decision takes seconds (about 5 s on 4 cores, so ~3 minutes for
+40), so a slow decider (`slow = True`) returns the memo with `drivers_status: "pending"` and the service
+fills them in afterwards (fill_drivers), a few at a time and most important first, while the investor reads.
+"""
 
 from __future__ import annotations
+
+import logging
 
 from .. import policy
 from ..template import UNKNOWN, render, unknown_paths
@@ -16,6 +24,8 @@ DISCLAIMER = (
     "Public information only; nothing is stored after the session."
 )
 MAX_UNKNOWNS_IN_TRAINING = 2
+DRIVER_CHUNK = 3  # flips per round trip in the background: a what-if waits behind at most this many (~15 s on a CPU)
+log = logging.getLogger("screener.memo")
 
 
 def plain(fields: dict) -> dict:
@@ -57,21 +67,54 @@ def field_flips(values: dict) -> list[tuple[str, str, dict]]:
     return flips
 
 
+def answer_flips(answer_labels: list[str], ctx: Pipeline) -> list[tuple[int, dict, str]]:
+    """(rule index, rule, flipped answer) for every answer with an opposite, most important first: by the size
+    of the rule's elastic-net weight in rules.json (rules it dropped last), then in rules.json order."""
+    rules = ctx.artifacts.rules["rules"]
+    flips = [(i, r, to) for i, r in enumerate(rules)
+             if (to := serialise.flip(answer_labels[i], ctx.artifacts.model)) is not None]
+    def importance(f):
+        coef = f[1].get("elastic_net_coef")
+        return (coef is None, -abs(coef or 0), f[0])
+    return sorted(flips, key=importance)
+
+
+async def answer_drivers(flips, answer_labels: list[str], values: dict, base: float, pol: dict,
+                         ctx: Pipeline) -> list[dict]:
+    """Ask the decider about each flip (one batch) and describe the change."""
+    inputs = []
+    for i, _, to in flips:
+        flipped = list(answer_labels)
+        flipped[i] = to
+        inputs.append({"answer_labels": flipped, "profile_text": "", "fields": values})
+    dists = await ctx.decider.decide_batch(inputs, ctx)
+    return [{"id": rule["id"], "kind": "answer", "label": rule["question"], "current": answer_labels[i],
+             "flipped": to, "distributions": d,
+             "delta": round(policy.score(d, pol["target"], pol["timeline_years"]) - base, 4)}
+            for (i, rule, to), d in zip(flips, dists)]
+
+
+async def fill_drivers(memo: dict, ctx: Pipeline) -> None:
+    """Compute a memo's pending drivers in the background, a few at a time, updating the memo as they arrive."""
+    labels = [a["answer"] for a in memo["answers"]]
+    values, pol = plain(memo["fields"]), memo["verdict"]["policy"]
+    base = policy.score(memo["distributions"], pol["target"], pol["timeline_years"])
+    flips = answer_flips(labels, ctx)
+    try:
+        for start in range(0, len(flips), DRIVER_CHUNK):
+            new = await answer_drivers(flips[start:start + DRIVER_CHUNK], labels, values, base, pol, ctx)
+            memo["drivers"] = sorted(memo["drivers"] + new, key=lambda dr: -abs(dr["delta"]))
+        memo["drivers_status"] = "complete"
+    except Exception:  # noqa: BLE001 - keep what we have; the memo says the rest failed
+        log.exception("drivers for %s stopped after %d of %d", memo["memo_id"], len(memo["drivers"]), len(flips))
+        memo["drivers_status"] = "failed"
+
+
 async def drivers(values: dict, dist: dict, answer_labels: list[str] | None, pol: dict, ctx: Pipeline) -> list[dict]:
     base = policy.score(dist, pol["target"], pol["timeline_years"])
     out = []
-    model = ctx.artifacts.model
     if answer_labels is not None:
-        for i, rule in enumerate(ctx.artifacts.rules["rules"]):
-            to = serialise.flip(answer_labels[i], model)
-            if to is None:
-                continue
-            flipped = list(answer_labels)
-            flipped[i] = to
-            d = await ctx.decider.decide(answer_labels=flipped, profile_text="", fields=values, ctx=ctx)
-            out.append({"id": rule["id"], "kind": "answer", "label": rule["question"], "current": answer_labels[i],
-                        "flipped": to, "distributions": d,
-                        "delta": round(policy.score(d, pol["target"], pol["timeline_years"]) - base, 4)})
+        out = await answer_drivers(answer_flips(answer_labels, ctx), answer_labels, values, base, pol, ctx)
     else:
         for fid, label, changes in field_flips(values):
             new = {**values, **changes}
@@ -89,7 +132,7 @@ def warnings(*, ctx: Pipeline, unknowns: list[str], conflicts: list[dict], pol: 
              founding: dict, issues: list[str] = (), redactions: list[dict] = ()) -> list[dict]:
     out = []
     if ctx.any_mock:
-        names = {"agent": "research agent", "answerer": "answerer (Jev)", "decider": "decider (Kev)"}
+        names = {"agent": "research agent", "answerer": "answerer (base Kev)", "decider": "decider (production Kev)"}
         mocked = [names[n] for n, v in ctx.components().items() if v == "mock"] + \
                  [f"{n}.json" for n in ("rules", "thresholds", "model") if ctx.artifacts.is_mock(n)]
         msg = ("Everything runs on mocks for now, so every number here is illustrative only." if len(mocked) == 6
@@ -114,9 +157,14 @@ def warnings(*, ctx: Pipeline, unknowns: list[str], conflicts: list[dict], pol: 
     if conflicts:
         out.append({"code": "conflicts_present", "message": (
             f"{len(conflicts)} of your values disagree with what the agent found. Your values were used; check the conflicts.")})
-    if policy.resolve(ctx.artifacts.thresholds, pol)["sparse"]:
+    resolved = policy.resolve(ctx.artifacts.thresholds, pol)
+    if resolved["n_positive"] == 0:
         out.append({"code": "thresholds_sparse", "message": (
-            "Few val founders reached this target and timeline, so expected precision and recall are noisy.")})
+            "No validation founder reached this target and timeline, so there's no bar to judge against and every "
+            "founder shows Look closer. Try a longer timeline or a lower target.")})
+    elif resolved["sparse"]:
+        out.append({"code": "thresholds_sparse", "message": (
+            "Few validation founders reached this target and timeline, so expected precision and recall are noisy.")})
     if pol.get("timeline_years") is not None:
         out.append({"code": "timeline_estimate", "message": (
             "With a timeline, the probability combines outcome and timeline as if they were independent, so it's an estimate.")})
@@ -137,13 +185,15 @@ async def build_memo(*, inp: dict, fields: dict, conflicts: list[dict], findings
             await emit("stage", f"Answering {len(ctx.artifacts.rule_ids)} screening questions.", stage="answering")
         p_yes = await ctx.answerer.answer(profile, values, ctx)
         answer_labels = serialise.labels(p_yes, model)
-        answers = [{"rule_id": rid, "p_yes": p, "answer": a} for rid, p, a in zip(ctx.artifacts.rule_ids, p_yes, answer_labels)]
+        answers = [{"rule_id": rid, "p_yes": serialise.p_or_none(p), "answer": a}
+                   for rid, p, a in zip(ctx.artifacts.rule_ids, p_yes, answer_labels)]
     if emit:
         await emit("stage", "Scoring outcome and timeline.", stage="deciding")
     dist = await ctx.decider.decide(answer_labels=answer_labels, profile_text=profile, fields=values, ctx=ctx)
 
     pol = policy.with_defaults(inp.get("policy"))
     verdict = policy.verdict(dist, ctx.artifacts.thresholds, pol, values)
+    deferred = answer_labels is not None and getattr(ctx.decider, "slow", False)
     if emit:
         await emit("stage", "Writing the memo.", stage="writing_memo")
     unknowns = unknown_paths(values)
@@ -169,7 +219,9 @@ async def build_memo(*, inp: dict, fields: dict, conflicts: list[dict], findings
         "decider": {"input_type": ctx.artifacts.decider_input, "model_id": model["model_id"],
                     "artifacts_dir": ctx.extra.get("artifacts_dir_label", str(ctx.artifacts.dir))},
         "answers": answers,
-        "drivers": await drivers(values, dist, answer_labels, verdict["policy"], ctx),
+        "drivers": [] if deferred else await drivers(values, dist, answer_labels, verdict["policy"], ctx),
+        "drivers_status": "pending" if deferred else "complete",
+        "drivers_total": len(answer_flips(answer_labels, ctx)) if answer_labels is not None else None,
         "what_if": {"answer_changes": "supported" if answers_mode else "unsupported",
                     "field_changes": "needs_answerer" if answers_mode else "supported"},
         "facets": policy.facets(values),

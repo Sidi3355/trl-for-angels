@@ -10,7 +10,7 @@
     "memo_id": { "$ref": "common.schema.json#/$defs/id" },
     "changes": { "$ref": "what_if_request.schema.json#/properties/changes" },
     "used_answerer": {
-      "description": "True if the change needed new answerer (Jev) calls.",
+      "description": "True if the change needed new answerer (base Kev) calls.",
       "type": "boolean"
     },
     "baseline": { "$ref": "common.schema.json#/$defs/distributions" },

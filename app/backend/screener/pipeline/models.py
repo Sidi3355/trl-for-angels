@@ -1,13 +1,14 @@
-"""The answerer (Jev) and the decider (production Kev), each with a mock and a real implementation.
+"""The answerer and the decider: the mocks here, the real Kev ones in kev.py.
 
 ANSWERER=mock / DECIDER=mock (default): the toy model in mocks/model.py, clearly not the real thing.
-ANSWERER=jev / DECIDER=kev: wired in once the keys and the real artefacts exist.
+ANSWERER=kev / DECIDER=kev: base Kev answers, the production Kev decides (pipeline/kev.py).
 """
 
 from __future__ import annotations
 
 from ..mocks.model import binary, mock_answer, mock_decide
-from .context import NotConfigured, Pipeline
+from .context import Pipeline
+from .kev import KevAnswerer, KevDecider  # noqa: F401 - re-exported for main.py
 from .serialise import binary_vector
 
 
@@ -17,19 +18,6 @@ class MockAnswerer:
     async def answer(self, profile_text: str, fields: dict, ctx: Pipeline) -> list[float]:
         """P(yes) for every rule in rules.json, in order."""
         return mock_answer(fields, ctx.artifacts.rule_ids)
-
-
-class JevAnswerer:
-    """Jev through TRL's own pipeline (rrf.answers), per the TRL fidelity rule (MASTER_PLAN 4b)."""
-    name = "jev"
-
-    def __init__(self, api_key: str | None):
-        if not api_key:
-            raise NotConfigured("ANSWERER=jev needs TYPESAFE_API_KEY")
-        raise NotConfigured("ANSWERER=jev arrives with the real rules.json and the research session's TRL hook")
-
-    async def answer(self, profile_text: str, fields: dict, ctx: Pipeline) -> list[float]:  # pragma: no cover
-        raise NotImplementedError
 
 
 class MockDecider:
@@ -42,18 +30,6 @@ class MockDecider:
             return mock_decide(binary_vector(answer_labels), ids)
         return mock_decide(binary(mock_answer(fields, ids)), ids)
 
-
-class KevDecider:
-    """The production Kev at model.json's endpoint (kev.serve's /v1/systemone)."""
-    name = "kev"
-
-    def __init__(self, api_key: str | None, model: dict):
-        auth = model["endpoint"]["auth"]
-        if auth["type"] != "none" and not api_key:
-            raise NotConfigured(f"DECIDER=kev: model.json says the endpoint needs a key in {auth.get('env_var', 'KEV_API_KEY')}")
-        if model.get("mock"):
-            raise NotConfigured("DECIDER=kev needs the real model.json (ARTIFACTS_DIR=shared/artifacts)")
-        raise NotConfigured("DECIDER=kev arrives once the research session confirms kev.serve's response format")
-
-    async def decide(self, *, answer_labels, profile_text, fields, ctx) -> dict:  # pragma: no cover
-        raise NotImplementedError
+    async def decide_batch(self, inputs: list[dict], ctx: Pipeline) -> list[dict]:
+        return [await self.decide(answer_labels=i.get("answer_labels"), profile_text=i.get("profile_text", ""),
+                                  fields=i.get("fields", {}), ctx=ctx) for i in inputs]

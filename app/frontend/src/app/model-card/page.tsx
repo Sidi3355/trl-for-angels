@@ -68,10 +68,19 @@ export default function ModelCardPage() {
             ],
             [
               "What it reads",
-              "Either TRL's answers to its 40 best questions, or the anonymised profile itself: whichever predicted better on the validation founders.",
+              "TRL's answers to its 40 best questions. Reading the anonymised profile directly did as well on the validation founders; the answers were chosen because they gave slightly better-calibrated odds there, and they let the memo show which questions drive each verdict.",
             ],
             ["Calibration", "One temperature per question, fitted on the validation founders, so a 30% means about 3 in 10."],
-            ["Status", "Being trained (November 2026). Until it's plugged in, the app shows example scores."],
+            [
+              "Status",
+              <>
+                The yes/no version is trained and tested:{" "}
+                <Link href="/calibration" className={linkClass}>
+                  its scores on 600 test founders
+                </Link>
+                . The app&apos;s version, which also predicts the outcome band and timing, is training now (November 2026). Until it&apos;s plugged in, the app shows example scores.
+              </>,
+            ],
           ]}
         />
       </section>
@@ -128,6 +137,7 @@ export default function ModelCardPage() {
             "Mostly generated data: 2,950 of the 3,000 outcomes come from a scoring rule plus noise, so the model learns that rule, not real founder dynamics. No real-world accuracy is claimed; VCBench is the intended real test.",
             "Timing is weak: in the generated data, years to outcome depend only on the outcome band, so the timeline control is an estimate.",
             "Few successes to learn from: 400 in training and 120 in the test set, so every score comes with wide uncertainty.",
+            "Honest but cautious: on the test founders its odds were the best calibrated of every method tried, but it never gave anyone more than 40%, so it singles out few founders. It was not more accurate than TRL's standard model.",
             "Real research is messier than training: profiles found on the web have more unknowns than the training profiles.",
             "Kev answers TRL's questions instead of Jev, TRL's usual answerer, and reads the 40 best questions rather than all of them, to fit free GPUs.",
             "It can be confidently wrong about one person: a percentage describes founders like this one, not this founder.",

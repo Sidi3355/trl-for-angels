@@ -1,68 +1,47 @@
 {
-  "status": "provisional",
-  "updated": "2026-11-14",
-  "model": "TRL's standard model (RRF, elastic net)",
-  "model_note": "Halomark's own model, a fine-tuned Kev, is still being trained. Its numbers will replace these, and the final ones come from 600 test founders that no model has seen.",
-  "split": "val",
-  "founders": 400,
-  "successes": 80,
+  "status": "final",
+  "updated": "2026-11-15",
+  "model": "Fine-tuned Kev reading TRL's answers (C3)",
+  "model_note": "The recipe behind Halomark's model: Kev, fine-tuned on 2,000 founders, reading the answers to TRL's 40 questions. These are its scores on 600 test founders it never learned from or was tuned on, for the yes/no question ($500M or more). Halomark's own version, trained the same way, also predicts the outcome band and timing.",
+  "split": "test",
+  "founders": 600,
+  "successes": 120,
   "target": "$500M+",
   "base_rate": 0.2,
-  "ece": 0.03,
-  "brier": 0.1427,
-  "precision": 0.5556,
-  "recall": 0.25,
+  "ece": 0.0121,
+  "brier": 0.1555,
+  "precision": 0.3333,
+  "recall": 0.1,
   "flagged": 36,
   "bins": [
     {
       "low": 0.0,
       "high": 0.1,
-      "count": 119,
-      "predicted": 0.0647,
-      "observed": 0.0756
+      "count": 99,
+      "predicted": 0.0715,
+      "observed": 0.0909
     },
     {
       "low": 0.1,
       "high": 0.2,
-      "count": 140,
-      "predicted": 0.1442,
-      "observed": 0.1643
+      "count": 218,
+      "predicted": 0.1504,
+      "observed": 0.1651
     },
     {
       "low": 0.2,
       "high": 0.3,
-      "count": 74,
-      "predicted": 0.2468,
-      "observed": 0.2838
+      "count": 238,
+      "predicted": 0.2524,
+      "observed": 0.2479
     },
     {
       "low": 0.3,
       "high": 0.4,
-      "count": 35,
-      "predicted": 0.3325,
-      "observed": 0.2571
-    },
-    {
-      "low": 0.4,
-      "high": 0.5,
-      "count": 18,
-      "predicted": 0.4493,
-      "observed": 0.5556
-    },
-    {
-      "low": 0.5,
-      "high": 0.6,
-      "count": 12,
-      "predicted": 0.5639,
-      "observed": 0.5833
-    },
-    {
-      "low": 0.6,
-      "high": 0.7,
-      "count": 2,
-      "predicted": 0.6801,
-      "observed": 0.5
+      "count": 45,
+      "predicted": 0.332,
+      "observed": 0.3556
     }
   ],
-  "source": "results/summary/b3-provisional on the research branch (condition C1a, validation split, threshold tuned on validation)"
+  "source": "results/summary/d1-final (C3, test) on the research branch"
 }
