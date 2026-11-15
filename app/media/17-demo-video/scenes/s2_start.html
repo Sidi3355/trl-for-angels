@@ -8,7 +8,6 @@
   .hl { font-size: 150px; margin-top: 34px; }
   .sub { margin-top: 40px; width: 860px; }
   .slip { position: absolute; left: 96px; top: 596px; width: 860px; }
-  #real { top: 440px; transform: rotate(-5deg); }
 </style>
 </head>
 <body>
@@ -25,7 +24,6 @@
       <div class="r"><span class="label">Company</span><span class="v">Calendly</span></div>
       <div class="r"><span class="label">As of</span><span class="v">The day he founded it</span></div>
     </div>
-    <div class="tag sidetag" id="real">The real app</div>
   </div>
   <div id="phone-slot"></div>
 </div>
@@ -41,7 +39,6 @@ HM.scene({
     HM.fade('#eb', 0.2);
     HM.set('.hl .w', 0.6, { dy: 60, dur: 0.42, stagger: 0.2 });   // "Type a name"
     HM.set('#sub', 1.56, { dur: 0.5 });                          // "or share a LinkedIn profile"
-    HM.strike('#real', 3.0, { rot: -5 });
     HM.wipe('#slip', 4.65, { dir: 'down', dur: 0.5 });            // "Here's Tope Awotona"
     HM.set(document.querySelectorAll('#slip .v')[0], 4.95, { dy: 24, dur: 0.4 });
     HM.set(document.querySelectorAll('#slip .v')[2], 6.25, { dy: 24, dur: 0.4 });   // "on the day he founded"
