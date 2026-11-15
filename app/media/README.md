@@ -284,6 +284,23 @@ How it works, two new sections (owner's request): **Why names are removed** (wha
 - `*-light-full`: the whole page
 - **Sent:** `desktop-light-built-on-trl`, `phone-light-why-names`
 
+## 19-showcase (2026-11-15, 11:20) · Current
+
+The owner's pick of 15 showcase images (asked for "up to 15 of the best images to showcase, desktop and iPhone, range of features"). iPhone shots 01–09 are frames from the demo video's recording of the real app on the real models with a real founder (Tope Awotona: live research, Kev's verdict); 10–15 are fresh captures of the current app (example founders, whose verdicts are the real Kev's saved answers). iPhone at 2× (804×1748), desktop 1440×900 at 2×.
+- `01-iphone-type-a-name`: the dashboard, typing a founder's name
+- `02-iphone-live-research`: research done, 8 sources and 9 facts, answering the questions
+- `03-iphone-verdict-meet-31`: Tope Awotona, Meet, 31% against 20% for all founders
+- `04-iphone-your-bar`: the bar sheet at $1B+, 8 years, bold, with what that bar means
+- `05-iphone-what-moves-the-score`: the factors, each answer's effect in points
+- `06-iphone-what-if`: one answer flipped: Look closer, 25%, was 31%
+- `07-iphone-what-the-model-reads`: the anonymised profile Kev reads
+- `08-iphone-voice-note`: a voice note transcribed and filling the form
+- `09-iphone-screen-a-list`: a list triaged into Meet, Look closer and Pass
+- `10-iphone-dark-pass`: dark mode, a Pass at 11%
+- `11-desktop-dashboard`, `12-desktop-memo`, `13-desktop-dark-memo`, `14-desktop-calibration`, `15-desktop-built-on-trl`
+- `fresh/`: the fresh captures as taken (including `phone-dark-dashboard`, not in the 15)
+- **Sent:** all 15
+
 ## tools
 
 - `record-walkthrough.cjs`: the script that recorded v3 and v4, with the ffmpeg command in its header, so the video can be re-shot after design changes
