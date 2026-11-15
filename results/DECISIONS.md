@@ -514,3 +514,35 @@ while doing the work: date, decision, reason, evidence. Newest last.
 - **Cost of the choice:** D3 takes about 2 hours instead of 25 minutes, and the app asks the
   Kev answerer 40 questions per founder before deciding.
 - **Chosen by:** the owner, from these numbers (C3, the recommended option).
+
+## 2026-11-15 · D3 · Production model trained; its val predictions asked without the options' descriptions, so redone
+
+- **Run:** `runs/20261114-224030-d_prod` on the `kaggle-results` branch, repo commit `d5a461a`,
+  22:40–01:56 UTC (3 h 16 min), fp32 on a T4, finished with exit 0.
+- **Training (C3's input, the two choice questions `outcome` and `years`):** from
+  `jaredpalmer/kev-0.6b`, lr 2e-5, batch 8, 2 epochs of 250 steps (87 min each: two questions
+  per founder), `--max_state 4096`. Kev's own val evaluation (400 founders × 2 questions, with the
+  options' descriptions, as trained): mean log-loss 2.010 (released Kev) → 1.172 (epoch 1) →
+  1.163 (epoch 2, chosen) → 1.161 calibrated. Temperatures: outcome 1.149, years 0.871 (below 1:
+  the years answers were too cautious, so they are sharpened). Val ECE 0.027 → 0.021, so the "done
+  when" checks pass. Saved to Hugging Face:
+  [Sidi3355/trl-for-angels-kev-prod](https://huggingface.co/Sidi3355/trl-for-angels-kev-prod)
+  (weights at commit `fc8409c`; `report.json` added at `f1bb43f`).
+- **Found:** the run's val distributions (`prod_val.csv`, the input to D4) were asked through
+  TRL, whose System One adapter always sent a choice question's options with **empty
+  descriptions** (`criteria: {"shut down": null, ...}`), while the model was trained, and its
+  temperatures fitted, with the descriptions (`"shut down": "the company closed"`, ...). Caught by
+  serving the published checkpoint on CPU and asking 3 val founders exactly as the app will (from
+  `model.json`): the answers differed from Kaggle's by up to 0.18. Asked without descriptions, they
+  matched Kaggle's to 0.00007, so the checkpoint is right and only the request differed. The
+  symptom was already visible in the band check: on average 35% "shut down" against 50% actual.
+- **Research results are not affected:** C3, C4 and EXTRA ask one yes/no question, which has no
+  options. Their TRL-scored val log-loss equals Kev's own evaluation (C3 0.4542 and 0.4542; C4
+  0.4598 and 0.4599).
+- **Fix:** the TRL fork's `ChoiceQuestion` takes optional `descriptions`, sent as System One
+  criteria, and part of the cache key only when given (fork commit `d9d1380`, with tests; ruff,
+  pyright and pytest pass). `research/kev_predict.py` now passes them. The 400 val founders are
+  being rescored through TRL, on CPU in the development container, from the Hugging Face
+  checkpoint (fp32, the same numbers as the T4 to 0.0001). Kaggle's file is kept as
+  `data/predictions/prod_val_no_descriptions.csv` (not used), and the D4 table, built from it
+  first and never published, was deleted.

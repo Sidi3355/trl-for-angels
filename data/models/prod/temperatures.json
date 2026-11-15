@@ -1,0 +1,10 @@
+{
+  "global": 1.109569472067845,
+  "per_question": {
+    "outcome": 1.148698354997035,
+    "years": 0.8705505632961241
+  },
+  "fitted_on": "val",
+  "method": "min NLL, micro, kev.metrics.fit_temperature",
+  "apply": "serve raw (KEV_TEMPERATURE=1.0), then p^(1/T) renormalised per question"
+}

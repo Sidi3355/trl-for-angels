@@ -41,7 +41,7 @@ Window 1, in this folder:
 
 ```powershell
 $env:KEV_API_KEY = "<your passcode>"            # the same passcode the app's backend has
-$env:DECIDER_MODEL = "<hf user>/trl-for-angels-kev-prod"   # once the production model exists
+$env:DECIDER_MODEL = "Sidi3355/trl-for-angels-kev-prod"   # the production model (D3)
 uv run python serve.py
 ```
 

@@ -68,7 +68,7 @@ def prod_distributions(url: str, states: list[str], temperatures: dict[str, floa
     from think_reason_learn.llm._spec import resolve
 
     endpoint = resolve(kev_llm(url, "kev-prod"))
-    questions = {qid: ChoiceQuestion(text, tuple(options))
+    questions = {qid: ChoiceQuestion(text, tuple(options), tuple(options.values()))
                  for qid, (text, options) in PROD_QUESTIONS.items()}
 
     async def ask():

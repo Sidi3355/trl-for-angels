@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-14",
+  "updated": "2026-11-15",
   "trl": {
     "upstream": "https://github.com/Vela-Research/think-reason-learn",
     "fork": "https://github.com/Sidi3355/think-reason-learn",
@@ -14,7 +14,11 @@
       "ruff_format": "84 files already formatted",
       "pyright": "0 errors, 0 warnings"
     },
-    "branch_head": "ddf3518 (decision combiner, B5b)"
+    "branch_head": "d9d1380 (ChoiceQuestion descriptions, D3 fix); ddf3518 (decision combiner, B5b)",
+    "commits": {
+      "ddf3518": "RRF combiner='decision' (B5b)",
+      "d9d1380": "ChoiceQuestion: optional label descriptions, sent as System One criteria (D3)"
+    }
   },
   "environment": {
     "python": "3.13.18",
@@ -203,6 +207,47 @@
           "test": 46
         }
       }
+    },
+    "d_prod": {
+      "run": "runs/20261114-224030-d_prod",
+      "repo_commit": "d5a461a",
+      "started_utc": "2026-11-14T22:40:30Z",
+      "finished_utc": "2026-11-15T01:56:49Z",
+      "input": "c3 (TRL's 40 answers as text), chosen at D2",
+      "questions": [
+        "outcome (5 bands)",
+        "years (3 bands)"
+      ],
+      "epoch_seconds": [
+        5238.8,
+        5238.2
+      ],
+      "steps_per_epoch": 250,
+      "peak_device_mib": 7723,
+      "gradient_checkpointing": true,
+      "val_nll_per_question_mean": {
+        "released": 2.0096,
+        "ep1": 1.1715,
+        "ep2": 1.163,
+        "ep2_calibrated": 1.1615
+      },
+      "val_top_choice_accuracy": {
+        "released": 0.125,
+        "ep2": 0.48875
+      },
+      "chosen": "ep2",
+      "temperatures": {
+        "global": 1.1096,
+        "outcome": 1.1487,
+        "years": 0.8706
+      },
+      "val_ece_raw_to_calibrated": [
+        0.0272,
+        0.0206
+      ],
+      "note_val_metrics": "Kev's own evaluation on 400 val founders x 2 questions (n=800), with the options' descriptions, as trained",
+      "hf": "Sidi3355/trl-for-angels-kev-prod@fc8409c7510dbd1fc360eee40fd1da2bfdce4f7b (weights); f1bb43f8f1939cf67179bc68ab3e82c759817918 (report.json added)",
+      "val_predictions_kaggle": "asked through TRL without the options' descriptions (TRL sent empty criteria); kept as data/predictions/prod_val_no_descriptions.csv, not used"
     }
   },
   "rrf_fit": {
