@@ -1,0 +1,90 @@
+\begin{thebibliography}{15}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Brier(1950)]{brier1950}
+Glenn~W. Brier.
+\newblock Verification of forecasts expressed in terms of probability.
+\newblock \emph{Monthly Weather Review}, 78\penalty0 (1):\penalty0 1--3, 1950.
+
+\bibitem[Chen \& Guestrin(2016)Chen and Guestrin]{chen2016xgboost}
+Tianqi Chen and Carlos Guestrin.
+\newblock {XGBoost}: A scalable tree boosting system.
+\newblock In \emph{ACM SIGKDD International Conference on Knowledge Discovery
+  and Data Mining}, 2016.
+
+\bibitem[Efron \& Tibshirani(1993)Efron and Tibshirani]{efron1993bootstrap}
+Bradley Efron and Robert~J. Tibshirani.
+\newblock \emph{An Introduction to the Bootstrap}.
+\newblock Chapman \& Hall, 1993.
+
+\bibitem[Guo et~al.(2017)Guo, Pleiss, Sun, and Weinberger]{guo2017calibration}
+Chuan Guo, Geoff Pleiss, Yu~Sun, and Kilian~Q. Weinberger.
+\newblock On calibration of modern neural networks.
+\newblock In \emph{International Conference on Machine Learning}, 2017.
+
+\bibitem[Hu et~al.(2022)Hu, Shen, Wallis, Allen-Zhu, Li, Wang, Wang, and
+  Chen]{hu2022lora}
+Edward~J. Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean
+  Wang, Lu~Wang, and Weizhu Chen.
+\newblock {LoRA}: Low-rank adaptation of large language models.
+\newblock In \emph{International Conference on Learning Representations}, 2022.
+
+\bibitem[Koh et~al.(2020)Koh, Nguyen, Tang, Mussmann, Pierson, Kim, and
+  Liang]{koh2020concept}
+Pang~Wei Koh, Thao Nguyen, Yew~Siang Tang, Stephen Mussmann, Emma Pierson, Been
+  Kim, and Percy Liang.
+\newblock Concept bottleneck models.
+\newblock In \emph{International Conference on Machine Learning}, 2020.
+
+\bibitem[Naeini et~al.(2015)Naeini, Cooper, and Hauskrecht]{naeini2015ece}
+Mahdi~Pakdaman Naeini, Gregory~F. Cooper, and Milos Hauskrecht.
+\newblock Obtaining well calibrated probabilities using {B}ayesian binning.
+\newblock In \emph{AAAI Conference on Artificial Intelligence}, 2015.
+
+\bibitem[Palmer(2026)]{kev}
+Jared Palmer.
+\newblock {Kev}: an open reconstruction of a {System One} decision model.
+\newblock \url{https://github.com/jaredpalmer/kev}, 2026.
+\newblock Apache-2.0.
+
+\bibitem[{Qwen Team}(2025)]{qwen3}
+{Qwen Team}.
+\newblock {Qwen3} technical report.
+\newblock arXiv:2505.09388, 2025.
+
+\bibitem[Saito \& Rehmsmeier(2015)Saito and Rehmsmeier]{saito2015prc}
+Takaya Saito and Marc Rehmsmeier.
+\newblock The precision-recall plot is more informative than the {ROC} plot
+  when evaluating binary classifiers on imbalanced datasets.
+\newblock \emph{PLoS ONE}, 10\penalty0 (3):\penalty0 e0118432, 2015.
+
+\bibitem[{TypeSafe}(n.d.)]{jev}
+{TypeSafe}.
+\newblock {Jev}, the ``{System One}'' decision model {API}, n.d.
+
+\bibitem[{Vela Research}(2026)]{trl}
+{Vela Research}.
+\newblock {Think Reason Learn (TRL)}, version 0.3.0.
+\newblock \url{https://github.com/Vela-Research/think-reason-learn}, 2026.
+
+\bibitem[{Vela Research}(n.d.{\natexlab{a}})]{trlresearch}
+{Vela Research}.
+\newblock Papers behind {Think, Reason, Learn}, including {Random Rule Forest}.
+\newblock \url{https://thinkreasonlearn.com/research}, n.d.{\natexlab{a}}.
+
+\bibitem[{Vela Research}(n.d.{\natexlab{b}})]{vcbench}
+{Vela Research}.
+\newblock {VCBench}.
+\newblock \url{https://vcbench.com}, n.d.{\natexlab{b}}.
+
+\bibitem[Zou \& Hastie(2005)Zou and Hastie]{zou2005elasticnet}
+Hui Zou and Trevor Hastie.
+\newblock Regularization and variable selection via the elastic net.
+\newblock \emph{Journal of the Royal Statistical Society: Series B},
+  67\penalty0 (2):\penalty0 301--320, 2005.
+
+\end{thebibliography}

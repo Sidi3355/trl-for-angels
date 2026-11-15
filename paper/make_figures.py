@@ -26,11 +26,14 @@ import matplotlib  # noqa: E402
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
+# Liberation Serif (Times metrics, TrueType so it embeds cleanly) matches the body font.
+
 OUT = ROOT / "paper" / "figures"
 INK, INK_2, GRID = "#0b0b0b", "#52514e", "#e4e3df"
 NAMES = {k: v[0] for k, v in E.CONDITIONS.items()}
 plt.rcParams.update({
-    "font.family": "serif", "font.serif": ["Latin Modern Roman", "DejaVu Serif"],
+    "font.family": "serif", "font.serif": ["Liberation Serif", "DejaVu Serif"],
+    "mathtext.fontset": "stix",
     "font.size": 8, "axes.titlesize": 8.5, "axes.labelsize": 8, "xtick.labelsize": 7.5,
     "ytick.labelsize": 7.5, "legend.fontsize": 7, "axes.edgecolor": INK_2,
     "axes.labelcolor": INK, "xtick.color": INK_2, "ytick.color": INK_2, "pdf.fonttype": 42,
@@ -55,7 +58,7 @@ def fig_paired():
              ("C3", "C1a-40"), ("C3", "CTRL"), ("C3", "C4"), ("C3", "C2"), ("C4", "EXTRA")]
     metrics = [("f05", "F0.5 (higher is better)"), ("pr_auc", "PR-AUC (higher is better)"),
                ("ece", "ECE (lower is better)")]
-    fig, axes = plt.subplots(1, 3, figsize=(6.9, 3.0), sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(5.5, 2.75), sharey=True)
     y = np.arange(len(pairs))[::-1]
     for ax, (k, title) in zip(axes, metrics):
         for yi, pr in zip(y, pairs):
@@ -80,7 +83,7 @@ def fig_paired():
 def fig_scores():
     preds = E.read_predictions(ROOT / "data" / "predictions")
     conds = ["c1a", "ctrl", "c1b", "c2", "extra", "c3", "c4"]
-    fig, ax = plt.subplots(figsize=(3.35, 2.7))
+    fig, ax = plt.subplots(figsize=(2.7, 2.6))
     rng = np.random.default_rng(0)
     for i, c in enumerate(conds[::-1]):
         d = preds[(c, "test")]
@@ -107,7 +110,7 @@ def fig_oracle():
     rows = read_csv(ROOT / "results/summary/d1-final/oracle.csv")
     order = ["oracle", "C1a", "CTRL", "C1a-40", "C3", "C4", "C2", "EXTRA", "C1b"]
     by = {r["condition"]: r for r in rows}
-    fig, ax = plt.subplots(figsize=(3.35, 2.5))
+    fig, ax = plt.subplots(figsize=(2.7, 2.6))
     y = np.arange(len(order))[::-1]
     pos = int(rows[0]["positives"]) / int(rows[0]["n_test"])
     for yi, c in zip(y, order):
@@ -130,7 +133,7 @@ def fig_oracle():
 
 def fig_reliability():
     preds = E.read_predictions(ROOT / "data" / "predictions")
-    fig, axes = plt.subplots(1, 2, figsize=(6.9, 3.0), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(5.5, 2.75), sharey=True)
     panels = [("Reading TRL's answers", ["c1a", "c2", "c3"]),
               ("Reading the founder profile", ["extra", "c4"])]
     for ax, (title, conds) in zip(axes, panels):
@@ -162,7 +165,7 @@ def fig_reliability():
 
 def fig_bands():
     rows = read_csv(ROOT / "results/experiments/04_production_model/d3-val/band_shares.csv")
-    fig, axes = plt.subplots(1, 2, figsize=(6.9, 2.4), gridspec_kw={"width_ratios": [5, 3]})
+    fig, axes = plt.subplots(1, 2, figsize=(5.5, 2.2), gridspec_kw={"width_ratios": [5, 3]})
     series = [("actual", "Actual share", INK_2), ("with_descriptions", "Asked as trained",
               "#2a78d6"), ("without_descriptions", "Options sent without descriptions",
               "#eb6834")]
