@@ -580,3 +580,15 @@ while doing the work: date, decision, reason, evidence. Newest last.
   as `model.json` describes (questions, descriptions, raw server, temperatures applied by the
   client), reproduces `data/predictions/prod_val.csv` exactly for the three val founders
   checked.
+
+## 2026-11-15 · Paper · Ceiling reference and the preprint
+
+- **Ceiling (`research/oracle.py`):** the generator, rerun with `--meta`, reproduces
+  `data/raw/full.jsonl` byte for byte and gives each synthetic row its noise-free background
+  score. Ranked by it, the 587 synthetic test founders give PR-AUC 0.328 (CI 0.282–0.392) and
+  F0.5 0.361 (threshold tuned on val). On the same founders: C1a 0.304, CTRL 0.305, C3 0.277.
+  A reference only, computed after D1; nothing is selected with it
+  (`results/summary/d1-final/oracle.{csv,md}`).
+- **Preprint:** `paper/main.tex` and `paper/main.pdf` (LaTeX, built with `latexmk -pdf`), with
+  figures from `paper/make_figures.py`, all from committed results. Author and affiliation are
+  placeholders for the owner to fill in.

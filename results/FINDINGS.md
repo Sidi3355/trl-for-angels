@@ -88,6 +88,12 @@ over-tuned.
 
 - Plot: `summary/d1-final/plots/reliability_c1a_vs_c1b_vs_ctrl_test.png`.
 
+**How much better could any model do?** Because the synthetic outcomes come from a known rule,
+the rule's own noise-free score is close to the best possible predictor. On the 587 synthetic
+test founders it reaches PR-AUC 0.328 (CI 0.282–0.392); the elastic net reaches 0.304, about 93%
+of it, and XGBoost 0.305. So there was little headroom for any learn stage to find
+([summary/d1-final/oracle.md](summary/d1-final/oracle.md), `research/oracle.py`).
+
 ## Also measured
 
 - **The paper's vote isn't a probability.** C1b ranks about as well as the elastic net on F0.5
