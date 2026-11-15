@@ -26,7 +26,7 @@ window.HM_CLIPS = {
   "placeholder": true
  },
  "c4_verdict": {
-  "frames": 141,
+  "frames": 126,
   "fps": 30,
   "speed": 1,
   "placeholder": true

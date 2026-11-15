@@ -66,5 +66,6 @@ function assemble() {
   const queue = [...todo];
   await Promise.all([0, 1, 2].map(async () => { while (queue.length) await renderScene(browser, queue.shift()); }));
   await browser.close();
-  if (!only.length) assemble();
+  // join the video whenever every scene has been rendered (a partial re-render re-joins too)
+  if (manifest.every((s) => fs.existsSync(path.join(BUILD, `${s.id}.mp4`)))) assemble();
 })().catch((e) => { console.error('CRASH', e.message); process.exit(1); });

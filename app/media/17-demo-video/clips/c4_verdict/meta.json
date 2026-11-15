@@ -1,13 +1,13 @@
 {
- "frames": 141,
+ "frames": 126,
  "fps": 30,
  "speed": 1.0,
- "seconds": 4.7,
- "source_seconds": 4.7,
+ "seconds": 4.2,
+ "source_seconds": 4.2,
  "segments": [
   {
    "seg": "c4_verdict",
-   "from": 0.0,
+   "from": 0.5,
    "to": 4.69
   }
  ]

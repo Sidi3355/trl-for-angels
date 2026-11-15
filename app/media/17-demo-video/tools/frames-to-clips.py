@@ -28,7 +28,7 @@ CLIPS = {
     "c1_type": {"segments": ["c1_type", {"seg": "c2_research", "to": 4.6}]},  # typing, then the research starting
     "c2_research": {"segments": [{"seg": "c2_research", "from": 4.6}], "fit_s": 12.6},
     "c3_profile": {"segments": [{"seg": "c3_profile", "from": 2.2}]},
-    "c4_verdict": {"segments": ["c4_verdict"]},
+    "c4_verdict": {"segments": [{"seg": "c4_verdict", "from": 0.5}]},  # from the verdict landing, not the page loading
     "c5_bar": {"segments": ["c5_bar"]},
     "c6_whatif": {"segments": ["c6a_factors", "c6b_whatif"]},
     "c7_list": {"segments": [{"seg": "c7_list", "tail": 2.6}]},
