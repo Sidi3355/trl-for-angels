@@ -53,15 +53,30 @@ body {
 .label { font-stretch: 125%; font-weight: 700; font-size: 15px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
 .col { position: absolute; left: var(--m); top: 150px; width: 1020px; }
 
-/* the phone: a plain slab, hard offset shadow like a printed block */
-.phone { position: absolute; left: 1296px; top: 132px; width: 432px; height: 918px; background: #0e0f0e;
-  border-radius: 58px; padding: 12px; box-shadow: 20px 20px 0 var(--line-strong); }
-.phone .screen { clip-path: inset(0 round 46px); position: relative; width: 408px; height: 887px; margin: 3.5px 0 0 0; overflow: hidden; background: var(--paper); }
-.phone .screen img { will-change: transform, clip-path; position: absolute; left: 0; top: 0; width: 100%; height: auto; display: block; }
-.phone .ph-tag { position: absolute; left: 0; right: 0; bottom: 0; height: 196px; display: none; align-items: center; justify-content: center;
-  text-align: center; background: var(--surface-3); color: var(--muted); font-stretch: 125%; font-weight: 700; font-size: 13px; letter-spacing: .14em;
+/* the phone: a plain slab with a hard offset shadow, like a printed block. Screen 446 x 1018: a 48px status bar
+   (time, island, signal, wi-fi, battery) and the app footage (804 x 1748, shown at 446 x 970) below it. */
+.rig { position: absolute; left: 1322px; top: 21px; width: 466px; height: 1038px; transform-origin: 0 0; z-index: 5; }
+.phone { position: absolute; inset: 0; background: #0e0f0e; border-radius: 62px; padding: 10px; box-shadow: 13px 13px 0 var(--line-strong); }
+.phone .screen { clip-path: inset(0 round 52px); position: relative; width: 446px; height: 1018px; overflow: hidden; background: #eeeeea; }
+.phone .status { position: absolute; left: 0; top: 0; width: 446px; height: 48px; background: #eeeeea; color: #0e0f0e; }
+.phone .status .time { position: absolute; left: 44px; top: 17px; font-size: 17px; font-weight: 650; letter-spacing: -.01em; line-height: 1; }
+.phone .status .island { position: absolute; left: 164px; top: 11px; width: 118px; height: 32px; border-radius: 16px; background: #0e0f0e; }
+.phone .status svg { position: absolute; right: 36px; top: 17px; width: 74px; height: 16px; }
+.phone .foot { position: absolute; left: 0; top: 48px; width: 446px; height: 970px; }
+.phone .foot img { will-change: transform, clip-path; position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; object-position: top center; display: block; }
+.phone .ph-tag { position: absolute; left: 0; right: 0; bottom: 0; height: 190px; display: none; align-items: center; justify-content: center;
+  text-align: center; background: #e3e3de; color: #5b5e5a; font-stretch: 125%; font-weight: 700; font-size: 13px; letter-spacing: .14em;
   text-transform: uppercase; line-height: 1.6; }
 .phone.is-placeholder .ph-tag { display: flex; }
+
+/* full-frame sheets that wipe across at the joins between scenes */
+.sheet-x { position: absolute; inset: 0; z-index: 60; }
+.sheet-x.ink { background: #0e0f0e; }
+.sheet-x.paper { background: #eeeeea; }
+/* everything left of the phone that leaves before a cut */
+.left { position: absolute; left: 0; top: 0; width: 1300px; height: 1080px; }
+/* the running head stops short of the phone in the app scenes */
+.head.short { right: 646px; }
 
 /* cut-corner tags (the hallmark punch shape), outlined: a blue block with a paper block set inside it */
 .tag { --c: 12px; position: absolute; isolation: isolate; display: inline-block; padding: 13px 22px 12px; font-stretch: 125%; font-weight: 800;
@@ -78,15 +93,14 @@ body {
 .tear { height: 0; border-top: 3px dashed var(--line-strong); }
 
 /* captions: bottom left, clear of the phone */
-#cap { position: absolute; left: var(--m); bottom: 58px; width: 1040px; min-height: 96px; display: flex; flex-direction: column; justify-content: flex-end; }
+#cap { position: absolute; left: var(--m); bottom: 58px; width: 850px; z-index: 4; min-height: 96px; display: flex; flex-direction: column; justify-content: flex-end; }
 #cap .bar { width: 48px; height: 5px; background: var(--brand); margin-bottom: 16px; }
 #cap .txt { text-wrap: balance; font-size: 35px; line-height: 1.26; font-weight: 560; letter-spacing: -.008em; color: var(--faint); }
 #cap .txt .said { color: var(--ink); }
 #cap.off { visibility: hidden; }
 
 /* app scenes: the left column */
-.phone-note { position: absolute; left: 1296px; top: 92px; width: 432px; text-align: center; }
-.sidetag { right: 652px; }
+.sidetag { right: 634px; }
 .kicker { margin-bottom: 26px; }
 .items { list-style: none; }
 .slip { background: var(--surface); border: 3px solid var(--ink); }

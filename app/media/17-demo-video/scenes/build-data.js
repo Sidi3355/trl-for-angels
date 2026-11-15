@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..');
 const script = JSON.parse(fs.readFileSync(path.join(root, 'script.json'), 'utf8'));
-const MAX = 78; // characters per caption cue (wraps to at most two lines at the caption width)
+const MAX = 84; // characters per caption cue (wraps to at most two lines at the caption width)
 
 function words(al) {
   const out = [];

@@ -176,7 +176,7 @@
   function clipSrc(c, t) {
     var m = c.meta;
     if (m && m.frames > 0) {
-      var i = Math.floor((t - c.from) * (m.fps || 30) + 1e-6) + 1;
+      var i = Math.floor((t - c.from + (c.offset || 0)) * (m.fps || 30) + 1e-6) + 1;
       i = Math.max(1, Math.min(m.frames, i));
       return '../clips/' + c.name + '/' + pad(i) + '.jpg';
     }
@@ -225,7 +225,7 @@
     for (var i = 0; i < cues.length; i++) {
       var c = cues[i], start = c[0].s - 0.12, end = c[c.length - 1].e;
       var next = i + 1 < cues.length ? cues[i + 1][0].s - 0.12 : Infinity;
-      var until = Math.min(next, end + 0.7); // hold a little after the last word, never into the next cue
+      var until = Math.min(next, end + 0.4); // hold a little after the last word, never into the next cue
       if (tv >= start && tv < until) { idx = i; break; }
     }
     if (idx !== capCue) {
@@ -243,25 +243,58 @@
     }
   }
 
+  /* The phone: built into <div id="phone-slot">. .rig takes the zooms, .phone the slide in and out. */
+  function buildPhone(clips) {
+    var slot = el('#phone-slot');
+    var h = '<div class="rig" id="rig"><div class="phone" id="phone"><div class="screen">' +
+      '<div class="foot">' + clips.map(function (c, i) { return '<img id="clip-' + i + '" alt="">'; }).join('') + '<div class="ph-tag"></div></div>' +
+      '<div class="status"><span class="time">9:41</span><span class="island"></span>' +
+      '<svg viewBox="0 0 74 16"><g fill="#0e0f0e">' +
+      '<rect x="0" y="10" width="3.4" height="5" rx="1"/><rect x="5.2" y="7.5" width="3.4" height="7.5" rx="1"/><rect x="10.4" y="4.8" width="3.4" height="10.2" rx="1"/><rect x="15.6" y="2" width="3.4" height="13" rx="1"/>' +
+      '<path d="M33.5 5.2a9.6 9.6 0 0 1 6.9 2.9l1.3-1.4a11.5 11.5 0 0 0-16.4 0l1.3 1.4a9.6 9.6 0 0 1 6.9-2.9zm0 3.9a5.8 5.8 0 0 1 4.2 1.8l1.3-1.4a7.7 7.7 0 0 0-11 0l1.3 1.4a5.8 5.8 0 0 1 4.2-1.8zm0 3.8a2 2 0 0 1 1.5.7l-1.5 1.6-1.5-1.6a2 2 0 0 1 1.5-.7z"/>' +
+      '<rect x="48" y="2.5" width="22" height="11.5" rx="3.6" fill="none" stroke="#0e0f0e" stroke-opacity=".45" stroke-width="1.1"/><rect x="49.8" y="4.3" width="18.4" height="7.9" rx="2.2"/><rect x="71.2" y="6.2" width="1.8" height="4.2" rx=".9" fill-opacity=".5"/>' +
+      '</g></svg></div></div></div></div>';
+    slot.outerHTML = h;
+  }
+  /* zoom: push in on a detail of the phone and pull back out. y is the detail's centre in footage pixels (0-1748).
+   * zooms: [{ at, until, y, scale }]: starts moving in at `at`, starts moving out at `until`. One call per scene. */
+  HM.zoom = function (zooms, o) {
+    o = o || {};
+    var tin = o.tin || 0.8, tout = o.tout || 0.7, f = [[0, { transform: 'translate(0px,0px) scale(1)' }, 'linear']];
+    zooms.forEach(function (z) {
+      var s = z.scale || 1.9, cx = 233, cy = 10 + 48 + z.y * 446 / 804;
+      var px = (z.px || 1432) - 1322, py = (z.py || 540) - 21;       // where that point lands, in the rig's own box
+      var tr = 'translate(' + (px - s * cx).toFixed(2) + 'px,' + (py - s * cy).toFixed(2) + 'px) scale(' + s + ')';
+      f.push([z.at, { transform: 'translate(0px,0px) scale(1)' }, 'cubic-bezier(.62,0,.18,1)']);
+      f.push([z.at + tin, { transform: tr }, 'linear']);
+      f.push([z.until, { transform: tr }, 'cubic-bezier(.62,0,.18,1)']);
+      f.push([z.until + tout, { transform: 'translate(0px,0px) scale(1)' }, 'linear']);
+    });
+    HM.tl('#rig', f);
+  };
+  /* sheet: a full-frame sheet of ink or paper wiped across, for the joins between scenes */
+  HM.sheet = function (kind, t, o) {
+    o = o || {};
+    var d = document.createElement('div'); d.className = 'sheet-x ' + kind; document.body.appendChild(d);
+    HM.tl(d, [[t, { clipPath: 'inset(100% 0 0 0)' }, 'cubic-bezier(.7,0,.2,1)'], [t + (o.dur || 0.5), { clipPath: 'inset(0 0 0 0)' }]]);
+  };
+
   var readyP = null;
   /* HM.scene({ id, duration, voiceAt, clips: [{name, from, to, img}], build: function (HM) {...} }) */
   HM.scene = function (cfg) {
     S = cfg;
-    window.SCENE = { id: cfg.id, duration: cfg.duration, voiceAt: cfg.voiceAt, clips: (cfg.clips || []).map(function (c) { return { name: c.name, from: c.from, to: c.to }; }) };
+    window.SCENE = { id: cfg.id, duration: cfg.duration, voiceAt: cfg.voiceAt, clips: (cfg.clips || []).map(function (c) {
+      var o = { name: c.name, from: c.from, to: c.to }; if (c.offset) o.offset = c.offset; if (c.carry) o.carry = true; return o; }) };
     brand();
     buildCap();
     var metas = window.HM_CLIPS || {};
-    clipState = (cfg.clips || []).map(function (c) {
-      return { name: c.name, from: c.from, to: c.to, img: el(c.img), meta: metas[c.name] || null, real: false };
-    });
-    // "sped up" badges: <el data-speed="clipname"> shows only when that clip's meta says speed > 1
-    els('[data-speed]').forEach(function (n) {
-      var m = metas[n.getAttribute('data-speed')];
-      var sp = m && m.frames > 0 ? m.speed : 1;
-      if (sp > 1) { var x = n.querySelector('[data-x]'); if (x) x.textContent = (Math.round(sp * 10) / 10) + '×'; }
-      else n.style.display = 'none';
+    if (cfg.clips && cfg.clips.length) buildPhone(cfg.clips);
+    clipState = (cfg.clips || []).map(function (c, i) {
+      return { name: c.name, from: c.from, to: c.to, offset: c.offset || 0, img: el('#clip-' + i), meta: metas[c.name] || null, real: false };
     });
     readyP = document.fonts.load('800 40px Archivo').then(function () { return document.fonts.ready; }).then(function () {
+      // inside the phone, each clip after the first wipes up over the one before it
+      (cfg.clips || []).forEach(function (c, i) { if (i > 0) HM.wipe('#clip-' + i, c.from, { dir: 'up', dur: 0.4 }); });
       if (cfg.build) cfg.build(HM);
     });
     return readyP;

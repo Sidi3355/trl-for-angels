@@ -31,15 +31,16 @@
 <script src="seek.js"></script>
 <script>
 HM.scene({
-  id: 's8_close', duration: 8.8, voiceAt: 0.5,
+  id: 's8_close', duration: 8.5, voiceAt: 0.5,
   build: function (HM) {
-    HM.strike('#mk', 0.55, { from: 1.9, dur: 0.18 });       // "Halomark."
+    HM.strike('#mk', 0.55, { from: 1.9, dur: 0.18 });       // "Halomark"
     HM.jolt('#stage', 0.55, 7);
     HM.set('.lock .wl', 0.7, { dy: 70, dur: 0.4, stagger: 0.045 });
-    HM.set('.lock .tg span', 1.45, { dy: 30, dur: 0.45, stagger: 1.0 });   // "Calibrated odds / for angels"
-    HM.wipe('#fine', 3.3, { dur: 0.6 });                     // "A screening aid, not investment advice"
-    HM.fade('#f1', 3.5, { dur: 0.4 });
-    HM.fade('#f2', 5.6, { dur: 0.5 });
+    HM.set('.lock .tg span', 1.4, { dy: 30, dur: 0.45, stagger: 0.88 });   // "calibrated odds / for angels"
+    HM.wipe('#fine', 3.0, { dur: 0.6 });                     // "A screening aid. Not investment advice."
+    HM.fade('#f1', 3.2, { dur: 0.4 });
+    HM.fade('#f2', 4.7, { dur: 0.5 });
+    HM.sheet('ink', 7.6, { dur: 0.8 });                      // the card holds, then the frame settles to ink
   }
 });
 </script>

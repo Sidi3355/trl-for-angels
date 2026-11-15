@@ -50,42 +50,46 @@
     <div class="tag gut" id="gut">Gut feeling</div>
   </div>
   <div class="sheet" id="sheet"></div>
-  <div class="lock">
+  <div class="lock" id="lock">
     <svg class="mk" id="mk" data-mark></svg>
     <div class="wm" data-wordmark></div>
     <div class="tg"><span>A first pass</span> <span>you can trust.</span></div>
   </div>
+  <div class="head short" id="head2"><span data-wordmark></span><span class="folio"></span></div>
 </div>
 <script src="data.js"></script>
 <script src="seek.js"></script>
 <script>
 HM.scene({
-  id: 's1_hook', duration: 12.7, voiceAt: 0.5,
+  id: 's1_hook', duration: 12.9, voiceAt: 0.5,
   build: function (HM) {
-    document.getElementById('qp').setAttribute('d', HM.PUNCH.replace(/^M/, 'M'));
+    document.getElementById('qp').setAttribute('d', HM.PUNCH);
     document.getElementById('qp').setAttribute('transform', 'translate(2 2) scale(.9375)');
-    HM.fade('.head', 0.1, { dur: 0.3 });
+    HM.wipe('#partA .head', 0.1, { dur: 0.45 });
     // "Angel investors / screen founders / alone."
-    [0.55, 1.5, 2.32].forEach(function (t, i) { HM.set(document.querySelectorAll('.hl .w')[i], t, { dy: 60, dur: 0.45 }); });
-    HM.wipe(document.querySelectorAll('.none .row')[0], 3.25, { dur: 0.4 });   // "No analyst"
-    HM.wipe(document.querySelectorAll('.none .row')[1], 4.3, { dur: 0.4 });    // "no second opinion"
+    [0.55, 1.48, 2.31].forEach(function (t, i) { HM.set(document.querySelectorAll('.hl .w')[i], t, { dy: 60, dur: 0.45 }); });
+    HM.wipe(document.querySelectorAll('.none .row')[0], 3.2, { dur: 0.4 });    // "No analyst"
+    HM.wipe(document.querySelectorAll('.none .row')[1], 4.15, { dur: 0.4 });   // "no second opinion"
     // "a stack of names": cards dealt one on another
     var cards = document.querySelectorAll('.card');
     var rots = [-2.2, 1.4, -1, 0.8];
     cards.forEach(function (c, i) {
-      var t = 5.45 + i * 0.26, r = 'rotate(' + rots[i] + 'deg)';
+      var t = 5.3 + i * 0.24, r = 'rotate(' + rots[i] + 'deg)';
       HM.tl(c, [[t, { opacity: 0, transform: 'translate(120px,-70px) rotate(' + (rots[i] + 7) + 'deg)' }, 'set'],
                 [t + 0.1, { opacity: 1, transform: 'translate(80px,-46px) rotate(' + (rots[i] + 5) + 'deg)' }, 'set'],
                 [t + 0.42, { opacity: 1, transform: 'translate(0px,0px) ' + r }]]);
     });
-    HM.strike('#gut', 7.45, { rot: -7, from: 1.8 });  // "a gut feeling"
-    HM.jolt('#partA', 7.45, 4);
+    HM.strike('#gut', 6.9, { rot: -7, from: 1.8 });   // "a gut feeling"
+    HM.jolt('#partA', 6.9, 4);
     // a clean sheet, then the mark is struck
-    HM.wipe('#sheet', 8.0, { dir: 'up', dur: 0.42 });
-    HM.strike('#mk', 8.62, { from: 1.9, dur: 0.18 });
-    HM.jolt('#stage', 8.62, 7);
-    HM.set('.lock .wl', 8.8, { dy: 70, dur: 0.4, stagger: 0.045 });
-    HM.set('.lock .tg span', 10.3, { dy: 30, dur: 0.45, stagger: 0.55 });  // "a first pass / they can trust"
+    HM.wipe('#sheet', 7.6, { dir: 'up', dur: 0.42 });
+    HM.strike('#mk', 8.32, { from: 1.9, dur: 0.18 });  // "Halomark"
+    HM.jolt('#stage', 8.32, 7);
+    HM.set('.lock .wl', 8.5, { dy: 70, dur: 0.4, stagger: 0.045 });
+    HM.set('.lock .tg span', 10.15, { dy: 30, dur: 0.45, stagger: 0.6 });  // "a first pass / they can trust"
+    // hand over to s2: the lockup leaves, the running head is set
+    HM.out('#lock', 12.25, { dur: 0.4 });
+    HM.wipe('#head2', 12.4, { dur: 0.45 });
   }
 });
 </script>

@@ -83,7 +83,7 @@
       <div class="top"></div>
       <div class="h"><span class="figure n">2</span><span class="t">Reason</span></div>
       <div class="g"><div class="cells" id="cells"></div></div>
-      <p class="p" id="p2"><b>Kev-0.6B</b>, a small open decision model, answers the 40 questions for each founder.</p>
+      <p class="p" id="p2"><b>Kev-0.6B</b>, a small open-source decision model, answers the 40 questions for each founder.</p>
     </div>
     <div class="step">
       <div class="top"></div>
@@ -114,17 +114,18 @@
 <script src="seek.js"></script>
 <script>
 HM.scene({
-  id: 's6_research', duration: 26.5, voiceAt: 0.5,
+  id: 's6_research', duration: 25.6, voiceAt: 0.6,
   build: function (HM) {
     var q = function (s) { return document.querySelector(s); }, qa = function (s) { return document.querySelectorAll(s); };
     var rnd = HM.rng(40);
 
     // ---- title
-    HM.fade('#eb', 0.2);
-    HM.strike('#trl', 1.78, { from: 1.5 });                 // "TRL"
-    HM.set('#who', 2.7, { dy: 24 });                         // "Vela Research's open ..."
-    HM.wipe('.step .top', 3.7, { dur: 0.5, stagger: 0.1 });
-    [4.32, 4.72, 5.3].forEach(function (t, i) {              // "think, reason, learn"
+    HM.wipe('.head', 0.1, { dur: 0.45 });
+    HM.fade('#eb', 0.3);
+    HM.strike('#trl', 1.46, { from: 1.5 });                 // "TRL"
+    HM.set('#who', 2.25, { dy: 24 });                         // "Vela Research's open ..."
+    HM.wipe('.step .top', 3.3, { dur: 0.5, stagger: 0.1 });
+    [3.93, 4.92, 5.47].forEach(function (t, i) {              // "think, reason, learn"
       HM.set(qa('.step .h .n')[i], t, { dy: 40, dur: 0.38 });
       HM.set(qa('.step .h .t')[i], t + 0.05, { dy: 40, dur: 0.38 });
     });
@@ -138,23 +139,23 @@ HM.scene({
       var s = document.createElement('i');
       s.style.left = (i % 31) * 17.75 + 'px'; s.style.top = Math.floor(i / 31) * 52 + 'px';
       slips.appendChild(s);
-      var t0 = 6.7 + i * 0.0235;
+      var t0 = 6.9 + i * 0.02;
       var f = [[t0, { opacity: 0, transform: 'translateY(-14px)', backgroundColor: '#f1f1ed' }, 'set'], [t0 + 0.16, { opacity: 1, transform: 'translateY(0px)', backgroundColor: '#f1f1ed' }]];
-      f.push([9.95, { opacity: 1, transform: 'translateY(0px)', backgroundColor: '#f1f1ed' }, 'inout']);
-      f.push([10.45, keep[i] ? { opacity: 1, transform: 'translateY(0px)', backgroundColor: '#8fa0ff' } : { opacity: 0.16, transform: 'translateY(0px)', backgroundColor: '#f1f1ed' }]);
+      f.push([9.85, { opacity: 1, transform: 'translateY(0px)', backgroundColor: '#f1f1ed' }, 'inout']);
+      f.push([10.35, keep[i] ? { opacity: 1, transform: 'translateY(0px)', backgroundColor: '#8fa0ff' } : { opacity: 0.16, transform: 'translateY(0px)', backgroundColor: '#f1f1ed' }]);
       HM.tl(s, f);
     }
-    HM.fade('#tn', 6.6, { dur: 0.15 });
+    HM.fade('#tn', 6.8, { dur: 0.15 });
     HM.onSeek(function (t) {                                  // 0 -> 93 as they are written, then 93 -> 40 at the cut
       var v;
-      if (t < 9.95) { var p = Math.max(0, Math.min(1, (t - 6.7) / (92 * 0.0235 + 0.1))); v = Math.round(93 * p); }
-      else { var p2 = Math.min(1, (t - 9.95) / 0.5); p2 = 1 - Math.pow(1 - p2, 3); v = Math.round(93 - 53 * p2); }
+      if (t < 9.85) { var p = Math.max(0, Math.min(1, (t - 6.9) / (92 * 0.02 + 0.1))); v = Math.round(93 * p); }
+      else { var p2 = Math.min(1, (t - 9.85) / 0.5); p2 = 1 - Math.pow(1 - p2, 3); v = Math.round(93 - 53 * p2); }
       v = String(v); var n = q('#tn'); if (n.textContent !== v) n.textContent = v;
     });
-    HM.fade('#tl1', 6.7, { dur: 0.25, out: 9.9 });
-    HM.fade('#tl2', 10.2, { dur: 0.25 });
-    HM.fade('#p1a', 6.7, { dur: 0.4 });                       // "Claude wrote a checklist"
-    HM.fade('#p1b', 9.9, { dur: 0.4 });                       // "the best forty made the cut"
+    HM.fade('#tl1', 6.9, { dur: 0.25, out: 9.8 });
+    HM.fade('#tl2', 10.1, { dur: 0.25 });
+    HM.fade('#p1a', 6.9, { dur: 0.4 });                       // "Claude wrote a checklist"
+    HM.fade('#p1b', 9.8, { dur: 0.4 });                       // "the best forty made the cut"
 
     // ---- Reason: 40 answers, yes or no
     var cells = q('#cells');
@@ -164,11 +165,11 @@ HM.scene({
       var yes = rnd() < 0.55;
       c.innerHTML = '<b class="' + (yes ? 'y' : 'n') + '">' + (yes ? 'YES' : 'NO') + '</b>';
       cells.appendChild(c);
-      HM.fade(c, 12.3 + i * 0.012, { dur: 0.2 });
-      var ta = 14.55 + i * 0.03;                               // "answers them"
+      HM.fade(c, 12.0 + i * 0.012, { dur: 0.2 });
+      var ta = 14.3 + i * 0.03;                               // "answers them"
       HM.tl(c.firstChild, [[ta, { opacity: 0, transform: 'scale(1.5)' }, 'strike'], [ta + 0.09, { opacity: 1, transform: 'scale(1)' }]]);
     }
-    HM.fade('#p2', 12.25, { dur: 0.4 });                      // "Kev, a small open decision model"
+    HM.fade('#p2', 11.95, { dur: 0.4 });                      // "Kev, a small open decision model"
 
     // ---- Learn: answers become the chance of each outcome (bar lengths are an illustration, not results)
     var bands = [['Shut down', 0.52], ['Under $50M', 0.2], ['$50M-$500M', 0.14], ['$500M-$1B', 0.08], ['Over $1B', 0.06]];
@@ -177,22 +178,22 @@ HM.scene({
       var o = document.createElement('div'); o.className = 'o';
       o.innerHTML = '<span class="label">' + b[0].replace('-', '–') + '</span><span class="tr"><i style="width:' + (b[1] / 0.52 * 100) + '%"></i></span>';
       odds.appendChild(o);
-      HM.fade(o.firstChild, 16.0 + k * 0.06, { dur: 0.3 });
-      var tb = 17.25 + k * 0.14;                               // "turns those answers into odds"
+      HM.fade(o.firstChild, 15.7 + k * 0.06, { dur: 0.3 });
+      var tb = 16.65 + k * 0.14;                               // "turns those answers into odds"
       HM.tl(o.querySelector('i'), [[tb, { transform: 'scaleX(0)' }, 'set'], [tb + 0.7, { transform: 'scaleX(1)' }]]);
     });
     var note = document.createElement('span'); note.className = 'note label'; note.textContent = 'Illustration'; odds.appendChild(note);
-    HM.fade(note, 17.3, { dur: 0.3 });
-    HM.fade('#p3', 15.8, { dur: 0.4 });                       // "our fine-tuned Kev"
+    HM.fade(note, 16.7, { dur: 0.3 });
+    HM.fade('#p3', 15.5, { dur: 0.4 });                       // "our fine-tuned Kev"
 
-    HM.out('#steps', 19.05, { dur: 0.42 });
+    HM.out('#steps', 18.3, { dur: 0.42 });
 
     // ---- Calibration: 600 test founders, four bins, all near the diagonal, none above 40%
-    HM.wipe('#cal .top', 19.45, { dur: 0.5 });
-    HM.fade('#n600', 19.6, { dur: 0.15 });
-    HM.count('#n600', 19.7, 21.0, 0, 600);                    // "six hundred founders"
-    HM.set('#t600', 20.0, { dy: 24 });
-    HM.fade('#foot', 19.8, { dur: 0.5 });
+    HM.wipe('#cal .top', 18.7, { dur: 0.5 });
+    HM.fade('#n600', 18.85, { dur: 0.15 });
+    HM.count('#n600', 18.95, 20.15, 0, 600);                    // "six hundred founders"
+    HM.set('#t600', 19.3, { dy: 24 });
+    HM.fade('#foot', 19.1, { dur: 0.5 });
 
     var NS = 'http://www.w3.org/2000/svg', svg = q('#chart');
     var X0 = 76, Y0 = 500, W = 480, k = W / 50;               // 0-50% on both axes, the same scale on each
@@ -209,26 +210,26 @@ HM.scene({
     }
     frame.appendChild(mk('text', { x: X0 + W / 2, y: Y0 + 56, 'text-anchor': 'middle', 'class': 'ax' }, 'Odds Halomark gave'));
     frame.appendChild(mk('text', { x: X0 - 62, y: Y0 - W / 2, 'text-anchor': 'middle', 'class': 'ax', transform: 'rotate(-90 ' + (X0 - 62) + ' ' + (Y0 - W / 2) + ')' }, 'Share who succeeded'));
-    HM.fade(frame, 19.6, { dur: 0.5 });
+    HM.fade(frame, 18.9, { dur: 0.5 });
     // the diagonal: where the odds given equal the share who succeeded
     var diag = mk('line', { x1: X0, y1: Y0, x2: X0 + W, y2: Y0 - W, stroke: '#a2a59f', 'stroke-width': 2, 'stroke-dasharray': '7 7' });
     var dclip = mk('clipPath', { id: 'dc' }); var drect = mk('rect', { x: X0, y: Y0 - W, width: W, height: W }); dclip.appendChild(drect);
     diag.setAttribute('clip-path', 'url(#dc)');
-    HM.tl(drect, [[20.4, { transform: 'translate(-' + W + 'px,' + W + 'px)' }, 'inout'], [21.2, { transform: 'translate(0px,0px)' }]]);
+    HM.tl(drect, [[19.7, { transform: 'translate(-' + W + 'px,' + W + 'px)' }, 'inout'], [20.5, { transform: 'translate(0px,0px)' }]]);
     var dl = mk('text', { x: X0 + 30 * k - 16, y: Y0 - 30 * k - 16, 'text-anchor': 'end', transform: 'rotate(-45 ' + (X0 + 30 * k - 16) + ' ' + (Y0 - 30 * k - 16) + ')' }, 'Perfectly calibrated');
-    dl.setAttribute('x', X0 + 30 * k - 22); HM.fade(dl, 21.1, { dur: 0.3 });
+    dl.setAttribute('x', X0 + 30 * k - 22); HM.fade(dl, 20.4, { dur: 0.3 });
     // nothing above 40%
     var hz = mk('g', {});
     hz.appendChild(mk('rect', { x: X0 + 40 * k, y: Y0 - W, width: 10 * k, height: W, fill: 'url(#hatch)' }));
     var hx = X0 + 45 * k + 6, hy = Y0 - W / 2;
     var hb = mk('rect', { x: hx - 16, y: hy - 178, width: 30, height: 356, fill: '#0e0f0e' }); hz.appendChild(hb);
     hz.appendChild(mk('text', { x: hx, y: hy, 'text-anchor': 'middle', transform: 'rotate(-90 ' + hx + ' ' + hy + ')', style: 'fill:#d6d6d0;font-weight:600' }, 'No odds above 40%: the model is cautious'));
-    HM.fade(hz, 22.85, { dur: 0.4 });
+    HM.fade(hz, 22.1, { dur: 0.4 });
     // the four bins
     var pts = [[7.2, 9.1], [15.0, 16.5], [25.2, 24.8], [33.2, 35.6]], rows = qa('.bins .rw');
-    HM.fade('.bins .hd', 21.2, { dur: 0.3 });
+    HM.fade('.bins .hd', 20.5, { dur: 0.3 });
     pts.forEach(function (p, i) {
-      var t = 21.5 + i * 0.36, cx = X0 + p[0] * k, cy = Y0 - p[1] * k;
+      var t = 20.8 + i * 0.33, cx = X0 + p[0] * k, cy = Y0 - p[1] * k;
       var g = mk('g', { style: 'transform-box: fill-box; transform-origin: center;' });
       g.appendChild(mk('circle', { cx: cx, cy: cy, r: 11, fill: '#0e0f0e' }));
       g.appendChild(mk('circle', { cx: cx, cy: cy, r: 8.5, fill: '#8fa0ff' }));
@@ -236,11 +237,12 @@ HM.scene({
       HM.wipe(rows[i], t, { dur: 0.35 });
     });
     // "off by about one percentage point"
-    HM.fade('#mid', 23.4, { dur: 0.3 });
-    HM.strike('#n1', 24.1, { from: 1.7, dur: 0.17 });
-    HM.jolt('#cal', 24.1, 6);
-    HM.set('#t1', 24.25, { dy: 24 });
-    HM.fade('#ece', 24.9, { dur: 0.4 });
+    HM.fade('#mid', 22.4, { dur: 0.3 });
+    HM.strike('#n1', 23.05, { from: 1.7, dur: 0.17 });
+    HM.jolt('#cal', 23.05, 6);
+    HM.set('#t1', 23.2, { dy: 24 });
+    HM.fade('#ece', 23.9, { dur: 0.4 });
+    HM.sheet('paper', 25.0, { dur: 0.5 });                   // a sheet of paper comes up; s7 opens on paper
   }
 });
 </script>

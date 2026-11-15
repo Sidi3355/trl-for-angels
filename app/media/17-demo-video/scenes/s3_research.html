@@ -6,48 +6,48 @@
 <link rel="stylesheet" href="shared.css">
 <style>
   .hl { font-size: 92px; margin-top: 30px; letter-spacing: -.035em; }
-  .items { position: absolute; left: 96px; top: 418px; width: 940px; }
+  .items { position: absolute; left: 96px; top: 418px; width: 850px; }
   .items li { display: flex; gap: 30px; padding: 22px 0 20px; border-top: 3px solid var(--ink); }
   .items .n { font-size: 74px; color: var(--brand); width: 84px; flex: none; }
   .items .t { font-size: 52px; font-weight: 800; letter-spacing: -.03em; line-height: 1.02; }
   .items .d { font-size: 27px; color: var(--muted); margin-top: 9px; }
-  #sped { top: 322px; transform: rotate(-5deg); }
-  #anon { top: 322px; transform: rotate(-5deg); }
 </style>
 </head>
 <body>
 <div class="stage">
-  <div class="head"><span data-wordmark></span><span class="folio"><b>03</b> &nbsp;Research</span></div>
-  <div class="col">
-    <div class="eyebrow kicker" id="eb">The research agent</div>
-    <h1 class="headline hl"><span class="w">It searches</span> <span class="w">the web.</span></h1>
+  <div class="head short" id="head"><span data-wordmark></span><span class="folio" id="folio"><b>03</b> &nbsp;Research</span></div>
+  <div class="left" id="left">
+    <div class="col">
+      <div class="eyebrow kicker" id="eb">The research agent</div>
+      <h1 class="headline hl"><span class="w">It searches</span> <span class="w">the web.</span></h1>
+    </div>
+    <ul class="items">
+      <li><span class="figure n">1</span><div><div class="t">Only what was public before founding</div><div class="d">Nothing from after the company started counts.</div></div></li>
+      <li><span class="figure n">2</span><div><div class="t">Every fact sourced</div><div class="d">What it can't confirm stays unknown.</div></div></li>
+      <li><span class="figure n">3</span><div><div class="t">Names removed</div><div class="d">The model judges the background, not the brand.</div></div></li>
+    </ul>
   </div>
-  <ul class="items">
-    <li><span class="figure n">1</span><div><div class="t">Only what was public before founding</div><div class="d">Nothing from after the company started counts.</div></div></li>
-    <li><span class="figure n">2</span><div><div class="t">Every fact sourced</div><div class="d">What it can't confirm stays unknown.</div></div></li>
-    <li><span class="figure n">3</span><div><div class="t">Names removed</div><div class="d">The model judges the background, not the brand.</div></div></li>
-  </ul>
-  <div class="tag sidetag" id="sped" data-speed="c2_research">Sped up <span data-x></span></div>
-  <div class="tag sidetag" id="anon">What the model reads</div>
-  <div class="phone" id="phone"><div class="screen"><img id="c2" alt=""><img id="c3" alt="">
-  <div class="ph-tag"></div></div></div>
+  <div id="phone-slot"></div>
 </div>
 <script src="data.js"></script>
 <script src="seek.js"></script>
 <script>
 HM.scene({
-  id: 's3_research', duration: 19.4, voiceAt: 0.5,
-  clips: [{ name: 'c2_research', from: 0, to: 13.1, img: '#c2' }, { name: 'c3_profile', from: 13.1, to: 19.4, img: '#c3' }],
+  id: 's3_research', duration: 17.2, voiceAt: 0.5,
+  clips: [{ name: 'c1_type', from: -8.5, to: 0.35, carry: true },          // what s2 ended on
+          { name: 'c2_research', from: 0.35, to: 8.9, offset: 1.6 },
+          { name: 'c3_profile', from: 8.9, to: 17.2 }],
   build: function (HM) {
+    HM.fade('#folio', 0.1, { out: 16.65 });
     HM.fade('#eb', 0.15);
     HM.set('.hl .w', 0.55, { dy: 50, dur: 0.45, stagger: 1.5 });       // "research agent" / "searches the web"
-    HM.strike('#sped', 1.2, { rot: -5, out: 12.7 });
     var li = document.querySelectorAll('.items li'), d = document.querySelectorAll('.items .d');
-    HM.wipe(li[0], 3.5, { dur: 0.5 });   HM.fade(d[0], 5.0, { dur: 0.4 });    // "only counts what was public before"
-    HM.wipe(li[1], 7.3, { dur: 0.5 });   HM.fade(d[1], 9.75, { dur: 0.4 });   // "every fact ... source" / "stays unknown"
-    HM.wipe(li[2], 13.55, { dur: 0.5 }); HM.fade(d[2], 15.7, { dur: 0.4 });   // "strips out every name" / "judges the background"
-    HM.wipe('#c3', 13.1, { dir: 'up', dur: 0.45 });                      // the anonymised profile takes over the screen
-    HM.strike('#anon', 13.9, { rot: -5 });
+    HM.wipe(li[0], 3.2, { dur: 0.5 });   HM.fade(d[0], 4.6, { dur: 0.4 });     // "only counts what was public before"
+    HM.wipe(li[1], 6.7, { dur: 0.5 });   HM.fade(d[1], 8.65, { dur: 0.4 });    // "every fact ... source" / "can't confirm"
+    HM.wipe(li[2], 11.7, { dur: 0.5 });  HM.fade(d[2], 13.5, { dur: 0.4 });    // "strips out every name" / "judges the background"
+    HM.zoom([{ at: 6.5, until: 8.1, y: 1050 },       // the sources and facts the agent found
+             { at: 12.3, until: 15.6, y: 800 }]);    // the anonymised profile, "What the model read"
+    HM.out('#left', 16.65, { dur: 0.42 });
   }
 });
 </script>
