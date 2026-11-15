@@ -19,6 +19,7 @@ import json
 import logging
 import math
 import re
+import time
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -66,8 +67,15 @@ class KevUnavailable(RuntimeError):
     """Kev didn't answer: the PC server or its tunnel is down, the key is wrong, or the reply was unusable."""
 
 
+NO_URL = ("Kev's address isn't set: start the Kev server and its tunnel on the PC, then put the tunnel address "
+          "(https://<words>.trycloudflare.com) in KEV_URL on the backend.")
+
+
 def kev_urls(model: dict, kev_url: str | None) -> tuple[str, str]:
-    """(answerer URL, decider URL). KEV_URL, when set, wins over model.json for both."""
+    """(answerer URL, decider URL). KEV_URL, when set, wins over model.json for both.
+
+    Without KEV_URL these are model.json's placeholders: the backend still starts, the demo cache still answers
+    for the example founders, and anyone else gets NO_URL (before any research is paid for: preflight)."""
     if kev_url:
         base = kev_url.strip().rstrip("/")
         if not base.startswith(("http://", "https://")):
@@ -75,11 +83,54 @@ def kev_urls(model: dict, kev_url: str | None) -> tuple[str, str]:
         return f"{base}/answerer/v1/systemone", f"{base}/decider/v1/systemone"
     decider = model["endpoint"]["base_url"].rstrip("/") + model["endpoint"]["path"]
     m = re.search(r'base_url="([^"]+)"', model.get("answerer", {}).get("spec", ""))
-    answerer = m.group(1) if m else ""
-    if not answerer or PLACEHOLDER in answerer or PLACEHOLDER in decider:
-        raise NotConfigured("set KEV_URL to the Kev server's tunnel address (https://<words>.trycloudflare.com): "
-                            "model.json only has a placeholder")
-    return answerer, decider
+    return (m.group(1) if m else f"https://{PLACEHOLDER}/answerer/v1/systemone"), decider
+
+
+def configured(url: str) -> bool:
+    return PLACEHOLDER not in url
+
+
+def server_root(url: str) -> str:
+    """The Kev server's front door from an endpoint URL: .../answerer/v1/systemone -> ..."""
+    root = url.rstrip("/").removesuffix("/v1/systemone")
+    return root.removesuffix("/answerer").removesuffix("/decider")
+
+
+_ready: dict[str, tuple[float, str | None]] = {}  # server root -> (when checked, problem or None)
+READY_TTL_S = 20.0
+
+
+async def preflight(url: str, api_key: str | None) -> None:
+    """Before a founder is researched (which costs money): is Kev there, ready, and is our key right?
+
+    Two quick requests to the kev_server front door, remembered for READY_TTL_S so a list doesn't repeat them.
+    Raises KevUnavailable, saying nothing was researched, if not."""
+    if not configured(url):
+        raise KevUnavailable(NO_URL + " Nothing was researched, so nothing was charged.")
+    root = server_root(url)
+    seen = _ready.get(root)
+    if seen is None or time.monotonic() - seen[0] > READY_TTL_S:
+        seen = (time.monotonic(), await _check(root, api_key))
+        _ready[root] = seen
+    if seen[1]:
+        raise KevUnavailable(f"{seen[1]} Nothing was researched, so nothing was charged.")
+
+
+async def _check(root: str, api_key: str | None) -> str | None:
+    import httpx
+    headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+    try:
+        async with httpx.AsyncClient(timeout=6.0) as client:
+            health = await client.get(f"{root}/health")
+            if health.status_code == 503 or (health.headers.get("content-type", "").startswith("application/json")
+                                              and health.json().get("ready") is False):
+                return f"The Kev server at {host(root)} is still loading its models: try again in a minute."
+            models = await client.get(f"{root}/answerer/v1/models", headers=headers)
+    except (httpx.HTTPError, ValueError) as e:
+        return f"Kev isn't reachable at {host(root)} ({type(e).__name__}): is the Kev server on the PC and its tunnel running?"
+    if models.status_code == 401:
+        return f"The Kev server at {host(root)} turned down our key: KEV_API_KEY must match the PC's."
+    return None
 
 
 def host(url: str) -> str:
@@ -101,6 +152,8 @@ def _endpoints(url: str, api_key: str | None, role: str):
 async def _ask(endpoints, url: str, states: list[str], questions: dict, role: str) -> list[dict]:
     from think_reason_learn.exceptions import TRLError
     from think_reason_learn.llm import LLMSession
+    if not configured(url):
+        raise KevUnavailable(NO_URL)
     try:
         return await LLMSession().answer(endpoints, states, questions, role=role)
     except TRLError as e:
@@ -121,11 +174,14 @@ class KevAnswerer:
             raise NotConfigured("ANSWERER=kev: the Kev server needs a key in KEV_API_KEY")
         from think_reason_learn.llm import YesNoQuestion
         configure_trl(timeout_s, max_retries)
-        self.url = url
+        self.url, self.api_key = url, api_key
         self.endpoints = _endpoints(url, api_key, "answerer")
         self.ids = [r["id"] for r in rules["rules"]]
         self.questions = {r["id"]: YesNoQuestion(r["question"]) for r in rules["rules"]}
         self.cache = cache
+
+    async def preflight(self) -> None:
+        await preflight(self.url, self.api_key)
 
     async def answer(self, profile_text: str, fields: dict, ctx) -> list[float]:
         key = _key(profile_text)
@@ -157,7 +213,7 @@ class KevDecider:
             raise NotConfigured("DECIDER=kev reads binary answers only (TRL's answers_text)")
         from think_reason_learn.llm import ChoiceQuestion
         configure_trl(timeout_s, max_retries)
-        self.url = url
+        self.url, self.api_key = url, api_key
         self.endpoints = _endpoints(url, api_key, "decider")
         # Word for word from model.json, option descriptions included: the model was trained with them.
         self.questions = {qid: ChoiceQuestion(q["instructions"], tuple(q["criteria"]), tuple(q["criteria"].values()))
@@ -167,6 +223,9 @@ class KevDecider:
                              if temp.get("applied_by") == "client" else {})
         self.rule_questions = [r["question"] for r in rules["rules"]]
         self.cache = cache
+
+    async def preflight(self) -> None:
+        await preflight(self.url, self.api_key)
 
     def state(self, answer_labels: list[str] | None, profile_text: str) -> str:
         if self.input == "profile":
@@ -237,7 +296,7 @@ def rounded(probs: dict[str, float]) -> dict[str, float]:
 async def probe(kev_url: str | None, api_key: str | None, timeout_s: float = 4.0) -> dict | None:
     """The Kev server's own /health (both models loaded? decider still standing in?), for our /health."""
     if not kev_url:
-        return None
+        return {"configured": False, "reachable": False}
     import httpx
     base = kev_url.strip().rstrip("/")
     headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
@@ -246,7 +305,7 @@ async def probe(kev_url: str | None, api_key: str | None, timeout_s: float = 4.0
             r = await client.get(f"{base}/health", headers=headers)
         body = r.json() if r.headers.get("content-type", "").startswith("application/json") else {}
     except (httpx.HTTPError, ValueError) as e:
-        return {"host": host(base), "reachable": False, "error": type(e).__name__}
+        return {"configured": True, "host": host(base), "reachable": False, "error": type(e).__name__}
     decider = body.get("decider") if isinstance(body.get("decider"), dict) else {}
-    return {"host": host(base), "reachable": True, "ready": bool(body.get("ready")),
+    return {"configured": True, "host": host(base), "reachable": True, "ready": bool(body.get("ready")),
             "decider_stand_in": decider.get("stand_in")}

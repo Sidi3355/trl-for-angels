@@ -256,8 +256,11 @@ branch): base `jaredpalmer/kev-0.6b` at `/answerer/v1/systemone`, the production
 - **`KEV_URL`** overrides `model.json`'s placeholder endpoint for both models: after restarting the tunnel, paste
   the new address into Railway. `/health` shows `kev: {reachable, ready, decider_stand_in}` from the Kev
   server's own health check (cached for 30 seconds).
-- **If Kev is down,** a screening fails with a message that names the host and asks whether the PC server and
-  its tunnel are running. It never shows the key.
+- **If Kev is down or `KEV_URL` isn't set,** the backend still runs. Before researching a founder (which costs
+  money) it checks that the Kev server is up, ready and accepts our key (cached 20 s); if not, the screening stops
+  at once saying what's wrong and that nothing was researched or charged. The example founders skip that check:
+  they have canned research and the demo cache. Messages name the host, never the key. A what-if that needs
+  Kev while it's down returns 503 `model_unavailable`.
 - **Demo cache** (`backend/screener/data/kev_demo_cache.json`, research's "keep the demo cache as the backup"):
   the real Kev's replies for the three fictional example founders, drivers included, built with
   `backend/tools/build_kev_demo_cache.py` against the real models. The examples then answer at once and still
@@ -283,7 +286,8 @@ exist, the app uses mocks with the same file names and structure:
 | `thresholds.json` | `app/contract/mocks/thresholds.json` | `shared/artifacts/thresholds.json` | The val precision and recall table (step D4) |
 | `model.json` | `app/contract/mocks/model.json` | `shared/artifacts/model.json` | The production Kev endpoint and input type (steps D2, D3) |
 
-The real files exist on the research branch (2026-11-15) and pass `validate.py --artifacts`. The answerer
+The real files are in `shared/artifacts/` (copied unchanged from the research branch at `4cc539d` on 2026-11-15, at
+the owner's request) and pass `validate.py --artifacts`. The answerer
 (base Kev), decider (production Kev) and research agent are mocked by `backend/screener/mocks/` until they're
 switched on. Every memo made with any mock carries `"mock": true` and a visible warning
 saying which parts are mocked.
@@ -318,7 +322,8 @@ way to point Railway at the Dockerfile. Leave Root Directory empty.
 | `ACCESS_TOKEN` | A passcode of your choice. The app asks for it once per session. |
 | `CORS_ORIGIN_REGEX` | `https://trl-for-angels[a-z0-9-]*\.vercel\.app` (production and preview URLs) |
 | `AGENT` | `claude` for real web research (uses `ANTHROPIC_API_KEY`, about $0.25 a founder; caps: `AGENT_BUDGET_USD`, default $5 per restart, and `AGENT_MAX_COST_PER_FOUNDER_USD`, default $1). Leave out to stay on mocks. |
-| `ARTIFACTS_DIR`, `ANSWERER`, `DECIDER`, `KEV_URL`, `KEV_API_KEY` | The real models: `shared/artifacts`, `kev`, `kev`, the tunnel address, and the Kev server's passcode. |
+| `ARTIFACTS_DIR`, `ANSWERER`, `DECIDER`, `KEV_API_KEY` | The real models: `shared/artifacts`, `kev`, `kev`, and the Kev server's passcode. Safe to set while the PC is off: the example founders answer from the demo cache. |
+| `KEV_URL` | The Kev server's tunnel address, pasted each time the tunnel starts. Unset: only the example founders can be screened. |
 | `ELEVENLABS_API_KEY` | Voice notes' speech-to-text. Without it a recording returns a marked example transcript. |
 | `ANTHROPIC_API_KEY` | Also turns on filling the form from notes (about 1–2 cents a note on Claude Opus 5.5), even while `AGENT` stays `mock`. |
 

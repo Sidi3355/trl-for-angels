@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from ..mocks.founders import find_demo_founder
 from ..template import FIELD_LABELS, consistency_issues
 from .context import Emitter, Pipeline, no_emit
 from .memo import build_memo, plain
@@ -16,6 +17,11 @@ def _n(n: int, word: str) -> str:
 
 async def screen(inp: dict, ctx: Pipeline, *, memo_id: str, job_id: str | None, emit: Emitter = no_emit) -> dict:
     options = inp.get("options") or {}
+    # Real Kev: check it's there before paying for research (the example founders have canned research and
+    # the demo cache, so they don't need it).
+    kev = ctx.answerer if ctx.artifacts.decider_input == "answers" else ctx.decider
+    if hasattr(kev, "preflight") and find_demo_founder(inp["founder"], by_name=False) is None:
+        await kev.preflight()
     if options.get("research", True):
         findings = await ctx.agent.research(inp, ctx, emit)
     else:

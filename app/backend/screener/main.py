@@ -26,7 +26,7 @@ from .pipeline.agent import ClaudeAgent
 from .pipeline.batch import CsvError, parse_csv
 from .pipeline.budget import Budget
 from .pipeline.context import NotConfigured, Pipeline
-from .pipeline.kev import DEMO_CACHE, KevCache, kev_urls, probe
+from .pipeline.kev import DEMO_CACHE, KevCache, KevUnavailable, kev_urls, probe
 from .pipeline.models import KevAnswerer, KevDecider, MockAnswerer, MockDecider
 from .pipeline.notes import (
     ClaudeSorter,
@@ -224,6 +224,10 @@ def _install_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(NotConfigured)
     async def _unconfigured(_, e: NotConfigured):
         return _error(503, "not_configured", str(e), retryable=True)
+
+    @app.exception_handler(KevUnavailable)
+    async def _kev_down(_, e: KevUnavailable):
+        return _error(503, "model_unavailable", str(e), retryable=True)
 
     @app.exception_handler(NoteError)
     async def _note(_, e: NoteError):

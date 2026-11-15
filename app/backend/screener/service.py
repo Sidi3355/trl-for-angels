@@ -16,6 +16,7 @@ from . import policy, push
 from .contract import Contract
 from .pipeline import batch as batchmod
 from .pipeline.context import NotConfigured, Pipeline
+from .pipeline.kev import KevUnavailable
 from .pipeline.memo import DISCLAIMER, fill_drivers
 from .pipeline.screening import screen
 from .pipeline.whatif import what_if
@@ -191,7 +192,10 @@ class Service:
                 memo = await screen(inp, self.pipeline, memo_id=new_id("memo"), job_id=job.id, emit=emit)
                 self._check("memo", memo)
             except Exception as e:  # noqa: BLE001 - report every failure on the job
-                log.exception("screening %s failed", job.id)
+                if isinstance(e, KevUnavailable):  # expected while the PC is off: no traceback in the logs
+                    log.warning("screening %s stopped: %s", job.id, e)
+                else:
+                    log.exception("screening %s failed", job.id)
                 job.error = {"code": type(e).__name__, "message": str(e)[:500], "retryable": False}
                 self._finish(job, "failed")
                 await self._emit(job, "error", "Screening failed.", data=job.error)

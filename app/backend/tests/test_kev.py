@@ -54,6 +54,12 @@ def fake_kev(calls: list) -> FastAPI:
     async def health(request: Request):
         return {"ready": True, "answerer": {"ready": True}, "decider": {"ready": True, "stand_in": False}}
 
+    @app.get("/answerer/v1/models")
+    async def models(request: Request):
+        if not authorised(request):
+            return JSONResponse({"detail": "missing or wrong bearer key"}, status_code=401)
+        return {"models": [{"id": "kev-0.6b"}]}
+
     @app.post("/answerer/v1/systemone")
     async def answerer(request: Request):
         body = await request.json()
@@ -141,11 +147,12 @@ def kev_client(artifacts, url, key=KEY):
 # ------------------------------------------------------------------------------------------- units
 
 def test_kev_url_overrides_model_json_and_placeholder_needs_it(artifacts):
+    from screener.pipeline.kev import configured, server_root
     model = load(artifacts / "model.json")
     assert kev_urls(model, "https://abc.trycloudflare.com/") == (
         "https://abc.trycloudflare.com/answerer/v1/systemone", "https://abc.trycloudflare.com/decider/v1/systemone")
-    with pytest.raises(NotConfigured, match="KEV_URL"):
-        kev_urls(model, None)
+    assert server_root("https://abc.trycloudflare.com/decider/v1/systemone") == "https://abc.trycloudflare.com"
+    assert not any(configured(u) for u in kev_urls(model, None))  # placeholders: the backend starts, Kev calls refuse
     with pytest.raises(NotConfigured, match="https"):
         kev_urls(model, "abc.trycloudflare.com")
 
@@ -181,7 +188,8 @@ def test_screening_through_kev(kev_server, artifacts, contract):
     with kev_client(artifacts, url) as c:
         h = c.get("/health").json()
         assert h["errors"] == {} and h["components"]["answerer"] == h["components"]["decider"] == "kev"
-        assert h["kev"] == {"host": url.split("//")[1], "reachable": True, "ready": True, "decider_stand_in": False}
+        assert h["kev"] == {"configured": True, "host": url.split("//")[1], "reachable": True, "ready": True,
+                            "decider_stand_in": False}
         calls.clear()
         _, first = screen(c, load(EXAMPLES / "investor_input_advance.json"))
         # The real decider is slow, so the memo comes back before its drivers, which fill in once it's opened.
@@ -234,29 +242,43 @@ def test_what_if_answer_change_calls_only_the_decider(kev_server, artifacts, con
 
 def test_wrong_key_fails_the_screening_without_leaking_it(kev_server, artifacts):
     url, _ = kev_server
+    from screener.pipeline import kev as kevmod
+    kevmod._ready.clear()
     with kev_client(artifacts, url, key="not-the-key") as c:
         r = c.post("/v1/screenings", json={"schema_version": "0.1.0", "founder": {"name": "Someone Not In The Demo"},
                                            "fields": {"industry": "fintech", "background": "technical"}})
         job = wait_for(c, f"/v1/screenings/{r.json()['job_id']}")
     assert job["status"] == "failed"
     msg = job["error"]["message"]
-    assert "Kev" in msg and "KEV_API_KEY" in msg and "not-the-key" not in msg
+    assert "KEV_API_KEY" in msg and "nothing was charged" in msg and "not-the-key" not in msg
+    kevmod._ready.clear()
 
 
-def test_without_kev_url_the_backend_says_what_to_set(artifacts):
+def test_without_kev_url_the_backend_runs_and_says_what_to_set(artifacts):
+    """No KEV_URL: the backend still starts (the demo cache can answer), and a real founder is stopped before any
+    research is paid for, with what to set."""
     with make_client(artifacts_dir=str(artifacts), answerer="kev", decider="kev", kev_api_key=KEY) as c:
         h = c.get("/health").json()
-    assert h["status"] == "degraded"
-    assert "KEV_URL" in h["errors"]["answerer"] and "KEV_URL" in h["errors"]["decider"]
+        r = c.post("/v1/screenings", json={"schema_version": "0.1.0", "founder": {"name": "Someone Real"}})
+        job = wait_for(c, f"/v1/screenings/{r.json()['job_id']}")
+        stages = [e["stage"] for e in c.get(job["events_url"], params={"format": "json"}).json()
+                  if e["type"] == "stage"]
+    assert h["status"] == "ok" and h["errors"] == {} and h["kev"] == {"configured": False, "reachable": False}
+    assert job["status"] == "failed" and "KEV_URL" in job["error"]["message"]
+    assert "nothing was charged" in job["error"]["message"] and "researching" not in stages
 
 
-def test_kev_down_shows_on_health(artifacts):
+def test_kev_down_shows_on_health_and_stops_before_research(artifacts):
     with socket.socket() as s:  # a port nothing listens on
         s.bind(("127.0.0.1", 0))
         port = s.getsockname()[1]
     with kev_client(artifacts, f"http://127.0.0.1:{port}") as c:
         h = c.get("/health").json()
+        r = c.post("/v1/screenings", json={"schema_version": "0.1.0", "founder": {"name": "Someone Real"}})
+        job = wait_for(c, f"/v1/screenings/{r.json()['job_id']}")
     assert h["kev"]["reachable"] is False and h["errors"] == {}
+    assert job["status"] == "failed" and "isn't reachable" in job["error"]["message"]
+    assert "nothing was charged" in job["error"]["message"]
 
 
 def test_drivers_fill_in_a_few_at_a_time_most_important_first(kev_server, artifacts, monkeypatch):

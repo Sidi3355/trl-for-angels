@@ -225,11 +225,9 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
 - **For the research session:** answered on 2026-11-15 by research's real artefacts and
   `docs/app_integration.md` (formats, the full `model.json`, Kev through TRL, `thresholds.json` counts, unknowns
   as `unknown`). Still open: 3 to 5 real rendered profiles from `data/raw/sample50.jsonl`.
-- **Research's artefacts on `app-track`:** they're in `shared/artifacts/` on the research branch
-  (`claude/determined-albattani-dl2cyy`), which the app may not write. The owner decides how they arrive: merge the
-  research branch (into `main`, then `main` into `app-track`), or let the app session merge it into `app-track`.
-  It touches no app file (it adds `app/thresholds.json`, the three artefacts, research files and a 3-line
-  MASTER_PLAN note).
+- **Research's artefacts on `app-track`:** done (2026-11-15, the owner relayed research's "pull them in"). The three
+  files were copied unchanged from the research branch at `4cc539d` (byte-identical; checked). Nothing else from
+  that branch was brought over. If research exports new ones, copy them the same way and rebuild the demo cache.
 - **MASTER_PLAN follow-ups** the owner hasn't decided on, after the 8b voice section:
   - step E3 still says voice notes are a stretch goal
   - the cut-line list doesn't place the briefing or the voice agent
@@ -247,5 +245,7 @@ or real research on the hosted backend (`AGENT=claude` plus the key, about $0.25
   the staged-changes Deploy. Next: the frontend deploy, then the first real note recorded on the iPhone. The
   onboarding's own test (a short text-to-speech clip) is optional; recommended to skip it.
 - **Going live with the real models (Railway variables):** `ARTIFACTS_DIR=shared/artifacts`, `ANSWERER=kev`,
-  `DECIDER=kev`, `KEV_URL=<tunnel address>`, `KEV_API_KEY=<the PC server's passcode>`. Real research:
-  `AGENT=claude` (the Claude key is already there). TypeSafe isn't needed any more.
+  `DECIDER=kev`, `KEV_API_KEY=<the PC server's passcode>` can be set any time (with the PC off, the example founders
+  answer from the demo cache and real founders are stopped before research, at no cost); `KEV_URL=<tunnel
+  address>` whenever the PC runs. Real research: `AGENT=claude` (the Claude key is already there). TypeSafe isn't
+  needed any more.
