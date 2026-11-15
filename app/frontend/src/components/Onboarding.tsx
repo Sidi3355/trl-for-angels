@@ -56,7 +56,7 @@ export function Onboarding() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
-  const { start, busy, error } = useStartScreening();
+  const { start, busy, error, reset } = useStartScreening();
   const dialog = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -83,8 +83,17 @@ export function Onboarding() {
     };
   }, [open, step]);
 
+  // A sample founder picked here starts a screening and moves the app to its progress page. The intro
+  // lives in the app shell, above every page, so close it once that page is showing: otherwise it stays
+  // on top with its spinner turning while the screening runs unseen underneath.
+  useEffect(() => {
+    if (open && busy && pathname.startsWith("/screenings/")) close();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
   function close() {
     markIntroSeen();
+    reset(); // a replayed intro starts with the examples enabled again
     setOpen(false);
   }
 

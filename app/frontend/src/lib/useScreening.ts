@@ -41,5 +41,10 @@ export function useStartScreening() {
       setError(err.status === 422 ? "Some details don't fit. Check the founding date and fields, then try again." : err.message);
     }
   }
-  return { start, busy, error, setError };
+  /** Forget a started screening's spinner and error (for a component that stays mounted, like the intro). */
+  function reset() {
+    setBusy(null);
+    setError(null);
+  }
+  return { start, busy, error, setError, reset };
 }
