@@ -1,0 +1,19 @@
+{
+ "frames": 91,
+ "fps": 30,
+ "speed": 1.0,
+ "seconds": 3.03,
+ "source_seconds": 3.0,
+ "segments": [
+  {
+   "seg": "c8a_record",
+   "from": 2.48,
+   "to": 3.88
+  },
+  {
+   "seg": "c8b_filled",
+   "from": 2.82,
+   "to": 4.47
+  }
+ ]
+}

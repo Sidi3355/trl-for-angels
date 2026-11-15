@@ -50,7 +50,7 @@ SSE_KEEPALIVE_S = 15
 def build_components(settings: Settings, artifacts, contract: Contract, budget: Budget) -> tuple[dict, dict]:
     """Instantiate the configured agent, answerer and decider; collect what isn't available."""
     built, errors = {}, {}
-    kev_call = {"timeout_s": settings.kev_timeout_s or float(artifacts.model["endpoint"].get("timeout_s", 60)),
+    kev_call = {"timeout_s": max(settings.kev_timeout_s, float(artifacts.model["endpoint"].get("timeout_s", 60))),
                 "max_retries": settings.kev_max_retries,
                 "cache": KevCache(DEMO_CACHE if settings.kev_demo_cache else None,
                                   model_id=artifacts.model["model_id"], rules=artifacts.rules)}

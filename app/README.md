@@ -228,8 +228,8 @@ If a real component is selected but can't run (a missing key, or not built yet),
 
 Other settings: `CORS_ORIGINS` and `CORS_ORIGIN_REGEX` (the frontend's address), `ACCESS_TOKEN`
 (optional shared passcode for `/v1`), `RETENTION_MINUTES` (default 120), `MAX_CONCURRENT_SCREENINGS`,
-`BATCH_MAX_CONCURRENCY`, `MOCK_PACE`, `VALIDATE_RESPONSES`, and for Kev `KEV_TIMEOUT_S` (default: `model.json`'s
-`timeout_s`) and `KEV_MAX_RETRIES` (default 1, so a PC that's off fails a screening quickly).
+`BATCH_MAX_CONCURRENCY`, `MOCK_PACE`, `VALIDATE_RESPONSES`, and for Kev `KEV_TIMEOUT_S` (default 180 s per request: answering
+takes ~7 s on idle cores but over a minute on a busy CPU) and `KEV_MAX_RETRIES` (default 1, so a PC that's off fails a screening quickly).
 
 ## The real models (`ANSWERER=kev`, `DECIDER=kev`)
 

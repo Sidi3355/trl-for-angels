@@ -1,0 +1,14 @@
+{
+ "frames": 77,
+ "fps": 30,
+ "speed": 1.0,
+ "seconds": 2.57,
+ "source_seconds": 2.5,
+ "segments": [
+  {
+   "seg": "c9_notify",
+   "from": 1.84,
+   "to": 4.39
+  }
+ ]
+}

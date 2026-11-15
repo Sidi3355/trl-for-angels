@@ -40,14 +40,14 @@ body {
 /* the wordmark: HAL + halo + MARK, widest width, weight 800 */
 .wordmark { display: inline-flex; align-items: baseline; font-stretch: 125%; font-weight: 800; letter-spacing: .01em;
   text-transform: uppercase; line-height: 1; white-space: nowrap; color: var(--ink); font-size: 26px; }
-.wordmark svg { height: .73em; width: .99em; margin: 0 .035em; fill: currentColor; display: block; align-self: baseline; overflow: visible; }
+.wordmark svg { height: .7em; width: .949em; margin: 0 .035em; fill: currentColor; display: block; align-self: baseline; overflow: visible; }
 .wordmark span { display: inline-block; }
 
 /* type roles */
 .eyebrow { font-stretch: 125%; font-weight: 700; font-size: 19px; letter-spacing: .16em; text-transform: uppercase; color: var(--brand); }
 .headline { font-weight: 800; letter-spacing: -.035em; line-height: .96; font-size: 124px; }
 .headline span, .ln span { display: inline-block; }
-.sub { font-size: 38px; line-height: 1.22; letter-spacing: -.012em; color: var(--ink-2); font-weight: 480; }
+.sub { text-wrap: balance; font-size: 38px; line-height: 1.22; letter-spacing: -.012em; color: var(--ink-2); font-weight: 480; }
 .small { font-size: 24px; line-height: 1.35; color: var(--muted); }
 .figure { font-stretch: 62%; font-weight: 900; line-height: .86; letter-spacing: -.01em; }
 .label { font-stretch: 125%; font-weight: 700; font-size: 15px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
@@ -56,8 +56,8 @@ body {
 /* the phone: a plain slab, hard offset shadow like a printed block */
 .phone { position: absolute; left: 1296px; top: 132px; width: 432px; height: 918px; background: #0e0f0e;
   border-radius: 58px; padding: 12px; box-shadow: 20px 20px 0 var(--line-strong); }
-.phone .screen { position: relative; width: 408px; height: 887px; margin: 3.5px 0 0 0; border-radius: 46px; overflow: hidden; background: var(--paper); }
-.phone .screen img { position: absolute; left: 0; top: 0; width: 100%; height: auto; display: block; }
+.phone .screen { clip-path: inset(0 round 46px); position: relative; width: 408px; height: 887px; margin: 3.5px 0 0 0; overflow: hidden; background: var(--paper); }
+.phone .screen img { will-change: transform, clip-path; position: absolute; left: 0; top: 0; width: 100%; height: auto; display: block; }
 .phone .ph-tag { position: absolute; left: 0; right: 0; bottom: 0; height: 196px; display: none; align-items: center; justify-content: center;
   text-align: center; background: var(--surface-3); color: var(--muted); font-stretch: 125%; font-weight: 700; font-size: 13px; letter-spacing: .14em;
   text-transform: uppercase; line-height: 1.6; }
@@ -80,6 +80,17 @@ body {
 /* captions: bottom left, clear of the phone */
 #cap { position: absolute; left: var(--m); bottom: 58px; width: 1040px; min-height: 96px; display: flex; flex-direction: column; justify-content: flex-end; }
 #cap .bar { width: 48px; height: 5px; background: var(--brand); margin-bottom: 16px; }
-#cap .txt { font-size: 35px; line-height: 1.26; font-weight: 560; letter-spacing: -.008em; color: var(--faint); }
+#cap .txt { text-wrap: balance; font-size: 35px; line-height: 1.26; font-weight: 560; letter-spacing: -.008em; color: var(--faint); }
 #cap .txt .said { color: var(--ink); }
 #cap.off { visibility: hidden; }
+
+/* app scenes: the left column */
+.phone-note { position: absolute; left: 1296px; top: 92px; width: 432px; text-align: center; }
+.sidetag { right: 652px; }
+.kicker { margin-bottom: 26px; }
+.items { list-style: none; }
+.slip { background: var(--surface); border: 3px solid var(--ink); }
+.slip .r { display: flex; align-items: baseline; gap: 28px; padding: 18px 28px 16px; border-top: 1px solid var(--line-strong); }
+.slip .r:first-child { border-top: 0; }
+.slip .r .label { width: 150px; flex: none; }
+.slip .r .v { font-size: 40px; font-weight: 700; letter-spacing: -.02em; }

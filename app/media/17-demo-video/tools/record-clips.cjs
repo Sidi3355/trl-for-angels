@@ -56,7 +56,10 @@ const log = (...a) => console.log(new Date().toISOString().slice(11, 19), ...a);
     await smoothTo(Math.max(0, y), ms);
   };
 
+  // ONLY=founder records c1-c6 (the real founder); ONLY=extras records c7-c10 (no research, no cost).
   // MEMO_URL=<a finished memo> resumes after the live research, without paying for it again.
+  const only = process.env.ONLY || 'all';
+  if (only !== 'extras') {
   let memoUrl = process.env.MEMO_URL || null;
   if (!memoUrl) {
   // ---- c1: the dashboard, typing a real founder's name
@@ -149,6 +152,9 @@ const log = (...a) => console.log(new Date().toISOString().slice(11, 19), ...a);
   await stop();
 
   // ---- c7: screening a list (the made-up example founders: canned research, real Kev answers from the demo cache)
+  } // end of the real founder's clips
+  if (only === 'founder') { await b.close(); log('done'); return; }
+
   await p.goto(B + '/batch', { waitUntil: 'networkidle' });
   await pause(500);
   await start('c7_list');

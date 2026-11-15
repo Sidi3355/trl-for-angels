@@ -53,7 +53,9 @@ class Settings(BaseSettings):
 
     # Kev (ANSWERER=kev, DECIDER=kev): research's kev_server on the owner's PC behind a Cloudflare tunnel.
     kev_url: str | None = None  # the bare tunnel address; overrides model.json's endpoint for both models
-    kev_timeout_s: float | None = None  # per request; default model.json's endpoint.timeout_s
+    # Per Kev request. Answering 40 questions takes ~7 s on 4 idle cores but over a minute on a busy CPU (seen in
+    # testing), so the default is generous; a PC that's off still fails at once (connection refused).
+    kev_timeout_s: float = 180.0
     kev_max_retries: int = 1  # a PC that's off should fail a screening quickly, not after minutes of retries
     kev_demo_cache: bool = True  # real Kev replies for the demo founders (screener/data/kev_demo_cache.json)
 

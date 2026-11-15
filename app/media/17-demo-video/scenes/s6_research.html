@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Halomark demo · s6_research</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .title { position: absolute; left: 96px; top: 136px; }
+  .title .row { display: flex; align-items: flex-end; gap: 44px; margin-top: 18px; }
+  .trl { font-stretch: 125%; font-weight: 800; font-size: 150px; line-height: .8; letter-spacing: -.01em; }
+  .title .who { font-size: 36px; line-height: 1.2; color: var(--muted); padding-bottom: 2px; font-weight: 500; }
+  /* three steps */
+  .steps { position: absolute; left: 96px; top: 372px; width: 1728px; display: flex; gap: 48px; }
+  .step { position: relative; width: 544px; }
+  .step .top { height: 3px; background: var(--ink); }
+  .step .h { display: flex; align-items: baseline; gap: 20px; height: 104px; padding-top: 18px; }
+  .step .h .n { font-size: 76px; color: var(--brand); }
+  .step .h .t { font-size: 70px; font-weight: 800; letter-spacing: -.035em; display: inline-block; }
+  .step .g { position: relative; height: 216px; margin-top: 16px; }
+  .step .p { font-size: 27px; line-height: 1.3; color: var(--ink-2); margin-top: 22px; text-wrap: balance; }
+  .step .p b { color: var(--ink); font-weight: 700; }
+  /* Think: 93 slips, 40 kept */
+  .slips { position: absolute; left: 0; top: 0; width: 544px; height: 150px; }
+  .slips i { position: absolute; width: 11px; height: 42px; background: var(--ink); }
+  .tally { position: absolute; left: 0; top: 162px; display: flex; align-items: baseline; gap: 14px; }
+  .tally .f { font-size: 60px; min-width: 62px; }
+  .tally .l { position: relative; height: 20px; width: 300px; }
+  .tally .l span { position: absolute; left: 0; bottom: 0; }
+  /* Reason: 40 answers */
+  .cells { position: absolute; left: 0; top: 0; width: 544px; height: 216px; }
+  .cells .c { position: absolute; width: 46px; height: 46px; border: 2px solid var(--line-strong); }
+  .cells .c b { position: absolute; inset: -2px; display: flex; align-items: center; justify-content: center; font-stretch: 125%; font-weight: 800; font-size: 13px; letter-spacing: .06em; }
+  .cells .c b.y { background: var(--ink); color: var(--paper); }
+  .cells .c b.n { border: 2px solid var(--ink); color: var(--ink); }
+  /* Learn: the chance of each outcome */
+  .odds { position: absolute; left: 0; top: 0; width: 544px; }
+  .odds .o { display: flex; align-items: center; height: 36px; margin-bottom: 6px; }
+  .odds .o .label { width: 200px; flex: none; font-size: 14px; letter-spacing: .12em; color: var(--ink-2); }
+  .odds .o .tr { position: relative; flex: 1; height: 22px; }
+  .odds .o .tr i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--brand); transform-origin: left center; }
+  .odds .note { position: absolute; right: 0; top: 196px; font-size: 12px; color: var(--faint); }
+  /* calibration */
+  .cal { position: absolute; left: 96px; top: 372px; width: 1728px; height: 520px; }
+  .cal .top { height: 3px; background: var(--ink); }
+  .stat { position: absolute; left: 0; width: 700px; display: flex; align-items: flex-end; gap: 30px; }
+  .stat .f { font-size: 190px; }
+  .stat .tx { font-size: 40px; line-height: 1.08; font-weight: 700; letter-spacing: -.025em; padding-bottom: 8px; }
+  .stat .tx .label { display: block; margin-bottom: 12px; letter-spacing: .16em; }
+  #st600 { top: 34px; } #st1 { top: 262px; }
+  #st1 .f { font-size: 250px; color: var(--brand); }
+  .cal .mid { position: absolute; left: 0; top: 240px; width: 640px; height: 1px; background: var(--line-strong); }
+  #chart { position: absolute; left: 730px; top: 20px; width: 620px; height: 560px; overflow: visible; }
+  #chart text { font-family: Archivo; fill: var(--muted); font-size: 17px; }
+  #chart .ax { font-stretch: 125%; font-weight: 700; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; }
+  .bins { position: absolute; left: 1372px; top: 34px; width: 356px; }
+  .bins .hd, .bins .rw { display: grid; grid-template-columns: 1fr 1fr .8fr; column-gap: 12px; align-items: end; }
+  .bins .hd { padding-bottom: 12px; border-bottom: 3px solid var(--ink); }
+  .bins .hd span { font-stretch: 125%; font-weight: 700; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); line-height: 1.35; }
+  .bins .rw { padding: 13px 0 11px; border-bottom: 1px solid var(--line-strong); }
+  .bins .rw span { font-stretch: 62%; font-weight: 900; font-size: 44px; line-height: 1; }
+  .bins .rw span:last-child { color: var(--muted); }
+  .bins .cap { font-size: 19px; line-height: 1.35; color: var(--muted); margin-top: 18px; }
+  .foot { position: absolute; right: 96px; bottom: 58px; width: 540px; font-size: 20px; line-height: 1.38; color: var(--muted); border-top: 1px solid var(--line-strong); padding-top: 14px; }
+</style>
+</head>
+<body class="dark">
+<div class="stage">
+  <div class="head"><span data-wordmark></span><span class="folio"><b>06</b> &nbsp;The research</span></div>
+  <div class="title">
+    <div class="eyebrow" id="eb">Under the hood</div>
+    <div class="row"><div class="trl" id="trl">TRL</div><div class="who" id="who">Vela Research's<br>open-source library</div></div>
+  </div>
+
+  <div class="steps" id="steps">
+    <div class="step">
+      <div class="top"></div>
+      <div class="h"><span class="figure n">1</span><span class="t">Think</span></div>
+      <div class="g"><div class="slips" id="slips"></div>
+        <div class="tally"><span class="figure f" id="tn">0</span><span class="l label"><span id="tl1">Questions written</span><span id="tl2">Kept: the best 40</span></span></div></div>
+      <p class="p"><span id="p1a"><b>Claude Opus 5.5</b> wrote 93 yes/no questions about founders.</span> <span id="p1b">The best 40 were kept.</span></p>
+    </div>
+    <div class="step">
+      <div class="top"></div>
+      <div class="h"><span class="figure n">2</span><span class="t">Reason</span></div>
+      <div class="g"><div class="cells" id="cells"></div></div>
+      <p class="p" id="p2"><b>Kev-0.6B</b>, a small open decision model, answers the 40 questions for each founder.</p>
+    </div>
+    <div class="step">
+      <div class="top"></div>
+      <div class="h"><span class="figure n">3</span><span class="t">Learn</span></div>
+      <div class="g"><div class="odds" id="odds"></div></div>
+      <p class="p" id="p3">A <b>fine-tuned Kev-0.6B</b> turns the 40 answers into the chance of each outcome.</p>
+    </div>
+  </div>
+
+  <div class="cal" id="cal">
+    <div class="top"></div>
+    <div class="stat" id="st600"><span class="figure f" id="n600">0</span><span class="tx" id="t600"><span class="label">Tested on</span>founders it had<br>never seen</span></div>
+    <div class="mid" id="mid"></div>
+    <div class="stat" id="st1"><span class="figure f" id="n1">1</span><span class="tx" id="t1"><span class="label">Off by about</span>percentage point,<br>on average</span></div>
+    <svg id="chart" viewBox="0 0 620 560"></svg>
+    <div class="bins" id="bins">
+      <div class="hd"><span>Odds<br>given</span><span>Share who<br>succeeded</span><span><br>Founders</span></div>
+      <div class="rw"><span>7.2%</span><span>9.1%</span><span>99</span></div>
+      <div class="rw"><span>15.0%</span><span>16.5%</span><span>218</span></div>
+      <div class="rw"><span>25.2%</span><span>24.8%</span><span>238</span></div>
+      <div class="rw"><span>33.2%</span><span>35.6%</span><span>45</span></div>
+      <p class="cap" id="ece">Calibration error 0.012</p>
+    </div>
+  </div>
+  <p class="foot" id="foot">Trained and tested mostly on generated founder data (2,950 of 3,000 profiles). No real-world accuracy claimed.</p>
+</div>
+<script src="data.js"></script>
+<script src="seek.js"></script>
+<script>
+HM.scene({
+  id: 's6_research', duration: 26.5, voiceAt: 0.5,
+  build: function (HM) {
+    var q = function (s) { return document.querySelector(s); }, qa = function (s) { return document.querySelectorAll(s); };
+    var rnd = HM.rng(40);
+
+    // ---- title
+    HM.fade('#eb', 0.2);
+    HM.strike('#trl', 1.78, { from: 1.5 });                 // "TRL"
+    HM.set('#who', 2.7, { dy: 24 });                         // "Vela Research's open ..."
+    HM.wipe('.step .top', 3.7, { dur: 0.5, stagger: 0.1 });
+    [4.32, 4.72, 5.3].forEach(function (t, i) {              // "think, reason, learn"
+      HM.set(qa('.step .h .n')[i], t, { dy: 40, dur: 0.38 });
+      HM.set(qa('.step .h .t')[i], t + 0.05, { dy: 40, dur: 0.38 });
+    });
+
+    // ---- Think: 93 slips set in three rows; 40 are kept
+    var slips = q('#slips'), keep = [], order = [];
+    for (var i = 0; i < 93; i++) order.push(i);
+    for (i = 92; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)), tmp = order[i]; order[i] = order[j]; order[j] = tmp; }
+    order.slice(0, 40).forEach(function (k) { keep[k] = true; });
+    for (i = 0; i < 93; i++) {
+      var s = document.createElement('i');
+      s.style.left = (i % 31) * 17.75 + 'px'; s.style.top = Math.floor(i / 31) * 52 + 'px';
+      slips.appendChild(s);
+      var t0 = 6.7 + i * 0.0235;
+      var f = [[t0, { opacity: 0, transform: 'translateY(-14px)', backgroundColor: '#f1f1ed' }, 'set'], [t0 + 0.16, { opacity: 1, transform: 'translateY(0px)', backgroundColor: '#f1f1ed' }]];
+      f.push([9.95, { opacity: 1, transform: 'translateY(0px)', backgroundColor: '#f1f1ed' }, 'inout']);
+      f.push([10.45, keep[i] ? { opacity: 1, transform: 'translateY(0px)', backgroundColor: '#8fa0ff' } : { opacity: 0.16, transform: 'translateY(0px)', backgroundColor: '#f1f1ed' }]);
+      HM.tl(s, f);
+    }
+    HM.fade('#tn', 6.6, { dur: 0.15 });
+    HM.onSeek(function (t) {                                  // 0 -> 93 as they are written, then 93 -> 40 at the cut
+      var v;
+      if (t < 9.95) { var p = Math.max(0, Math.min(1, (t - 6.7) / (92 * 0.0235 + 0.1))); v = Math.round(93 * p); }
+      else { var p2 = Math.min(1, (t - 9.95) / 0.5); p2 = 1 - Math.pow(1 - p2, 3); v = Math.round(93 - 53 * p2); }
+      v = String(v); var n = q('#tn'); if (n.textContent !== v) n.textContent = v;
+    });
+    HM.fade('#tl1', 6.7, { dur: 0.25, out: 9.9 });
+    HM.fade('#tl2', 10.2, { dur: 0.25 });
+    HM.fade('#p1a', 6.7, { dur: 0.4 });                       // "Claude wrote a checklist"
+    HM.fade('#p1b', 9.9, { dur: 0.4 });                       // "the best forty made the cut"
+
+    // ---- Reason: 40 answers, yes or no
+    var cells = q('#cells');
+    for (i = 0; i < 40; i++) {
+      var c = document.createElement('div'); c.className = 'c';
+      c.style.left = (i % 10) * 55.3 + 'px'; c.style.top = Math.floor(i / 10) * 56.6 + 'px';
+      var yes = rnd() < 0.55;
+      c.innerHTML = '<b class="' + (yes ? 'y' : 'n') + '">' + (yes ? 'YES' : 'NO') + '</b>';
+      cells.appendChild(c);
+      HM.fade(c, 12.3 + i * 0.012, { dur: 0.2 });
+      var ta = 14.55 + i * 0.03;                               // "answers them"
+      HM.tl(c.firstChild, [[ta, { opacity: 0, transform: 'scale(1.5)' }, 'strike'], [ta + 0.09, { opacity: 1, transform: 'scale(1)' }]]);
+    }
+    HM.fade('#p2', 12.25, { dur: 0.4 });                      // "Kev, a small open decision model"
+
+    // ---- Learn: answers become the chance of each outcome (bar lengths are an illustration, not results)
+    var bands = [['Shut down', 0.52], ['Under $50M', 0.2], ['$50M-$500M', 0.14], ['$500M-$1B', 0.08], ['Over $1B', 0.06]];
+    var odds = q('#odds');
+    bands.forEach(function (b, k) {
+      var o = document.createElement('div'); o.className = 'o';
+      o.innerHTML = '<span class="label">' + b[0].replace('-', '–') + '</span><span class="tr"><i style="width:' + (b[1] / 0.52 * 100) + '%"></i></span>';
+      odds.appendChild(o);
+      HM.fade(o.firstChild, 16.0 + k * 0.06, { dur: 0.3 });
+      var tb = 17.25 + k * 0.14;                               // "turns those answers into odds"
+      HM.tl(o.querySelector('i'), [[tb, { transform: 'scaleX(0)' }, 'set'], [tb + 0.7, { transform: 'scaleX(1)' }]]);
+    });
+    var note = document.createElement('span'); note.className = 'note label'; note.textContent = 'Illustration'; odds.appendChild(note);
+    HM.fade(note, 17.3, { dur: 0.3 });
+    HM.fade('#p3', 15.8, { dur: 0.4 });                       // "our fine-tuned Kev"
+
+    HM.out('#steps', 19.05, { dur: 0.42 });
+
+    // ---- Calibration: 600 test founders, four bins, all near the diagonal, none above 40%
+    HM.wipe('#cal .top', 19.45, { dur: 0.5 });
+    HM.fade('#n600', 19.6, { dur: 0.15 });
+    HM.count('#n600', 19.7, 21.0, 0, 600);                    // "six hundred founders"
+    HM.set('#t600', 20.0, { dy: 24 });
+    HM.fade('#foot', 19.8, { dur: 0.5 });
+
+    var NS = 'http://www.w3.org/2000/svg', svg = q('#chart');
+    var X0 = 76, Y0 = 500, W = 480, k = W / 50;               // 0-50% on both axes, the same scale on each
+    function mk(tag, attrs, text) { var n = document.createElementNS(NS, tag); for (var a in attrs) n.setAttribute(a, attrs[a]); if (text !== undefined) n.textContent = text; svg.appendChild(n); return n; }
+    var defs = mk('defs', {});
+    defs.innerHTML = '<pattern id="hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="2" height="9" fill="#44474b"/></pattern>';
+    var frame = mk('g', {}); svg.appendChild(frame);
+    for (var v = 0; v <= 50; v += 10) {
+      var gx = X0 + v * k, gy = Y0 - v * k;
+      frame.appendChild(mk('line', { x1: X0, x2: X0 + W, y1: gy, y2: gy, stroke: v ? '#2a2c2d' : '#f1f1ed', 'stroke-width': v ? 1 : 2 }));
+      frame.appendChild(mk('line', { x1: gx, x2: gx, y1: Y0, y2: Y0 - W, stroke: v ? '#2a2c2d' : '#f1f1ed', 'stroke-width': v ? 1 : 2 }));
+      frame.appendChild(mk('text', { x: X0 - 12, y: gy + 6, 'text-anchor': 'end' }, v + '%'));
+      frame.appendChild(mk('text', { x: gx, y: Y0 + 26, 'text-anchor': 'middle' }, v + '%'));
+    }
+    frame.appendChild(mk('text', { x: X0 + W / 2, y: Y0 + 56, 'text-anchor': 'middle', 'class': 'ax' }, 'Odds Halomark gave'));
+    frame.appendChild(mk('text', { x: X0 - 62, y: Y0 - W / 2, 'text-anchor': 'middle', 'class': 'ax', transform: 'rotate(-90 ' + (X0 - 62) + ' ' + (Y0 - W / 2) + ')' }, 'Share who succeeded'));
+    HM.fade(frame, 19.6, { dur: 0.5 });
+    // the diagonal: where the odds given equal the share who succeeded
+    var diag = mk('line', { x1: X0, y1: Y0, x2: X0 + W, y2: Y0 - W, stroke: '#a2a59f', 'stroke-width': 2, 'stroke-dasharray': '7 7' });
+    var dclip = mk('clipPath', { id: 'dc' }); var drect = mk('rect', { x: X0, y: Y0 - W, width: W, height: W }); dclip.appendChild(drect);
+    diag.setAttribute('clip-path', 'url(#dc)');
+    HM.tl(drect, [[20.4, { transform: 'translate(-' + W + 'px,' + W + 'px)' }, 'inout'], [21.2, { transform: 'translate(0px,0px)' }]]);
+    var dl = mk('text', { x: X0 + 30 * k - 16, y: Y0 - 30 * k - 16, 'text-anchor': 'end', transform: 'rotate(-45 ' + (X0 + 30 * k - 16) + ' ' + (Y0 - 30 * k - 16) + ')' }, 'Perfectly calibrated');
+    dl.setAttribute('x', X0 + 30 * k - 22); HM.fade(dl, 21.1, { dur: 0.3 });
+    // nothing above 40%
+    var hz = mk('g', {});
+    hz.appendChild(mk('rect', { x: X0 + 40 * k, y: Y0 - W, width: 10 * k, height: W, fill: 'url(#hatch)' }));
+    var hx = X0 + 45 * k + 6, hy = Y0 - W / 2;
+    var hb = mk('rect', { x: hx - 16, y: hy - 178, width: 30, height: 356, fill: '#0e0f0e' }); hz.appendChild(hb);
+    hz.appendChild(mk('text', { x: hx, y: hy, 'text-anchor': 'middle', transform: 'rotate(-90 ' + hx + ' ' + hy + ')', style: 'fill:#d6d6d0;font-weight:600' }, 'No odds above 40%: the model is cautious'));
+    HM.fade(hz, 22.85, { dur: 0.4 });
+    // the four bins
+    var pts = [[7.2, 9.1], [15.0, 16.5], [25.2, 24.8], [33.2, 35.6]], rows = qa('.bins .rw');
+    HM.fade('.bins .hd', 21.2, { dur: 0.3 });
+    pts.forEach(function (p, i) {
+      var t = 21.5 + i * 0.36, cx = X0 + p[0] * k, cy = Y0 - p[1] * k;
+      var g = mk('g', { style: 'transform-box: fill-box; transform-origin: center;' });
+      g.appendChild(mk('circle', { cx: cx, cy: cy, r: 11, fill: '#0e0f0e' }));
+      g.appendChild(mk('circle', { cx: cx, cy: cy, r: 8.5, fill: '#8fa0ff' }));
+      HM.strike(g, t, { from: 3, dur: 0.14 });
+      HM.wipe(rows[i], t, { dur: 0.35 });
+    });
+    // "off by about one percentage point"
+    HM.fade('#mid', 23.4, { dur: 0.3 });
+    HM.strike('#n1', 24.1, { from: 1.7, dur: 0.17 });
+    HM.jolt('#cal', 24.1, 6);
+    HM.set('#t1', 24.25, { dy: 24 });
+    HM.fade('#ece', 24.9, { dur: 0.4 });
+  }
+});
+</script>
+</body>
+</html>

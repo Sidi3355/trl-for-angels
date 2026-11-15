@@ -91,6 +91,13 @@
       HM.tl(n, f);
     });
   };
+  // out: leaves edge to edge (the opposite of wipe), for something that is there from the start
+  HM.out = function (target, t, o) {
+    o = o || {};
+    var dur = o.dur || 0.4, dir = o.dir || 'left';
+    var gone = { right: 'inset(0 0 0 100%)', left: 'inset(0 100% 0 0)', down: 'inset(100% 0 0 0)', up: 'inset(0 0 100% 0)' }[dir];
+    els(target).forEach(function (n) { HM.tl(n, [[t, { clipPath: 'inset(0 0 0 0)' }, 'inout'], [t + dur, { clipPath: gone }]]); });
+  };
   // fade: plain opacity, for quiet things
   HM.fade = function (target, t, o) {
     o = o || {};
@@ -151,7 +158,7 @@
       n.innerHTML = '<path fill="var(--brand)" d="' + PUNCH + '"/><path fill="var(--paper)" fill-rule="evenodd" d="' + HALO + '"/>';
     });
     var icons = {
-      meet: '<path d="M24 40L40 24M27 24H40V37" fill="none" stroke="#04210f" stroke-width="5" stroke-linecap="square"/>',
+      meet: '<path d="M23 41L39 25" fill="none" stroke="#04210f" stroke-width="5"/><path d="M26.5 24.5H39.5V37.5" fill="none" stroke="#04210f" stroke-width="5" stroke-linejoin="miter"/>',
       closer: '<path d="M32 18V36" stroke="#2a1800" stroke-width="6" stroke-linecap="square"/><rect x="29" y="42" width="6" height="6" fill="#2a1800"/>',
       pass: '<path d="M22 32H42" stroke="#f4f4f0" stroke-width="5.5" stroke-linecap="square"/>',
       ask: ''
@@ -268,7 +275,10 @@
     for (var i = 0; i < hooks.length; i++) hooks[i](t);
     seekCap(t);
     await seekClips(t);
-    void document.body.offsetHeight; // settle layout before the screenshot
+    // Drop and rebuild the render layers, so a frame's pixels never depend on which frames were drawn before it
+    // (Chromium otherwise reuses a layer rastered at an earlier scale, which shifts a few anti-aliased pixels).
+    var st = document.querySelector('.stage');
+    st.style.display = 'none'; void st.offsetHeight; st.style.display = ''; void st.offsetHeight;
     return t;
   };
 })();

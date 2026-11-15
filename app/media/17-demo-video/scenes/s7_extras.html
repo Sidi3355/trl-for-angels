@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Halomark demo · s7_extras</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .items { position: absolute; left: 96px; top: 236px; width: 1040px; border-bottom: 3px solid var(--ink); }
+  .items li { position: relative; display: flex; align-items: center; gap: 34px; height: 146px; border-top: 3px solid var(--ink); }
+  .items .n { font-size: 84px; width: 84px; flex: none; color: var(--brand); }
+  .items .t { font-size: 62px; font-weight: 800; letter-spacing: -.035em; line-height: 1; }
+  .items .on { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: var(--brand-soft); z-index: -1; margin: 0 -24px; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="head"><span data-wordmark></span><span class="folio"><b>07</b> &nbsp;Also in the app</span></div>
+  <div class="col"><div class="eyebrow" id="eb">Also in the app</div></div>
+  <ul class="items">
+    <li><i class="on"></i><span class="figure n">1</span><span class="t">Screen a list</span></li>
+    <li><i class="on"></i><span class="figure n">2</span><span class="t">Voice notes</span></li>
+    <li><i class="on"></i><span class="figure n">3</span><span class="t">Notified when it's done</span></li>
+    <li><i class="on"></i><span class="figure n">4</span><span class="t">Your profile stays on your phone</span></li>
+  </ul>
+  <div class="phone" id="phone"><div class="screen"><img id="c7" alt=""><img id="c8" alt=""><img id="c9" alt=""><img id="c10" alt="">
+  <div class="ph-tag"></div></div></div>
+</div>
+<script src="data.js"></script>
+<script src="seek.js"></script>
+<script>
+HM.scene({
+  id: 's7_extras', duration: 11.1, voiceAt: 0.5,
+  clips: [{ name: 'c7_list', from: 0, to: 2.6, img: '#c7' }, { name: 'c8_voice', from: 2.6, to: 5.65, img: '#c8' },
+          { name: 'c9_notify', from: 5.65, to: 8.2, img: '#c9' }, { name: 'c10_profile', from: 8.2, to: 11.1, img: '#c10' }],
+  build: function (HM) {
+    HM.fade('#eb', 0.15);
+    HM.wipe('.items', 0.2, { dur: 0.5 });
+    var li = document.querySelectorAll('.items li'), on = document.querySelectorAll('.items .on');
+    var at = [0.5, 2.7, 5.75, 8.3], cut = [0, 2.6, 5.65, 8.2], imgs = ['#c7', '#c8', '#c9', '#c10'];
+    at.forEach(function (t, i) {
+      HM.set([li[i].children[1], li[i].children[2]], t, { dy: 30, dur: 0.4, stagger: 0.05 });
+      // the highlight sits on the feature the phone is showing
+      var f = [[cut[i], { clipPath: 'inset(0 100% 0 0)' }, 'inout'], [cut[i] + 0.35, { clipPath: 'inset(0 0 0 0)' }]];
+      if (i < 3) { f.push([cut[i + 1], { clipPath: 'inset(0 0 0 0)' }, 'inout']); f.push([cut[i + 1] + 0.3, { clipPath: 'inset(0 0 0 100%)' }]); }
+      HM.tl(on[i], f);
+      if (i > 0) HM.wipe(imgs[i], cut[i], { dir: 'up', dur: 0.35 });
+    });
+  }
+});
+</script>
+</body>
+</html>
