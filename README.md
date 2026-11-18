@@ -1,5 +1,7 @@
 # trl-for-angels
 
+Demo: https://www.youtube.com/watch?v=akMRJbdCokc
+
 **Halomark, a calibrated deal-screening agent for angel investors, and the research behind it.**
 
 Angel investors usually screen founders alone, with no analysts and little time. Halomark does
