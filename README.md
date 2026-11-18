@@ -1,6 +1,8 @@
 # trl-for-angels
 
-Demo: https://www.youtube.com/watch?v=akMRJbdCokc
+[![Watch the Halomark demo on YouTube](https://img.youtube.com/vi/akMRJbdCokc/hqdefault.jpg)](https://www.youtube.com/watch?v=akMRJbdCokc)
+
+**[▶ Watch the demo on YouTube](https://www.youtube.com/watch?v=akMRJbdCokc)**
 
 **Halomark, a calibrated deal-screening agent for angel investors, and the research behind it.**
 
